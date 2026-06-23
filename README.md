@@ -1,8 +1,8 @@
 # Huntington Research Assistant
 
-Huntington Research Assistant is a small open-source MVP for searching, summarizing, and navigating Huntington's disease research papers.
+Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The first version uses [Europe PMC](https://europepmc.org/RestfulWebService) for publication search and metadata. It is intended as an educational public-good project and as a foundation that can later add PubMed/NCBI E-utilities as a second literature provider.
+The app uses [Europe PMC](https://europepmc.org/RestfulWebService) for publications and the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project and as a foundation that can later add PubMed/NCBI E-utilities as a second literature provider.
 
 > [!IMPORTANT]
 > This tool is for educational and research navigation purposes only. It is not medical advice. Always consult qualified healthcare professionals for diagnosis, treatment, or genetic counselling.
@@ -20,10 +20,16 @@ This project is not affiliated with any medical association, including the Norwe
 - Search Europe PMC for Huntington-related research papers.
 - Expand simple user queries into a Huntington's disease literature context.
 - Display titles, authors, year, journal, DOI, PMID, abstract snippets, source links, citation counts, and open-access flags where available.
+- Display publication types and prominent Europe PMC retraction/correction notices.
 - Add simple rule-based topic tags.
-- Filter retrieved papers by topic category, publication year, and open-access status.
+- Filter Europe PMC results by topic category, publication year, and open-access status.
+- Browse provider-backed result pages instead of only filtering a small local batch.
+- Download each paper's metadata and abstract, with direct open-access PDF links where Europe PMC provides them.
+- Export the visible publication page as CSV or BibTeX with source links.
 - Show a publication dashboard with yearly Europe PMC result counts, the selected-period total, and the current-year count.
-- Include dedicated views for clinical trial literature and recent publications from the last couple of years.
+- Track registered Huntington's disease studies by status, phase, country, intervention, sponsor, and registry update date.
+- Export visible registered studies as CSV.
+- Include a dedicated view for recent publications from the last couple of years.
 - Offer English and Norwegian UI labels and safety disclaimers.
 - Offer English plain-language and research-detail summary modes.
 - Optionally summarize abstracts with a local Ollama model such as Qwen.
@@ -46,9 +52,11 @@ Norwegian translation of abstracts and generated summaries is planned for a late
 
 ![Search results](docs/screenshots/Two_results_for_search_gene_splicing.png)
 
-### Clinical-trial literature
+### Clinical-trial literature from the v0.1 interface
 
 ![Clinical trials search and trends](docs/screenshots/Clinical_trials_search_tab_and_some_publishing_trends.png)
+
+The v0.2 development version replaces this publication search with a separate ClinicalTrials.gov tracker. An updated screenshot will be added after release verification.
 
 ### Recent publications
 
@@ -117,13 +125,14 @@ Supported variables:
 - `OLLAMA_MODEL`: local model name. Defaults to `qwen2.5:1.5b`.
 - `HRA_CACHE_PATH`: optional SQLite cache path override. By default the app stores cache in the OS local app data/cache directory, outside the repo. If that location is unavailable, it falls back to the system temp directory. This avoids SQLite I/O problems in synced folders such as OneDrive.
 - `HRA_EUROPE_PMC_EMAIL`: optional contact email sent in the Europe PMC user agent.
-- `HRA_TRUST_ENV`: set to `true` only if Europe PMC requests should use system proxy environment variables. Defaults to `false` to avoid broken local proxy settings.
+- `HRA_TRUST_ENV`: set to `true` only if Europe PMC and ClinicalTrials.gov requests should use system proxy environment variables. Defaults to `false` to avoid broken local proxy settings.
 
 No API keys are required or hardcoded. If local summarization is unavailable, the app still searches Europe PMC.
 
 ## Data and Privacy
 
 - Search queries are sent to Europe PMC.
+- Clinical-trial filter queries are sent to ClinicalTrials.gov when the tracker is used.
 - Ollama summaries remain local unless `OLLAMA_HOST` is deliberately pointed elsewhere.
 - Search history is stored in a local SQLite database.
 - Do not enter personal health or identifying information.
@@ -131,7 +140,7 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-Near-term priorities include stronger pagination, export, saved reading lists, Norwegian refinement, and a second PubMed/NCBI provider. AlphaFold, BioNeMo, autonomous agents, and personalized medical features are intentionally out of scope for v0.1.
+Near-term priorities include saved reading lists, Norwegian refinement, accessibility testing, and a second PubMed/NCBI provider. AlphaFold, BioNeMo, autonomous agents, personalized medical features, and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
 

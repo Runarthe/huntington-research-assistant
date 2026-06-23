@@ -17,6 +17,8 @@ The app must always show a prominent disclaimer explaining that it is not medica
 - Ask users for personal health data or identifying information.
 - Present generated summaries as complete, authoritative, or clinically actionable.
 - Hide the source paper or separate a summary from its source context.
+- Recommend, rank, or match clinical studies for an individual.
+- Interpret registry eligibility criteria for a user's personal circumstances.
 
 ## Source and Summary Requirements
 
@@ -25,10 +27,14 @@ The app must always show a prominent disclaimer explaining that it is not medica
 - Local summaries must include limitations/uncertainty and an educational-use disclaimer.
 - Plain-language mode may simplify wording, but must preserve uncertainty.
 - The original abstract must remain accessible next to any generated summary.
+- Registered studies must link to their ClinicalTrials.gov record.
+- Registry status must be presented as reported metadata, not as evidence that an intervention is safe or effective.
+- Users must be reminded that study status and registry details can change.
 
 ## Data Handling
 
 - Europe PMC receives literature search queries.
+- ClinicalTrials.gov receives tracker filter queries.
 - Local Ollama summaries should remain local by default.
 - SQLite history must not be treated as a place for sensitive or medical data.
 - New telemetry or analytics must be documented and opt-in before introduction.

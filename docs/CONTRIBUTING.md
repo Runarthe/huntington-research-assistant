@@ -18,6 +18,7 @@ streamlit run app/streamlit_app.py
 - Run `python -m pytest`.
 - Confirm the app still works without Ollama.
 - Confirm sources remain visible for papers and summaries.
+- Confirm registered studies retain their ClinicalTrials.gov source links.
 - Review copy for medical-advice or personalized-guidance language.
 - Do not commit API keys, personal data, SQLite files, model files, or generated caches.
 
@@ -30,6 +31,8 @@ Contributors can see the result in the pull request checks. A failing check shou
 ## Safety Guardrails
 
 Pull requests must not add diagnosis, personalized interpretation, treatment recommendations, requests for personal health information, authoritative summary claims, or hidden source attribution.
+
+Clinical-trial contributions must not rank studies, infer eligibility, or describe registry status as evidence of safety or effectiveness.
 
 See [SAFETY.md](SAFETY.md).
 

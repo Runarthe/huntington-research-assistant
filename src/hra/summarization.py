@@ -118,8 +118,7 @@ def build_summary_prompt(
             "Hva undersøkte de?\n"
             "Hva fant de?\n"
             "Hvorfor er det viktig?\n"
-            "Begrensninger / usikkerhet\n"
-            "Ansvarsfraskrivelse"
+            "Begrensninger / usikkerhet"
         )
         language_instruction = "Svar på norsk."
     else:
@@ -128,8 +127,7 @@ def build_summary_prompt(
             "What did they study?\n"
             "What did they find?\n"
             "Why does it matter?\n"
-            "Limitations / uncertainty\n"
-            "Disclaimer"
+            "Limitations / uncertainty"
         )
         language_instruction = "Respond in English."
 
@@ -153,10 +151,13 @@ def build_summary_prompt(
         f"Title: {paper.title}\n"
         f"Journal: {paper.journal or 'Unknown'}\n"
         f"Year: {paper.year or 'Unknown'}\n"
+        f"Source record: {paper.source_url or 'Not available'}\n"
         f"Abstract: {abstract}\n\n"
         f"{headings}\n\n"
-        "For the final disclaimer heading, include this exact idea: "
-        f"{summary_disclaimer(language)}"
+        "Use only information explicitly present in the abstract. If a requested "
+        "detail is absent, say that it is not stated in the abstract. Do not invent "
+        "citations, URLs, participant outcomes, effectiveness claims, or clinical implications. "
+        f"The application will display this disclaimer separately: {summary_disclaimer(language)}"
     )
 
 

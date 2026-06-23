@@ -5,7 +5,7 @@ This folder contains screenshots used in the project README:
 - Search controls and the medical disclaimer.
 - Search results with source links.
 - Publication dashboard and yearly trend.
-- Clinical-trial literature search.
+- Clinical-trial literature search from v0.1. The v0.2 tracker needs a replacement screenshot.
 - Recent-publication search.
 - An optional English plain-language summary produced locally with Ollama.
 

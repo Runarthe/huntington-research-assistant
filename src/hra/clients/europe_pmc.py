@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import os
+import time
+from html import unescape
+from html.parser import HTMLParser
 from typing import Any
 
 import httpx
 
-from hra.models import Author, Paper, SearchResponse
+from hra.models import Author, CorrectionNotice, Paper, SearchResponse
 from hra.tagging import tag_papers
 
 
@@ -35,13 +38,14 @@ class EuropePMCClient:
         query: str,
         page: int = 1,
         page_size: int = 10,
+        cursor_mark: str = "*",
     ) -> SearchResponse:
         params = {
             "query": query,
             "format": "json",
-            "page": page,
             "pageSize": page_size,
             "resultType": "core",
+            "cursorMark": cursor_mark,
         }
         headers = {"User-Agent": self._user_agent()}
 
@@ -51,9 +55,7 @@ class EuropePMCClient:
                 headers=headers,
                 trust_env=self.trust_env,
             ) as client:
-                response = client.get(f"{self.base_url}/search", params=params)
-                response.raise_for_status()
-                data = response.json()
+                data = self._get_json(client, f"{self.base_url}/search", params)
         except httpx.HTTPError as exc:
             raise EuropePMCError(f"Europe PMC request failed: {exc}") from exc
         except ValueError as exc:
@@ -67,6 +69,7 @@ class EuropePMCClient:
             page_size=page_size,
             total_results=self._safe_int(data.get("hitCount")),
             papers=papers,
+            next_cursor_mark=data.get("nextCursorMark"),
         )
 
     def count_by_year(
@@ -92,9 +95,7 @@ class EuropePMCClient:
                         "pageSize": 1,
                         "resultType": "lite",
                     }
-                    response = client.get(f"{self.base_url}/search", params=params)
-                    response.raise_for_status()
-                    data = response.json()
+                    data = self._get_json(client, f"{self.base_url}/search", params)
                     counts.append(
                         {
                             "year": year,
@@ -106,6 +107,21 @@ class EuropePMCClient:
         except ValueError as exc:
             raise EuropePMCError("Europe PMC returned invalid analytics JSON.") from exc
         return counts
+
+    def _get_json(
+        self,
+        client: httpx.Client,
+        url: str,
+        params: dict[str, Any],
+    ) -> dict[str, Any]:
+        for attempt in range(3):
+            response = client.get(url, params=params)
+            status_code = getattr(response, "status_code", 200)
+            if status_code not in {429, 500, 502, 503, 504} or attempt == 2:
+                response.raise_for_status()
+                return response.json()
+            time.sleep(0.5 * (attempt + 1))
+        raise EuropePMCError("Europe PMC retry loop ended unexpectedly.")
 
     def _user_agent(self) -> str:
         contact = f" ({self.email})" if self.email else ""
@@ -120,9 +136,10 @@ class EuropePMCClient:
             or "unknown"
         )
         source_url = self._source_url(item)
+        full_text_url, pdf_url = self._open_access_urls(item)
         return Paper(
             id=str(paper_id),
-            title=item.get("title") or "Untitled",
+            title=_plain_text(item.get("title") or "Untitled"),
             authors=self._parse_authors(item),
             year=item.get("pubYear") or item.get("firstPublicationDate"),
             journal=item.get("journalTitle"),
@@ -130,9 +147,60 @@ class EuropePMCClient:
             pmid=item.get("pmid"),
             abstract=item.get("abstractText"),
             source_url=source_url,
+            open_access_full_text_url=full_text_url,
+            open_access_pdf_url=pdf_url,
             citation_count=item.get("citedByCount"),
             is_open_access=item.get("isOpenAccess"),
+            publication_types=self._parse_publication_types(item),
+            correction_notices=self._parse_correction_notices(item),
         )
+
+    def _open_access_urls(self, item: dict[str, Any]) -> tuple[str | None, str | None]:
+        entries = item.get("fullTextUrlList", {}).get("fullTextUrl", [])
+        if isinstance(entries, dict):
+            entries = [entries]
+
+        html_url: str | None = None
+        pdf_url: str | None = None
+        for entry in entries:
+            if not isinstance(entry, dict) or entry.get("availabilityCode") != "OA":
+                continue
+            url = entry.get("url")
+            if not url:
+                continue
+            style = str(entry.get("documentStyle", "")).lower()
+            if style == "pdf" and pdf_url is None:
+                pdf_url = str(url)
+            elif style == "html" and html_url is None:
+                html_url = str(url)
+        return html_url, pdf_url
+
+    def _parse_publication_types(self, item: dict[str, Any]) -> list[str]:
+        values = item.get("pubTypeList", {}).get("pubType", [])
+        if isinstance(values, str):
+            values = [values]
+        return [str(value).strip() for value in values if str(value).strip()]
+
+    def _parse_correction_notices(
+        self,
+        item: dict[str, Any],
+    ) -> list[CorrectionNotice]:
+        values = item.get("commentCorrectionList", {}).get("commentCorrection", [])
+        if isinstance(values, dict):
+            values = [values]
+        notices: list[CorrectionNotice] = []
+        for value in values:
+            if not isinstance(value, dict) or not value.get("type"):
+                continue
+            notices.append(
+                CorrectionNotice(
+                    id=str(value["id"]) if value.get("id") else None,
+                    source=value.get("source"),
+                    reference=value.get("reference"),
+                    notice_type=str(value["type"]),
+                )
+            )
+        return notices
 
     def _parse_authors(self, item: dict[str, Any]) -> list[Author]:
         author_string = item.get("authorString")
@@ -174,3 +242,18 @@ class EuropePMCClient:
 
 def _env_flag(name: str) -> bool:
     return os.getenv(name, "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+class _TextExtractor(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.parts: list[str] = []
+
+    def handle_data(self, data: str) -> None:
+        self.parts.append(data)
+
+
+def _plain_text(value: str) -> str:
+    parser = _TextExtractor()
+    parser.feed(unescape(value))
+    return "".join(parser.parts).strip()

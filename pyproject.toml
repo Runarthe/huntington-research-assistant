@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "huntington-research-assistant"
-version = "0.1.0"
-description = "A Streamlit MVP for searching and understanding Huntington's disease research papers."
+version = "0.2.0"
+description = "An open-source Streamlit app for navigating Huntington's disease research and registered clinical trials."
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
@@ -15,6 +15,7 @@ authors = [
 dependencies = [
   "httpx>=0.27,<1",
   "pydantic>=2.7,<3",
+  "requests>=2.31,<3",
   "streamlit>=1.36,<2",
 ]
 

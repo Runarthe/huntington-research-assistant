@@ -1,4 +1,4 @@
-from hra.i18n import translate
+from hra.i18n import TRANSLATIONS, translate
 from hra.safety import medical_disclaimer, prohibited_guidance, summary_disclaimer
 
 
@@ -12,6 +12,10 @@ def test_translate_returns_norwegian_ui_label() -> None:
 
 def test_unknown_language_falls_back_to_english() -> None:
     assert translate("unknown", "search_tab") == "Search"
+
+
+def test_translation_catalogs_have_matching_keys() -> None:
+    assert set(TRANSLATIONS["no"]) == set(TRANSLATIONS["en"])
 
 
 def test_safety_copy_is_available_in_both_languages() -> None:
