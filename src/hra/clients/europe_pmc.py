@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import time
 from html import unescape
 from html.parser import HTMLParser
@@ -145,7 +146,11 @@ class EuropePMCClient:
             journal=item.get("journalTitle"),
             doi=item.get("doi"),
             pmid=item.get("pmid"),
-            abstract=item.get("abstractText"),
+            abstract=(
+                _plain_text(item["abstractText"])
+                if item.get("abstractText")
+                else None
+            ),
             source_url=source_url,
             open_access_full_text_url=full_text_url,
             open_access_pdf_url=pdf_url,
@@ -256,4 +261,13 @@ class _TextExtractor(HTMLParser):
 def _plain_text(value: str) -> str:
     parser = _TextExtractor()
     parser.feed(unescape(value))
-    return "".join(parser.parts).strip()
+    text = " ".join(" ".join(parser.parts).split()).strip()
+    text = re.sub(r"\s+([,.;:!?)-])", r"\1", text)
+    text = re.sub(r"([(])\s+", r"\1", text)
+    for heading in ("Background", "Objective", "Methods", "Results", "Conclusions"):
+        text = re.sub(
+            rf"\b{heading}\s*(?=[A-Z])",
+            f" {heading}: ",
+            text,
+        )
+    return " ".join(text.split()).strip()

@@ -10,6 +10,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "search_tab": "Search",
         "clinical_tab": "Trial tracker",
         "recent_tab": "Recent publications",
+        "knowledge_tab": "Research map (experimental)",
         "research_topic": "Research topic",
         "research_topic_placeholder": "gene silencing, biomarkers, clinical trials...",
         "research_topic_help": "Enter a research topic, not personal health information.",
@@ -30,6 +31,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "period_total": "Published in selected period",
         "peak_year": "Peak publication year",
         "yearly_trend": "Publications per year",
+        "accessible_trend_table": "View publication counts as a table",
+        "year": "Year",
+        "publication_count": "Publications",
         "dashboard_note": (
             "Dashboard counts use all matching Europe PMC records for the selected "
             "years and API-compatible filters, not only the paper cards below."
@@ -61,10 +65,17 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "summarize": "Summarize abstract",
         "summarizing": "Summarizing locally with {model}...",
         "summary_failed": "Summary failed: {error}",
+        "summary_integrity_failed": (
+            "The generated text was withheld because it did not pass the factual integrity checks: {reason}"
+        ),
         "plain_summary": "Plain-language summary",
         "research_summary": "Research-detail summary",
+        "norwegian_summary_experimental": (
+            "Norwegian plain-language explanations are machine-generated and experimental. "
+            "The original English abstract remains the authoritative source."
+        ),
         "norwegian_summary_later": (
-            "Norwegian translation of abstracts and summaries is coming in a later update."
+            "Norwegian translation of abstracts and summaries will be added in a later update."
         ),
         "citations": "Citations",
         "open_access": "Open access",
@@ -114,14 +125,57 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Recent publications are retrieved from Europe PMC and filtered by year. "
             "They are not curated breakthroughs or medical recommendations."
         ),
+        "knowledge_title": "Source-linked research map",
+        "knowledge_intro": (
+            "A knowledge graph is a map of things and their connections. This preview "
+            "links catalogued genes, proteins, pathways, and compounds to papers that mention them."
+        ),
+        "knowledge_scope": (
+            "Connections mean 'mentioned in' only. They do not establish causation, treatment "
+            "effect, clinical relevance, or evidence quality. Open the source paper to verify context."
+        ),
+        "knowledge_search_section": "Find source papers",
+        "knowledge_query": "Research-map topic",
+        "knowledge_paper_limit": "Papers to inspect",
+        "knowledge_search": "Build map from Europe PMC",
+        "knowledge_start": "Search to build a small research map from the retrieved paper batch.",
+        "knowledge_loading": "Retrieving papers and matching controlled terms...",
+        "knowledge_no_entities": "No catalogued entities were found in this paper batch.",
+        "knowledge_entity_types": "Entity types",
+        "knowledge_entities": "Entities",
+        "knowledge_source_papers": "Source papers",
+        "knowledge_mentions": "Source-linked mentions",
+        "knowledge_no_filter_results": "No mentions match the selected entity types.",
+        "knowledge_choose_entity": "Choose one entity",
+        "knowledge_map": "Mention map",
+        "knowledge_map_help": (
+            "Each line means only that the selected term appears in the paper's title or abstract."
+        ),
+        "knowledge_relationship": "mentioned in",
+        "knowledge_inspect_entity": "Entity",
+        "knowledge_papers_mentioning": "Papers mentioning {entity}",
+        "knowledge_graph_limit": "Showing {shown} of {total} papers in the diagram. All source evidence is listed below.",
+        "knowledge_evidence_title": "Why are these papers connected?",
+        "knowledge_evidence_help": (
+            "These are exact title or abstract sentences containing the matched term."
+        ),
+        "knowledge_matched_term": "Matched term",
+        "knowledge_evidence_location": "Found in",
+        "knowledge_location_title": "title",
+        "knowledge_location_abstract": "abstract",
+        "entity_gene": "Gene",
+        "entity_protein": "Protein",
+        "entity_pathway": "Pathway or biological process",
+        "entity_compound": "Compound",
     },
     "no": {
         "summary_style": "Oppsummeringsstil",
-        "summary_mode_plain": "Klarspråk",
-        "summary_mode_research": "Forskningsdetaljer",
+        "summary_mode_plain": "Kort klarspråk",
+        "summary_mode_research": "Detaljert forskningsforklaring",
         "search_tab": "Søk",
         "clinical_tab": "Studieregister",
         "recent_tab": "Nylige publikasjoner",
+        "knowledge_tab": "Forskningskart (eksperimentelt)",
         "research_topic": "Forskningstema",
         "research_topic_placeholder": "gendemping, biomarkører, kliniske studier...",
         "research_topic_help": "Skriv inn et forskningstema, ikke personlige helseopplysninger.",
@@ -142,6 +196,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "period_total": "Publisert i valgt periode",
         "peak_year": "År med flest publikasjoner",
         "yearly_trend": "Publikasjoner per år",
+        "accessible_trend_table": "Vis publikasjonsantall som tabell",
+        "year": "År",
+        "publication_count": "Publikasjoner",
         "dashboard_note": (
             "Oversikten teller alle samsvarende poster i Europe PMC for de valgte "
             "årene og API-kompatible filtrene, ikke bare publikasjonene nedenfor."
@@ -168,13 +225,20 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "source_record": "Åpne kildepost i Europe PMC",
         "open_access_pdf": "Åpne fulltekst som PDF",
         "download_paper_details": "Last ned detaljer og sammendrag",
-        "abstract": "Sammendrag",
-        "no_abstract": "Sammendrag er ikke tilgjengelig.",
-        "summarize": "Oppsummer sammendraget",
-        "summarizing": "Oppsummerer lokalt med {model}...",
+        "abstract": "Originalt abstrakt (engelsk)",
+        "no_abstract": "Originalt engelsk abstrakt er ikke tilgjengelig.",
+        "summarize": "Lag norsk forklaring",
+        "summarizing": "Lager kontrollert norsk forklaring lokalt med {model}...",
         "summary_failed": "Oppsummeringen feilet: {error}",
-        "plain_summary": "Oppsummering i klarspråk",
-        "research_summary": "Oppsummering med forskningsdetaljer",
+        "summary_integrity_failed": (
+            "Teksten ble holdt tilbake fordi den ikke besto de automatiske faktakontrollene: {reason}"
+        ),
+        "plain_summary": "Norsk klarspråkforklaring (eksperimentell)",
+        "research_summary": "Norsk forskningsforklaring (eksperimentell)",
+        "norwegian_summary_experimental": (
+            "Norske klarspråkforklaringer er maskingenererte og eksperimentelle. "
+            "Det originale engelske abstraktet er den autoritative kilden."
+        ),
         "norwegian_summary_later": (
             "Norsk oversettelse av abstrakt og oppsummering kommer i en senere oppdatering."
         ),
@@ -226,6 +290,49 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Nylige publikasjoner hentes fra Europe PMC og filtreres etter år. "
             "De er ikke kuraterte gjennombrudd eller medisinske anbefalinger."
         ),
+        "knowledge_title": "Kildekoblet forskningskart",
+        "knowledge_intro": (
+            "En knowledge graph, eller kunnskapsgraf, er et kart over ting og forbindelsene "
+            "mellom dem. Denne prøveversjonen kobler registrerte gener, proteiner, biologiske "
+            "prosesser og forbindelser til artikler som nevner dem."
+        ),
+        "knowledge_scope": (
+            "Koblingene betyr bare 'nevnt i'. De viser ikke årsak, behandlingseffekt, klinisk "
+            "betydning eller evidenskvalitet. Åpne kildeartikkelen for å kontrollere sammenhengen."
+        ),
+        "knowledge_search_section": "Finn kildeartikler",
+        "knowledge_query": "Tema for forskningskartet",
+        "knowledge_paper_limit": "Artikler som undersøkes",
+        "knowledge_search": "Bygg kart fra Europe PMC",
+        "knowledge_start": "Søk for å bygge et lite forskningskart fra de hentede artiklene.",
+        "knowledge_loading": "Henter artikler og finner kontrollerte begreper...",
+        "knowledge_no_entities": "Ingen registrerte begreper ble funnet i disse artiklene.",
+        "knowledge_entity_types": "Begrepstyper",
+        "knowledge_entities": "Begreper",
+        "knowledge_source_papers": "Kildeartikler",
+        "knowledge_mentions": "Kildekoblede treff",
+        "knowledge_no_filter_results": "Ingen treff samsvarer med de valgte begrepstypene.",
+        "knowledge_choose_entity": "Velg ett begrep",
+        "knowledge_map": "Kart over omtaler",
+        "knowledge_map_help": (
+            "Hver linje betyr bare at det valgte begrepet finnes i artikkelens tittel eller abstrakt."
+        ),
+        "knowledge_relationship": "nevnt i",
+        "knowledge_inspect_entity": "Begrep",
+        "knowledge_papers_mentioning": "Artikler som nevner {entity}",
+        "knowledge_graph_limit": "Viser {shown} av {total} artikler i diagrammet. Alle kildeutdrag vises nedenfor.",
+        "knowledge_evidence_title": "Hvorfor er disse artiklene koblet til begrepet?",
+        "knowledge_evidence_help": (
+            "Dette er eksakte setninger fra tittelen eller abstraktet som inneholder begrepet."
+        ),
+        "knowledge_matched_term": "Begrep som ga treff",
+        "knowledge_evidence_location": "Funnet i",
+        "knowledge_location_title": "tittel",
+        "knowledge_location_abstract": "abstrakt",
+        "entity_gene": "Gen",
+        "entity_protein": "Protein",
+        "entity_pathway": "Biologisk prosess eller signalvei",
+        "entity_compound": "Forbindelse",
     },
 }
 

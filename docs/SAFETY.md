@@ -26,6 +26,7 @@ The app must always show a prominent disclaimer explaining that it is not medica
 - DOI and PMID should be shown when available.
 - Local summaries must include limitations/uncertainty and an educational-use disclaimer.
 - Plain-language mode may simplify wording, but must preserve uncertainty.
+- Experimental Norwegian explanations must pass deterministic checks for selected numbers and protected biomedical identifiers before display.
 - The original abstract must remain accessible next to any generated summary.
 - Registered studies must link to their ClinicalTrials.gov record.
 - Registry status must be presented as reported metadata, not as evidence that an intervention is safe or effective.

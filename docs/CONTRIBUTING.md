@@ -6,8 +6,9 @@ Thank you for helping improve Huntington Research Assistant.
 
 ```bash
 python -m venv .venv
-pip install -e ".[dev]"
+python -m pip install -e ".[dev]"
 python -m pytest
+python -m build
 streamlit run app/streamlit_app.py
 ```
 
@@ -16,6 +17,7 @@ streamlit run app/streamlit_app.py
 - Keep changes focused and maintainable.
 - Add or update tests for behavioral changes.
 - Run `python -m pytest`.
+- Run `python -m build` when packaging or release metadata changes.
 - Confirm the app still works without Ollama.
 - Confirm sources remain visible for papers and summaries.
 - Confirm registered studies retain their ClinicalTrials.gov source links.

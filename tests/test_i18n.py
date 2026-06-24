@@ -4,9 +4,12 @@ from hra.safety import medical_disclaimer, prohibited_guidance, summary_disclaim
 
 def test_translate_returns_norwegian_ui_label() -> None:
     assert translate("no", "search_tab") == "Søk"
-    assert translate("no", "summary_mode_plain") == "Klarspråk"
-    assert translate("no", "norwegian_summary_later") == (
-        "Norsk oversettelse av abstrakt og oppsummering kommer i en senere oppdatering."
+    assert translate("no", "summary_mode_plain") == "Kort klarspråk"
+    assert "eksperimentelle" in translate(
+        "no", "norwegian_summary_experimental"
+    )
+    assert "senere oppdatering" in translate(
+        "no", "norwegian_summary_later"
     )
 
 

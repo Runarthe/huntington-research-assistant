@@ -2,6 +2,8 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
+The current release is **v0.2.0**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
+
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) for publications and the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project and as a foundation that can later add PubMed/NCBI E-utilities as a second literature provider.
 
 > [!IMPORTANT]
@@ -30,13 +32,15 @@ This project is not affiliated with any medical association, including the Norwe
 - Track registered Huntington's disease studies by status, phase, country, intervention, sponsor, and registry update date.
 - Export visible registered studies as CSV.
 - Include a dedicated view for recent publications from the last couple of years.
+- Explore a source-linked experimental research map of catalogued genes, proteins, pathways, and compounds mentioned in retrieved papers.
 - Offer English and Norwegian UI labels and safety disclaimers.
 - Offer English plain-language and research-detail summary modes.
+- Keep experimental Norwegian generation available to developers, but disabled by default until it passes linguistic and biomedical review.
 - Optionally summarize abstracts with a local Ollama model such as Qwen.
 - Keep a small local SQLite cache/history.
 - Continue to work without any LLM by showing retrieved papers only.
 
-Norwegian translation of abstracts and generated summaries is planned for a later update. Norwegian UI labels and safety information are already available.
+Norwegian UI labels and safety information are available. Norwegian translation of abstracts and generated summaries is planned for a later update; the current experimental implementation is disabled by default.
 
 ## Screenshots
 
@@ -52,11 +56,11 @@ Norwegian translation of abstracts and generated summaries is planned for a late
 
 ![Search results](docs/screenshots/Two_results_for_search_gene_splicing.png)
 
-### Clinical-trial literature from the v0.1 interface
+### Clinical-trial literature and publication trends
 
 ![Clinical trials search and trends](docs/screenshots/Clinical_trials_search_tab_and_some_publishing_trends.png)
 
-The v0.2 development version replaces this publication search with a separate ClinicalTrials.gov tracker. An updated screenshot will be added after release verification.
+This literature view remains useful for finding papers about clinical trials. v0.2 also includes a separate ClinicalTrials.gov tracker for registered-study metadata.
 
 ### Recent publications
 
@@ -76,19 +80,32 @@ Create a virtual environment and install locally:
 
 ```bash
 python -m venv .venv
-pip install -e .
+python -m pip install -e .
+```
+
+Activate the environment first when preferred:
+
+```powershell
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+```
+
+```bash
+# macOS or Linux
+source .venv/bin/activate
 ```
 
 For development and tests:
 
 ```bash
-pip install -e ".[dev]"
-pytest
+python -m pip install -e ".[dev]"
+python -m pytest
+python -m build
 ```
 
 ## Automated Tests
 
-GitHub Actions runs the test suite automatically on Python 3.11 and 3.12 whenever code is pushed or a pull request is opened. The workflow does not require Ollama, an API key, or access to personal data.
+GitHub Actions runs the test suite automatically on Python 3.11 and 3.12 whenever code is pushed or a pull request is opened. It also verifies that the v0.2 package can be built. The workflow does not require Ollama, an API key, or access to personal data.
 
 The workflow is defined in [`.github/workflows/tests.yml`](.github/workflows/tests.yml). A green check means the automated tests passed; it does not certify medical or scientific accuracy.
 
@@ -100,29 +117,31 @@ streamlit run app/streamlit_app.py
 
 ## Optional Local Summaries
 
-Summaries are optional and run locally through [Ollama](https://ollama.com/). No cloud LLM API key is used or needed.
-
-One small default option is Qwen 2.5 1.5B:
+Summaries are optional and run locally through [Ollama](https://ollama.com/). No cloud LLM API key is used or needed. English summaries use the small Qwen 2.5 1.5B model:
 
 ```bash
 ollama pull qwen2.5:1.5b
 ollama serve
 ```
 
-Then run the Streamlit app normally. If Ollama is not installed, not running, or the model is not pulled, the app shows retrieved papers only. Larger models such as `qwen2.5:3b` may produce better summaries but require more disk and memory.
+Then run the Streamlit app normally. If Ollama is not installed, not running, or the model is not pulled, the app shows retrieved papers only.
+
+An experimental NorMistral-based Norwegian pipeline remains in the codebase for evaluation, but is disabled in the public configuration because current testing found unreliable medical terminology and occasional meaning changes. Developer opt-in instructions are documented in [docs/NORWEGIAN_LANGUAGE.md](docs/NORWEGIAN_LANGUAGE.md).
 
 ## Environment Variables
 
-Copy `.env.example` if you want local defaults:
+Copy `.env.example` if you want local defaults. Environment files are optional and ignored by Git:
 
-```bash
-cp .env.example .env
+```powershell
+Copy-Item .env.example .env
 ```
 
 Supported variables:
 
 - `OLLAMA_HOST`: local Ollama server URL. Defaults to `http://localhost:11434`.
-- `OLLAMA_MODEL`: local model name. Defaults to `qwen2.5:1.5b`.
+- `OLLAMA_MODEL`: local English summary model. Defaults to `qwen2.5:1.5b`.
+- `OLLAMA_NORWEGIAN_MODEL`: experimental Norwegian rendering model. Defaults to `hf.co/norallm/normistral-7b-warm-instruct:Q4_K_M`.
+- `HRA_ENABLE_EXPERIMENTAL_NORWEGIAN_SUMMARIES`: developer-only opt-in for unreviewed Norwegian generation. Defaults to `false`.
 - `HRA_CACHE_PATH`: optional SQLite cache path override. By default the app stores cache in the OS local app data/cache directory, outside the repo. If that location is unavailable, it falls back to the system temp directory. This avoids SQLite I/O problems in synced folders such as OneDrive.
 - `HRA_EUROPE_PMC_EMAIL`: optional contact email sent in the Europe PMC user agent.
 - `HRA_TRUST_ENV`: set to `true` only if Europe PMC and ClinicalTrials.gov requests should use system proxy environment variables. Defaults to `false` to avoid broken local proxy settings.
@@ -143,6 +162,12 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 Near-term priorities include saved reading lists, Norwegian refinement, accessibility testing, and a second PubMed/NCBI provider. AlphaFold, BioNeMo, autonomous agents, personalized medical features, and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
+
+Norwegian quality and accessibility are documented in [docs/NORWEGIAN_LANGUAGE.md](docs/NORWEGIAN_LANGUAGE.md) and [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
+
+The experimental research map and its strict "mentioned in" semantics are documented in [docs/KNOWLEDGE_GRAPH.md](docs/KNOWLEDGE_GRAPH.md).
+
+Maintainers can use [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) before creating a GitHub release.
 
 ## Contributing
 

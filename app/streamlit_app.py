@@ -36,7 +36,9 @@ from hra.export import (
     trials_to_csv,
 )
 from hra.i18n import LANGUAGE_OPTIONS, translate
+from hra.knowledge_graph import build_research_map, graphviz_dot
 from hra.models import ClinicalTrial, ClinicalTrialResponse, Paper, SearchResponse
+from hra.norwegian_language import SummaryIntegrityError
 from hra.query import (
     DEFAULT_QUERY,
     build_dashboard_query,
@@ -46,9 +48,11 @@ from hra.query import (
 )
 from hra.safety import medical_disclaimer, prohibited_guidance, summary_disclaimer
 from hra.summarization import (
+    SUMMARY_PIPELINE_VERSION,
     SummarizationConfig,
     SummarizationDisabled,
     disabled_message,
+    experimental_norwegian_summaries_enabled,
     local_llm_status,
     summarize_paper,
 )
@@ -162,7 +166,10 @@ def render_paper(
     summary_mode: str,
 ) -> None:
     summaries = get_summary_store(st.session_state)
-    summary_key = f"{paper.id}:{language}:{summary_mode}"
+    summary_key = (
+        f"{paper.id}:{language}:{summary_mode}:{summary_config.model}:"
+        f"{summary_config.norwegian_model}:{SUMMARY_PIPELINE_VERSION}"
+    )
 
     st.subheader(paper.title)
 
@@ -250,8 +257,12 @@ def render_paper(
                 else:
                     st.write(f"- {notice.notice_type}: {label}")
 
-    if language == "no":
+    if language == "no" and not experimental_norwegian_summaries_enabled():
+        st.caption(translate(language, "norwegian_summary_later"))
         return
+
+    if language == "no":
+        st.caption(translate(language, "norwegian_summary_experimental"))
 
     button_key = summarize_button_key(panel_key, paper.id, index)
     if st.button(translate(language, "summarize"), key=button_key):
@@ -272,6 +283,14 @@ def render_paper(
                     )
                 except SummarizationDisabled as exc:
                     st.info(str(exc))
+                except SummaryIntegrityError as exc:
+                    st.warning(
+                        translate(
+                            language,
+                            "summary_integrity_failed",
+                            reason=exc,
+                        )
+                    )
                 except Exception as exc:  # Streamlit should show friendly API failures.
                     st.error(translate(language, "summary_failed", error=exc))
                 else:
@@ -399,6 +418,16 @@ def render_publication_dashboard(
     st.caption(translate(language, "dashboard_note"))
     st.subheader(translate(language, "yearly_trend"))
     st.line_chart(yearly_counts, x="year", y="papers", width="stretch")
+    with st.expander(translate(language, "accessible_trend_table")):
+        st.table(
+            [
+                {
+                    translate(language, "year"): item["year"],
+                    translate(language, "publication_count"): item["papers"],
+                }
+                for item in yearly_counts
+            ]
+        )
 
 
 def run_search_panel(
@@ -737,6 +766,161 @@ def run_trial_tracker(language: str) -> None:
             render_trial(trial, language)
 
 
+def run_knowledge_graph(language: str) -> None:
+    st.subheader(translate(language, "knowledge_title"))
+    st.info(translate(language, "knowledge_intro"))
+    st.caption(translate(language, "knowledge_scope"))
+
+    st.subheader(translate(language, "knowledge_search_section"))
+    with st.form("knowledge-map-form"):
+        query = st.text_input(
+            translate(language, "knowledge_query"),
+            value="HTT OR huntingtin OR autophagy OR biomarker",
+            help=translate(language, "research_topic_help"),
+            key="knowledge-query",
+        )
+        paper_limit = st.selectbox(
+            translate(language, "knowledge_paper_limit"),
+            options=[10, 25, 50],
+            index=1,
+            key="knowledge-paper-limit",
+        )
+        submitted = st.form_submit_button(translate(language, "knowledge_search"))
+
+    if submitted:
+        normalized_query = normalize_user_query(query)
+        st.session_state["knowledge-request"] = {
+            "query": expand_huntington_query(normalized_query),
+            "paper_limit": int(paper_limit),
+        }
+
+    request = st.session_state.get("knowledge-request")
+    if not request:
+        st.write(translate(language, "knowledge_start"))
+        return
+
+    with st.spinner(translate(language, "knowledge_loading")):
+        try:
+            response = search_europe_pmc(
+                str(request["query"]),
+                "*",
+                1,
+                int(request["paper_limit"]),
+            )
+        except EuropePMCError as exc:
+            st.error(str(exc))
+            return
+
+    research_map = build_research_map(response.papers)
+    if not research_map.mentions:
+        st.info(translate(language, "knowledge_no_entities"))
+        return
+
+    type_labels = {
+        "gene": translate(language, "entity_gene"),
+        "protein": translate(language, "entity_protein"),
+        "pathway": translate(language, "entity_pathway"),
+        "compound": translate(language, "entity_compound"),
+    }
+    st.subheader(translate(language, "knowledge_choose_entity"))
+    available_types = [
+        entity_type
+        for entity_type in type_labels
+        if any(entity.entity_type == entity_type for entity in research_map.entities)
+    ]
+    selected_types = st.multiselect(
+        translate(language, "knowledge_entity_types"),
+        options=available_types,
+        default=available_types,
+        format_func=lambda value: type_labels[value],
+        key=f"knowledge-entity-types-{language}",
+    )
+    visible_mentions = [
+        mention
+        for mention in research_map.mentions
+        if mention.entity_type in selected_types
+    ]
+    visible_entities = {
+        mention.entity_id: mention for mention in visible_mentions
+    }
+
+    entity_col, paper_col, mention_col = st.columns(3)
+    entity_col.metric(translate(language, "knowledge_entities"), len(visible_entities))
+    paper_col.metric(
+        translate(language, "knowledge_source_papers"),
+        len({mention.paper_id for mention in visible_mentions}),
+    )
+    mention_col.metric(
+        translate(language, "knowledge_mentions"),
+        len(visible_mentions),
+    )
+
+    if not visible_mentions:
+        st.info(translate(language, "knowledge_no_filter_results"))
+        return
+
+    entity_options = sorted(
+        visible_entities,
+        key=lambda entity_id: visible_entities[entity_id].entity_name.casefold(),
+    )
+    selected_entity_id = st.selectbox(
+        translate(language, "knowledge_inspect_entity"),
+        options=entity_options,
+        format_func=lambda entity_id: (
+            f"{visible_entities[entity_id].entity_name} "
+            f"({type_labels[visible_entities[entity_id].entity_type]})"
+        ),
+        key=f"knowledge-selected-entity-{language}",
+    )
+    selected_mentions = [
+        mention
+        for mention in visible_mentions
+        if mention.entity_id == selected_entity_id
+    ]
+
+    selected_entity_name = visible_entities[selected_entity_id].entity_name
+    st.subheader(
+        translate(
+            language,
+            "knowledge_papers_mentioning",
+            entity=selected_entity_name,
+        )
+    )
+    st.caption(translate(language, "knowledge_map_help"))
+    st.graphviz_chart(
+        graphviz_dot(
+            selected_mentions,
+            relationship_label=translate(language, "knowledge_relationship"),
+            show_relationship_labels=False,
+        ),
+        width="stretch",
+    )
+    if len(selected_mentions) > 8:
+        st.caption(
+            translate(
+                language,
+                "knowledge_graph_limit",
+                shown=8,
+                total=len(selected_mentions),
+            )
+        )
+
+    st.subheader(translate(language, "knowledge_evidence_title"))
+    st.caption(translate(language, "knowledge_evidence_help"))
+    for mention in selected_mentions:
+        if mention.source_url:
+            st.markdown(f"**[{mention.paper_title}]({mention.source_url})**")
+        else:
+            st.markdown(f"**{mention.paper_title}**")
+        st.write(f'"{mention.evidence}"')
+        st.caption(
+            f"{translate(language, 'knowledge_matched_term')}: "
+            f"`{mention.matched_alias}` | "
+            f"{translate(language, 'knowledge_evidence_location')}: "
+            f"{translate(language, f'knowledge_location_{mention.evidence_location}')}"
+        )
+
+
 def main() -> None:
     language_name = st.sidebar.selectbox(
         "Language / Språk",
@@ -744,12 +928,14 @@ def main() -> None:
         key="ui-language",
     )
     language = LANGUAGE_OPTIONS[language_name]
-    if language == "no":
-        summary_mode = "plain"
+    norwegian_generation_enabled = experimental_norwegian_summaries_enabled()
+    if language == "no" and not norwegian_generation_enabled:
+        summary_mode = "research"
     else:
         summary_mode = st.sidebar.radio(
             translate(language, "summary_style"),
             options=["plain", "research"],
+            index=1 if language == "no" else 0,
             format_func=lambda value: translate(language, f"summary_mode_{value}"),
             horizontal=True,
             key="summary-mode",
@@ -760,21 +946,28 @@ def main() -> None:
     st.caption(prohibited_guidance(language))
 
     summary_config = SummarizationConfig.from_env()
-    status = local_llm_status(summary_config, language=language)
-    if language == "no":
+    if language == "no" and not norwegian_generation_enabled:
+        summary_available = False
         st.info(translate(language, "norwegian_summary_later"))
-    elif status.available:
-        st.success(status.message)
     else:
-        st.info(status.message)
+        status = local_llm_status(summary_config, language=language)
+        summary_available = status.available
+        if status.available:
+            st.success(status.message)
+        else:
+            st.info(status.message)
+
+    if language == "no" and norwegian_generation_enabled:
+        st.info(translate(language, "norwegian_summary_experimental"))
 
     cache = get_cache()
 
-    search_tab, clinical_tab, recent_tab = st.tabs(
+    search_tab, clinical_tab, recent_tab, knowledge_tab = st.tabs(
         [
             translate(language, "search_tab"),
             translate(language, "clinical_tab"),
             translate(language, "recent_tab"),
+            translate(language, "knowledge_tab"),
         ]
     )
 
@@ -784,7 +977,7 @@ def main() -> None:
             default_query=DEFAULT_QUERY,
             submit_label=translate(language, "search_europe_pmc"),
             summary_config=summary_config,
-            summary_available=status.available,
+            summary_available=summary_available,
             language=language,
             summary_mode=summary_mode,
             cache=cache,
@@ -800,13 +993,16 @@ def main() -> None:
             default_query=RECENT_PROGRESS_QUERY,
             submit_label=translate(language, "search_recent"),
             summary_config=summary_config,
-            summary_available=status.available,
+            summary_available=summary_available,
             language=language,
             summary_mode=summary_mode,
             cache=cache,
             default_year_start=CURRENT_YEAR - 2,
             intro=translate(language, "recent_intro"),
         )
+
+    with knowledge_tab:
+        run_knowledge_graph(language)
 
     if cache is not None:
         with st.sidebar:

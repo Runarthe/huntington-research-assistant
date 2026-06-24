@@ -160,3 +160,20 @@ def test_parse_paper_includes_only_open_access_full_text_urls() -> None:
 
     assert str(paper.open_access_full_text_url).endswith("/articles/PMC123")
     assert str(paper.open_access_pdf_url).endswith("PMC123?pdf=render")
+
+
+def test_parse_paper_cleans_structured_abstract_markup() -> None:
+    paper = EuropePMCClient()._parse_paper(
+        {
+            "id": "123",
+            "title": "Study",
+            "abstractText": (
+                "<h4>Objective</h4><p>To study <i>HTT</i>.</p>"
+                "<h4>Methods</h4><p>We tested <i>HTT</i>-expressing cells.</p>"
+            ),
+        }
+    )
+
+    assert paper.abstract == (
+        "Objective: To study HTT. Methods: We tested HTT-expressing cells."
+    )
