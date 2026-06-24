@@ -1,4 +1,4 @@
-from hra.models import Author, Paper, SearchResponse
+from hra.models import Author, CorrectionNotice, Paper, SearchResponse
 
 
 def test_paper_normalizes_empty_fields() -> None:
@@ -29,3 +29,19 @@ def test_search_response_defaults_to_empty_papers() -> None:
     response = SearchResponse(query="x", page=1, page_size=10)
 
     assert response.papers == []
+    assert response.next_cursor_mark is None
+
+
+def test_paper_surfaces_retraction_and_correction_metadata() -> None:
+    paper = Paper(
+        id="abc",
+        publication_types=["Journal Article"],
+        correction_notices=[
+            CorrectionNotice(notice_type="Retraction in", id="123", source="MED"),
+            CorrectionNotice(notice_type="Erratum in"),
+        ],
+    )
+
+    assert paper.is_retracted is True
+    assert paper.has_correction is True
+    assert paper.correction_notices[0].source_url == "https://europepmc.org/article/MED/123"

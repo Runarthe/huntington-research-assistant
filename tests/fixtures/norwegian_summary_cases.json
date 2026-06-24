@@ -1,0 +1,68 @@
+[
+  {
+    "name": "gene silencing cell model",
+    "source": "The study tested gene silencing of HTT in a CAG-expanded cell model. mHTT was reduced by 50%.",
+    "facts": {
+      "studied": "The study tested gene silencing of HTT in a CAG-expanded cell model.",
+      "found": "mHTT was reduced by 50%.",
+      "importance": "Not stated in the abstract.",
+      "limitations": "Not stated in the abstract."
+    },
+    "summary": "**Hva undersøkte de?**\n\nForskerne undersøkte gendemping av HTT i en cellemodell med CAG-ekspansjon.\n\n**Hva fant de?**\n\nNivået av mHTT ble redusert med 50%.\n\n**Hvorfor er det viktig?**\n\nIkke oppgitt i abstraktet.\n\n**Begrensninger og usikkerhet**\n\nIkke oppgitt i abstraktet."
+  },
+  {
+    "name": "phase 2 trial",
+    "source": "A phase 2 placebo-controlled study included 64 adults with HD and evaluated a 56 mg dose. The abstract reported no efficacy conclusion.",
+    "facts": {
+      "studied": "A phase 2 placebo-controlled study included 64 adults with HD and evaluated a 56 mg dose.",
+      "found": "The abstract reported no efficacy conclusion.",
+      "importance": "Not stated in the abstract.",
+      "limitations": "Not stated in the abstract."
+    },
+    "summary": "**Hva undersøkte de?**\n\nEn placebokontrollert fase 2-studie inkluderte 64 voksne med HD og undersøkte en dose på 56 mg.\n\n**Hva fant de?**\n\nAbstraktet oppga ingen konklusjon om effekt.\n\n**Hvorfor er det viktig?**\n\nIkke oppgitt i abstraktet.\n\n**Begrensninger og usikkerhet**\n\nIkke oppgitt i abstraktet."
+  },
+  {
+    "name": "animal biomarker study",
+    "source": "NfL was measured for 12 weeks in an HD mouse model. NfL increased by 18%.",
+    "facts": {
+      "studied": "NfL was measured for 12 weeks in an HD mouse model.",
+      "found": "NfL increased by 18%.",
+      "importance": "Not stated in the abstract.",
+      "limitations": "Not stated in the abstract."
+    },
+    "summary": "**Hva undersøkte de?**\n\nNfL ble målt i 12 uker i en musemodell for HD.\n\n**Hva fant de?**\n\nNfL økte med 18%.\n\n**Hvorfor er det viktig?**\n\nIkke oppgitt i abstraktet.\n\n**Begrensninger og usikkerhet**\n\nIkke oppgitt i abstraktet."
+  },
+  {
+    "name": "observational biomarker cohort",
+    "source": "The cohort included 120 participants. The association had a 95% confidence interval and did not prove causation.",
+    "facts": {
+      "studied": "The cohort included 120 participants.",
+      "found": "The association had a 95% confidence interval and did not prove causation.",
+      "importance": "Not stated in the abstract.",
+      "limitations": "The association had a 95% confidence interval and did not prove causation."
+    },
+    "summary": "**Hva undersøkte de?**\n\nKohorten inkluderte 120 deltakere.\n\n**Hva fant de?**\n\nSammenhengen hadde et 95% konfidensintervall og beviste ikke årsakssammenheng.\n\n**Hvorfor er det viktig?**\n\nIkke oppgitt i abstraktet.\n\n**Begrensninger og usikkerhet**\n\nSammenhengen hadde et 95% konfidensintervall og beviste ikke årsakssammenheng."
+  },
+  {
+    "name": "genetics laboratory study",
+    "source": "CRISPR and Cas9 were used to study HTT regulation in vitro. The abstract did not report clinical outcomes.",
+    "facts": {
+      "studied": "CRISPR and Cas9 were used to study HTT regulation in vitro.",
+      "found": "The abstract did not report clinical outcomes.",
+      "importance": "Not stated in the abstract.",
+      "limitations": "The abstract did not report clinical outcomes."
+    },
+    "summary": "**Hva undersøkte de?**\n\nCRISPR og Cas9 ble brukt til å undersøke regulering av HTT i laboratorieforsøk utenfor en levende organisme (in vitro).\n\n**Hva fant de?**\n\nAbstraktet rapporterte ikke kliniske utfall.\n\n**Hvorfor er det viktig?**\n\nIkke oppgitt i abstraktet.\n\n**Begrensninger og usikkerhet**\n\nAbstraktet rapporterte ikke kliniske utfall."
+  },
+  {
+    "name": "exercise feasibility trial",
+    "source": "A 16-week exercise feasibility study enrolled 30 people with HD. The abstract reported adherence, not treatment effectiveness.",
+    "facts": {
+      "studied": "A 16-week exercise feasibility study enrolled 30 people with HD.",
+      "found": "The abstract reported adherence, not treatment effectiveness.",
+      "importance": "Not stated in the abstract.",
+      "limitations": "The abstract reported adherence, not treatment effectiveness."
+    },
+    "summary": "**Hva undersøkte de?**\n\nEn 16-ukers gjennomførbarhetsstudie av trening inkluderte 30 personer med HD.\n\n**Hva fant de?**\n\nAbstraktet rapporterte etterlevelse, ikke behandlingseffekt.\n\n**Hvorfor er det viktig?**\n\nIkke oppgitt i abstraktet.\n\n**Begrensninger og usikkerhet**\n\nAbstraktet rapporterte etterlevelse, ikke behandlingseffekt."
+  }
+]

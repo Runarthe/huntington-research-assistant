@@ -1,6 +1,7 @@
 from hra.query import (
     DEFAULT_QUERY,
     build_dashboard_query,
+    build_literature_query,
     expand_huntington_query,
     normalize_user_query,
 )
@@ -30,4 +31,15 @@ def test_build_dashboard_query_adds_category_and_open_access_filters() -> None:
 
     assert '"imaging marker"' in query
     assert "biomarker" in query
+    assert "OPEN_ACCESS:Y" in query
+
+
+def test_literature_query_adds_provider_side_year_range() -> None:
+    query = build_literature_query(
+        "(huntingtin) AND (biomarker)",
+        year_range=(2020, 2026),
+        open_access_only=True,
+    )
+
+    assert "PUB_YEAR:[2020 TO 2026]" in query
     assert "OPEN_ACCESS:Y" in query

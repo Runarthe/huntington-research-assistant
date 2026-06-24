@@ -48,5 +48,24 @@ def build_dashboard_query(
     return " AND ".join(clauses)
 
 
+def build_literature_query(
+    expanded_query: str,
+    selected_tags: list[str] | None = None,
+    year_range: tuple[int, int] | None = None,
+    open_access_only: bool = False,
+) -> str:
+    """Build a Europe PMC query with provider-side filters."""
+
+    query = build_dashboard_query(
+        expanded_query,
+        selected_tags=selected_tags,
+        open_access_only=open_access_only,
+    )
+    if year_range:
+        start_year, end_year = year_range
+        query = f"{query} AND PUB_YEAR:[{start_year} TO {end_year}]"
+    return query
+
+
 def _quote_term(term: str) -> str:
     return f'"{term}"' if " " in term else term

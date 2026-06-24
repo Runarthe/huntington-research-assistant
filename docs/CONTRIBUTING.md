@@ -6,8 +6,9 @@ Thank you for helping improve Huntington Research Assistant.
 
 ```bash
 python -m venv .venv
-pip install -e ".[dev]"
+python -m pip install -e ".[dev]"
 python -m pytest
+python -m build
 streamlit run app/streamlit_app.py
 ```
 
@@ -16,8 +17,10 @@ streamlit run app/streamlit_app.py
 - Keep changes focused and maintainable.
 - Add or update tests for behavioral changes.
 - Run `python -m pytest`.
+- Run `python -m build` when packaging or release metadata changes.
 - Confirm the app still works without Ollama.
 - Confirm sources remain visible for papers and summaries.
+- Confirm registered studies retain their ClinicalTrials.gov source links.
 - Review copy for medical-advice or personalized-guidance language.
 - Do not commit API keys, personal data, SQLite files, model files, or generated caches.
 
@@ -30,6 +33,8 @@ Contributors can see the result in the pull request checks. A failing check shou
 ## Safety Guardrails
 
 Pull requests must not add diagnosis, personalized interpretation, treatment recommendations, requests for personal health information, authoritative summary claims, or hidden source attribution.
+
+Clinical-trial contributions must not rank studies, infer eligibility, or describe registry status as evidence of safety or effectiveness.
 
 See [SAFETY.md](SAFETY.md).
 

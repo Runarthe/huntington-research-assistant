@@ -46,7 +46,7 @@ def test_search_cache_falls_back_when_default_dir_is_unusable(monkeypatch) -> No
     blocker.write_text("blocks mkdir", encoding="utf-8")
     monkeypatch.delenv("HRA_CACHE_PATH", raising=False)
     monkeypatch.setenv("LOCALAPPDATA", str(blocker))
-    monkeypatch.delenv("XDG_CACHE_HOME", raising=False)
+    monkeypatch.setenv("XDG_CACHE_HOME", str(blocker))
 
     cache = SearchCache()
 
