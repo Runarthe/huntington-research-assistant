@@ -28,6 +28,7 @@ This project is not affiliated with any medical association, including the Norwe
 - Browse provider-backed result pages instead of only filtering a small local batch.
 - Download each paper's metadata and abstract, with direct open-access PDF links where Europe PMC provides them.
 - Export the visible publication page as CSV or BibTeX with source links.
+- Save papers to a local reading list and export the saved set for later review.
 - Show a publication dashboard with yearly Europe PMC result counts, the selected-period total, and the current-year count.
 - Track registered Huntington's disease studies by status, phase, country, intervention, sponsor, and registry update date.
 - Export visible registered studies as CSV.

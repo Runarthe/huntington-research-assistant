@@ -41,6 +41,24 @@ def test_search_cache_stores_papers() -> None:
     assert cached.title == "A biomarker paper"
 
 
+def test_search_cache_manages_reading_list() -> None:
+    cache = SearchCache(temp_cache_dir() / "cache.sqlite3")
+    first = Paper(id="p1", title="A biomarker paper")
+    second = Paper(id="p2", title="A gene silencing paper")
+
+    cache.add_to_reading_list(first)
+    cache.add_to_reading_list(second)
+    cache.add_to_reading_list(first)
+
+    assert cache.reading_list_ids() == {"p1", "p2"}
+    assert [paper.id for paper in cache.reading_list_papers()] == ["p2", "p1"]
+
+    cache.remove_from_reading_list("p1")
+
+    assert cache.reading_list_ids() == {"p2"}
+    assert [paper.id for paper in cache.reading_list_papers()] == ["p2"]
+
+
 def test_search_cache_falls_back_when_default_dir_is_unusable(monkeypatch) -> None:
     blocker = temp_cache_dir() / "not-a-directory"
     blocker.write_text("blocks mkdir", encoding="utf-8")

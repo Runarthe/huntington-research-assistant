@@ -156,6 +156,28 @@ def safe_recent_searches(cache: SearchCache | None, limit: int = 5) -> list[dict
         return []
 
 
+def safe_reading_list_ids(cache: SearchCache | None) -> set[str]:
+    if cache is None:
+        return set()
+
+    try:
+        return cache.reading_list_ids()
+    except (OSError, sqlite3.Error) as exc:
+        st.warning(f"Reading list is unavailable. Details: {exc}")
+        return set()
+
+
+def safe_reading_list_papers(cache: SearchCache | None) -> list[Paper]:
+    if cache is None:
+        return []
+
+    try:
+        return cache.reading_list_papers()
+    except (OSError, sqlite3.Error) as exc:
+        st.warning(f"Reading list is unavailable. Details: {exc}")
+        return []
+
+
 def render_paper(
     paper: Paper,
     index: int,
@@ -164,6 +186,8 @@ def render_paper(
     summary_available: bool,
     language: str,
     summary_mode: str,
+    cache: SearchCache | None,
+    reading_list_ids: set[str],
 ) -> None:
     summaries = get_summary_store(st.session_state)
     summary_key = (
@@ -217,7 +241,7 @@ def render_paper(
     if link_parts:
         st.caption(" | ".join(link_parts))
 
-    action_count = 1 + int(paper.source_url is not None) + int(
+    action_count = 2 + int(paper.source_url is not None) + int(
         paper.open_access_pdf_url is not None
     )
     action_columns = st.columns(action_count)
@@ -244,6 +268,25 @@ def render_paper(
         key=f"{panel_key}-download-paper-{paper.id}-{index}",
         use_container_width=True,
     )
+    action_index += 1
+    paper_is_saved = paper.id in reading_list_ids
+    if paper_is_saved:
+        if action_columns[action_index].button(
+            translate(language, "remove_from_reading_list"),
+            key=f"{panel_key}-remove-reading-list-{paper.id}-{index}",
+            use_container_width=True,
+        ):
+            safe_cache_write(cache, "remove_from_reading_list", paper.id)
+            st.rerun()
+    else:
+        if action_columns[action_index].button(
+            translate(language, "add_to_reading_list"),
+            key=f"{panel_key}-add-reading-list-{paper.id}-{index}",
+            disabled=cache is None,
+            use_container_width=True,
+        ):
+            safe_cache_write(cache, "add_to_reading_list", paper)
+            st.rerun()
 
     with st.expander(translate(language, "abstract")):
         st.write(paper.abstract or translate(language, "no_abstract"))
@@ -315,6 +358,8 @@ def render_results(
     summary_available: bool,
     language: str,
     summary_mode: str,
+    cache: SearchCache | None,
+    reading_list_ids: set[str],
 ) -> None:
     if not papers:
         st.info(translate(language, "no_papers"))
@@ -330,6 +375,8 @@ def render_results(
                 summary_available,
                 language,
                 summary_mode,
+                cache,
+                reading_list_ids,
             )
 
 
@@ -588,6 +635,7 @@ def run_search_panel(
 
     render_paper_exports(response.papers, panel_key, language)
     st.subheader(translate(language, "papers"))
+    reading_list_ids = safe_reading_list_ids(cache)
     render_results(
         response.papers,
         panel_key,
@@ -595,6 +643,8 @@ def run_search_panel(
         summary_available,
         language,
         summary_mode,
+        cache,
+        reading_list_ids,
     )
     render_pagination(panel_key, page, total_pages, language, position="bottom")
 
@@ -764,6 +814,39 @@ def run_trial_tracker(language: str) -> None:
     for trial in visible:
         with st.container(border=True):
             render_trial(trial, language)
+
+
+def run_reading_list(
+    *,
+    cache: SearchCache | None,
+    summary_config: SummarizationConfig,
+    summary_available: bool,
+    language: str,
+    summary_mode: str,
+) -> None:
+    st.subheader(translate(language, "reading_list_title"))
+    st.info(translate(language, "reading_list_intro"))
+    if cache is None:
+        st.warning(translate(language, "reading_list_unavailable"))
+        return
+
+    papers = safe_reading_list_papers(cache)
+    if not papers:
+        st.caption(translate(language, "reading_list_empty"))
+        return
+
+    st.metric(translate(language, "reading_list_count"), len(papers))
+    render_paper_exports(papers, "reading-list", language)
+    render_results(
+        papers,
+        "reading-list",
+        summary_config,
+        summary_available,
+        language,
+        summary_mode,
+        cache,
+        {paper.id for paper in papers},
+    )
 
 
 def run_knowledge_graph(language: str) -> None:
@@ -962,9 +1045,10 @@ def main() -> None:
 
     cache = get_cache()
 
-    search_tab, clinical_tab, recent_tab, knowledge_tab = st.tabs(
+    search_tab, reading_list_tab, clinical_tab, recent_tab, knowledge_tab = st.tabs(
         [
             translate(language, "search_tab"),
+            translate(language, "reading_list_tab"),
             translate(language, "clinical_tab"),
             translate(language, "recent_tab"),
             translate(language, "knowledge_tab"),
@@ -986,6 +1070,15 @@ def main() -> None:
 
     with clinical_tab:
         run_trial_tracker(language)
+
+    with reading_list_tab:
+        run_reading_list(
+            cache=cache,
+            summary_config=summary_config,
+            summary_available=summary_available,
+            language=language,
+            summary_mode=summary_mode,
+        )
 
     with recent_tab:
         run_search_panel(

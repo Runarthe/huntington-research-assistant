@@ -2,6 +2,12 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [Unreleased]
+
+### Added
+
+- Local saved reading list for papers, including add/remove controls, source-preserving exports, and cache tests.
+
 ## [0.2.0] - 2026-06-24
 
 ### Added

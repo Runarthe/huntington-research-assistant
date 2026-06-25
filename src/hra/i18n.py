@@ -8,6 +8,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "summary_mode_plain": "Plain language",
         "summary_mode_research": "Research detail",
         "search_tab": "Search",
+        "reading_list_tab": "Reading list",
         "clinical_tab": "Trial tracker",
         "recent_tab": "Recent publications",
         "knowledge_tab": "Research map (experimental)",
@@ -60,6 +61,16 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "source_record": "Open Europe PMC source record",
         "open_access_pdf": "Open full-text PDF",
         "download_paper_details": "Download details and abstract",
+        "add_to_reading_list": "Add to reading list",
+        "remove_from_reading_list": "Remove from reading list",
+        "reading_list_title": "Saved reading list",
+        "reading_list_intro": (
+            "Save papers locally for later reading. The list is stored only in your local "
+            "cache and should not contain personal health information."
+        ),
+        "reading_list_unavailable": "Local reading-list storage is unavailable.",
+        "reading_list_empty": "No saved papers yet. Add papers from search results to build a reading list.",
+        "reading_list_count": "Saved papers",
         "abstract": "Abstract",
         "no_abstract": "No abstract available.",
         "summarize": "Summarize abstract",
@@ -173,6 +184,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "summary_mode_plain": "Kort klarspråk",
         "summary_mode_research": "Detaljert forskningsforklaring",
         "search_tab": "Søk",
+        "reading_list_tab": "Leseliste",
         "clinical_tab": "Studieregister",
         "recent_tab": "Nylige publikasjoner",
         "knowledge_tab": "Forskningskart (eksperimentelt)",
@@ -225,6 +237,16 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "source_record": "Åpne kildepost i Europe PMC",
         "open_access_pdf": "Åpne fulltekst som PDF",
         "download_paper_details": "Last ned detaljer og sammendrag",
+        "add_to_reading_list": "Legg til i leseliste",
+        "remove_from_reading_list": "Fjern fra leseliste",
+        "reading_list_title": "Lagret leseliste",
+        "reading_list_intro": (
+            "Lagre publikasjoner lokalt for senere lesing. Listen lagres bare i lokal cache "
+            "og skal ikke inneholde personlige helseopplysninger."
+        ),
+        "reading_list_unavailable": "Lokal lagring av leseliste er utilgjengelig.",
+        "reading_list_empty": "Ingen lagrede publikasjoner ennå. Legg til publikasjoner fra søkeresultatene for å bygge en leseliste.",
+        "reading_list_count": "Lagrede publikasjoner",
         "abstract": "Originalt abstrakt (engelsk)",
         "no_abstract": "Originalt engelsk abstrakt er ikke tilgjengelig.",
         "summarize": "Lag norsk forklaring",
