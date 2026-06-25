@@ -7,6 +7,7 @@ All notable project changes are documented here. The project follows semantic ve
 ### Added
 
 - Local saved reading list for papers, including add/remove controls, source-preserving exports, and cache tests.
+- PubMed/NCBI E-utilities provider preview with combined-source deduplication by PMID, DOI, and title/year.
 
 ## [0.2.0] - 2026-06-24
 

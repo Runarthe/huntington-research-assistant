@@ -15,6 +15,13 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "research_topic": "Research topic",
         "research_topic_placeholder": "gene silencing, biomarkers, clinical trials...",
         "research_topic_help": "Enter a research topic, not personal health information.",
+        "literature_sources": "Literature sources",
+        "source_provider": "Source",
+        "pubmed_query": "PubMed query",
+        "combined_source_note": (
+            "Results from multiple sources are deduplicated by PMID, DOI, and title/year. "
+            "Total counts are approximate across providers."
+        ),
         "category_filters": "Category filters",
         "publication_year": "Publication year",
         "open_access_only": "Open access only",
@@ -39,6 +46,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Dashboard counts use all matching Europe PMC records for the selected "
             "years and API-compatible filters, not only the paper cards below."
         ),
+        "dashboard_europe_only": "Publication dashboard is currently available for Europe PMC searches.",
         "dashboard_unavailable": "Publication dashboard is unavailable: {error}",
         "paper_batch_count": (
             "Showing {shown} paper cards after local filters. "
@@ -191,6 +199,13 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "research_topic": "Forskningstema",
         "research_topic_placeholder": "gendemping, biomarkører, kliniske studier...",
         "research_topic_help": "Skriv inn et forskningstema, ikke personlige helseopplysninger.",
+        "literature_sources": "Litteraturkilder",
+        "source_provider": "Kilde",
+        "pubmed_query": "PubMed-søk",
+        "combined_source_note": (
+            "Resultater fra flere kilder dedupliseres etter PMID, DOI og tittel/år. "
+            "Totalt antall treff er omtrentlig på tvers av kilder."
+        ),
         "category_filters": "Kategorifiltre",
         "publication_year": "Publikasjonsår",
         "open_access_only": "Kun åpen tilgang",
@@ -215,6 +230,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Oversikten teller alle samsvarende poster i Europe PMC for de valgte "
             "årene og API-kompatible filtrene, ikke bare publikasjonene nedenfor."
         ),
+        "dashboard_europe_only": "Publikasjonsoversikten er foreløpig tilgjengelig for Europe PMC-søk.",
         "dashboard_unavailable": "Publikasjonsoversikten er utilgjengelig: {error}",
         "paper_batch_count": (
             "Viser {shown} publikasjoner etter lokale filtre. "

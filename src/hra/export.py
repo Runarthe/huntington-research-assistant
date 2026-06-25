@@ -14,6 +14,7 @@ def paper_to_text(paper: Paper) -> str:
         paper.title,
         "",
         f"Authors: {', '.join(author.full_name for author in paper.authors) or 'Not listed'}",
+        f"Source provider: {paper.source_provider}",
         f"Year: {paper.year or 'Not listed'}",
         f"Journal: {paper.journal or 'Not listed'}",
         f"DOI: {paper.doi or 'Not listed'}",
@@ -42,6 +43,7 @@ def papers_to_csv(papers: list[Paper]) -> str:
     output = StringIO(newline="")
     fieldnames = [
         "title",
+        "source_provider",
         "authors",
         "year",
         "journal",
@@ -61,6 +63,7 @@ def papers_to_csv(papers: list[Paper]) -> str:
         writer.writerow(
             {
                 "title": paper.title,
+                "source_provider": paper.source_provider,
                 "authors": "; ".join(author.full_name for author in paper.authors),
                 "year": paper.year or "",
                 "journal": paper.journal or "",

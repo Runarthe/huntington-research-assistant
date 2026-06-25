@@ -22,7 +22,7 @@ The app must always show a prominent disclaimer explaining that it is not medica
 
 ## Source and Summary Requirements
 
-- Literature results must link to the Europe PMC source record whenever available.
+- Literature results must link to the Europe PMC or PubMed source record whenever available.
 - DOI and PMID should be shown when available.
 - Local summaries must include limitations/uncertainty and an educational-use disclaimer.
 - Plain-language mode may simplify wording, but must preserve uncertainty.
@@ -34,7 +34,7 @@ The app must always show a prominent disclaimer explaining that it is not medica
 
 ## Data Handling
 
-- Europe PMC receives literature search queries.
+- Selected literature providers, such as Europe PMC and PubMed, receive literature search queries.
 - ClinicalTrials.gov receives tracker filter queries.
 - Local Ollama summaries should remain local by default.
 - SQLite history must not be treated as a place for sensitive or medical data.

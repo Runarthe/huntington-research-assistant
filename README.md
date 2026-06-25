@@ -4,7 +4,7 @@ Huntington Research Assistant is a small open-source app for searching, summariz
 
 The current release is **v0.2.0**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
 
-The app uses [Europe PMC](https://europepmc.org/RestfulWebService) for publications and the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project and as a foundation that can later add PubMed/NCBI E-utilities as a second literature provider.
+The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
 > [!IMPORTANT]
 > This tool is for educational and research navigation purposes only. It is not medical advice. Always consult qualified healthcare professionals for diagnosis, treatment, or genetic counselling.
@@ -19,13 +19,14 @@ This project is not affiliated with any medical association, including the Norwe
 
 ## Features
 
-- Search Europe PMC for Huntington-related research papers.
+- Search Europe PMC and PubMed for Huntington-related research papers.
 - Expand simple user queries into a Huntington's disease literature context.
 - Display titles, authors, year, journal, DOI, PMID, abstract snippets, source links, citation counts, and open-access flags where available.
 - Display publication types and prominent Europe PMC retraction/correction notices.
 - Add simple rule-based topic tags.
 - Filter Europe PMC results by topic category, publication year, and open-access status.
 - Browse provider-backed result pages instead of only filtering a small local batch.
+- Deduplicate combined Europe PMC/PubMed results by PMID, DOI, and title/year.
 - Download each paper's metadata and abstract, with direct open-access PDF links where Europe PMC provides them.
 - Export the visible publication page as CSV or BibTeX with source links.
 - Save papers to a local reading list and export the saved set for later review.
@@ -145,13 +146,15 @@ Supported variables:
 - `HRA_ENABLE_EXPERIMENTAL_NORWEGIAN_SUMMARIES`: developer-only opt-in for unreviewed Norwegian generation. Defaults to `false`.
 - `HRA_CACHE_PATH`: optional SQLite cache path override. By default the app stores cache in the OS local app data/cache directory, outside the repo. If that location is unavailable, it falls back to the system temp directory. This avoids SQLite I/O problems in synced folders such as OneDrive.
 - `HRA_EUROPE_PMC_EMAIL`: optional contact email sent in the Europe PMC user agent.
-- `HRA_TRUST_ENV`: set to `true` only if Europe PMC and ClinicalTrials.gov requests should use system proxy environment variables. Defaults to `false` to avoid broken local proxy settings.
+- `HRA_NCBI_EMAIL`: optional contact email sent to NCBI E-utilities. NCBI recommends including a contact email for tools that use E-utilities.
+- `HRA_NCBI_API_KEY`: optional NCBI API key for higher E-utilities rate limits. It is not required for normal local use.
+- `HRA_TRUST_ENV`: set to `true` only if provider requests should use system proxy environment variables. Defaults to `false` to avoid broken local proxy settings.
 
-No API keys are required or hardcoded. If local summarization is unavailable, the app still searches Europe PMC.
+No API keys are required or hardcoded. If local summarization is unavailable, the app still searches literature sources.
 
 ## Data and Privacy
 
-- Search queries are sent to Europe PMC.
+- Search queries are sent to the selected literature providers, such as Europe PMC and PubMed.
 - Clinical-trial filter queries are sent to ClinicalTrials.gov when the tracker is used.
 - Ollama summaries remain local unless `OLLAMA_HOST` is deliberately pointed elsewhere.
 - Search history is stored in a local SQLite database.
@@ -160,7 +163,7 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-Near-term priorities include saved reading lists, Norwegian refinement, accessibility testing, and a second PubMed/NCBI provider. AlphaFold, BioNeMo, autonomous agents, personalized medical features, and automated claims about study suitability remain out of scope.
+Near-term priorities include improving the provider-comparison workflow, Norwegian refinement, accessibility testing, and stronger summary evaluation. AlphaFold, BioNeMo, autonomous agents, personalized medical features, and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
 

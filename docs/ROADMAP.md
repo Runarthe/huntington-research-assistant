@@ -26,11 +26,12 @@ This roadmap is directional, not a promise of clinical functionality.
 ## v0.3: Evidence Quality and Reading Workflow
 
 - Saved reading lists without sensitive user profiles.
+- PubMed/NCBI E-utilities provider preview.
+- Initial deduplication across Europe PMC and PubMed.
 - Improved category vocabulary and tagging tests.
 - Complete manual accessibility and mobile-layout review.
 - Expand and professionally review the Norwegian evaluation set.
-- Add PubMed/NCBI E-utilities as a second provider.
-- Deduplicate records across providers.
+- Improve provider-comparison UX and pagination semantics.
 - Add stronger summary evaluation and citation-preservation tests.
 - Evaluate the experimental source-linked research map against a manually reviewed abstract set.
 

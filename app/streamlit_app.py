@@ -28,6 +28,8 @@ from hra.clients.clinical_trials import (
     ClinicalTrialsError,
 )
 from hra.clients.europe_pmc import EuropePMCClient, EuropePMCError
+from hra.clients.pubmed import PubMedClient, PubMedError
+from hra.deduplication import deduplicate_papers
 from hra.export import (
     paper_text_filename,
     paper_to_text,
@@ -43,6 +45,7 @@ from hra.query import (
     DEFAULT_QUERY,
     build_dashboard_query,
     build_literature_query,
+    build_pubmed_query,
     expand_huntington_query,
     normalize_user_query,
 )
@@ -83,6 +86,9 @@ DEFAULT_TRIAL_STATUSES = [
     "COMPLETED",
     "TERMINATED",
 ]
+SOURCE_EUROPE_PMC = "Europe PMC"
+SOURCE_PUBMED = "PubMed"
+SOURCE_OPTIONS = [SOURCE_EUROPE_PMC, SOURCE_PUBMED]
 
 
 @st.cache_data(show_spinner=False, ttl=900)
@@ -99,6 +105,16 @@ def search_europe_pmc(
         page_size=page_size,
         cursor_mark=cursor_mark,
     )
+
+
+@st.cache_data(show_spinner=False, ttl=900)
+def search_pubmed(
+    query: str,
+    page: int,
+    page_size: int,
+) -> SearchResponse:
+    client = PubMedClient()
+    return client.search(query, page=page, page_size=page_size)
 
 
 @st.cache_data(show_spinner=False, ttl=3600)
@@ -225,6 +241,8 @@ def render_paper(
     st.write(paper.abstract_snippet)
 
     link_parts = []
+    if paper.source_provider != "unknown":
+        link_parts.append(f"{translate(language, 'source_provider')}: `{paper.source_provider}`")
     if paper.doi:
         link_parts.append(f"DOI: `{paper.doi}`")
     if paper.pmid:
@@ -503,6 +521,12 @@ def run_search_panel(
             help=translate(language, "research_topic_help") if help_text else None,
             key=f"{panel_key}-query",
         )
+        selected_sources = st.multiselect(
+            translate(language, "literature_sources"),
+            options=SOURCE_OPTIONS,
+            default=[SOURCE_EUROPE_PMC],
+            key=f"{panel_key}-sources",
+        )
         selected_tags = st.multiselect(
             translate(language, "category_filters"),
             options=ALL_TAGS,
@@ -535,6 +559,8 @@ def run_search_panel(
         st.code(expanded_query)
 
     if submitted:
+        if not selected_sources:
+            selected_sources = [SOURCE_EUROPE_PMC]
         safe_cache_write(cache, "record_search", normalized_query, expanded_query)
         dashboard_query = build_dashboard_query(
             expanded_query,
@@ -547,15 +573,28 @@ def run_search_panel(
             year_range=(int(year_range[0]), int(year_range[1])),
             open_access_only=open_access_only,
         )
+        pubmed_query = build_pubmed_query(
+            expanded_query,
+            selected_tags=selected_tags,
+            year_range=(int(year_range[0]), int(year_range[1])),
+            open_access_only=open_access_only,
+        )
         st.session_state[f"{panel_key}-request"] = {
             "provider_query": provider_query,
+            "pubmed_query": pubmed_query,
             "dashboard_query": dashboard_query,
             "year_range": (int(year_range[0]), int(year_range[1])),
             "page_size": int(page_size),
+            "sources": list(selected_sources),
         }
         st.session_state[f"{panel_key}-page"] = 1
         st.session_state[f"{panel_key}-cursor-history"] = ["*"]
-        st.session_state[f"{panel_key}-dashboard-pending"] = True
+        st.session_state[f"{panel_key}-dashboard-pending"] = (
+            SOURCE_EUROPE_PMC in selected_sources
+        )
+        if SOURCE_EUROPE_PMC not in selected_sources:
+            st.session_state[f"{panel_key}-dashboard"] = []
+            st.session_state.pop(f"{panel_key}-dashboard-error", None)
 
     request = st.session_state.get(f"{panel_key}-request")
     if not request:
@@ -563,28 +602,56 @@ def run_search_panel(
         return
 
     page = int(st.session_state.get(f"{panel_key}-page", 1))
+    sources = list(request.get("sources", [SOURCE_EUROPE_PMC]))
     cursor_history = list(
         st.session_state.get(f"{panel_key}-cursor-history", ["*"])
     )
-    if page > len(cursor_history):
+    if SOURCE_EUROPE_PMC in sources and page > len(cursor_history):
         page = len(cursor_history)
         st.session_state[f"{panel_key}-page"] = page
-    cursor_mark = cursor_history[page - 1]
-    with st.spinner(translate(language, "searching")):
-        try:
-            response = search_europe_pmc(
-                str(request["provider_query"]),
-                cursor_mark,
-                page,
-                int(request["page_size"]),
-            )
-        except EuropePMCError as exc:
-            st.error(str(exc))
-            return
+    cursor_mark = cursor_history[min(page - 1, len(cursor_history) - 1)]
+    if len(sources) > 1:
+        st.info(translate(language, "combined_source_note"))
+    if SOURCE_PUBMED in sources:
+        with st.expander(translate(language, "pubmed_query")):
+            st.code(str(request.get("pubmed_query", "")))
 
-    safe_cache_write(cache, "upsert_papers", response.papers)
-    if response.next_cursor_mark and len(cursor_history) == page:
-        cursor_history.append(response.next_cursor_mark)
+    papers: list[Paper] = []
+    total_results = 0
+    next_cursor_mark: str | None = None
+    with st.spinner(translate(language, "searching")):
+        if SOURCE_EUROPE_PMC in sources:
+            try:
+                europe_response = search_europe_pmc(
+                    str(request["provider_query"]),
+                    cursor_mark,
+                    page,
+                    int(request["page_size"]),
+                )
+            except EuropePMCError as exc:
+                st.error(str(exc))
+                return
+            papers.extend(europe_response.papers)
+            total_results += europe_response.total_results or len(europe_response.papers)
+            next_cursor_mark = europe_response.next_cursor_mark
+
+        if SOURCE_PUBMED in sources:
+            try:
+                pubmed_response = search_pubmed(
+                    str(request["pubmed_query"]),
+                    page,
+                    int(request["page_size"]),
+                )
+            except PubMedError as exc:
+                st.error(str(exc))
+                return
+            papers.extend(pubmed_response.papers)
+            total_results += pubmed_response.total_results or len(pubmed_response.papers)
+
+    papers = deduplicate_papers(papers)[: int(request["page_size"])]
+    safe_cache_write(cache, "upsert_papers", papers)
+    if next_cursor_mark and len(cursor_history) == page:
+        cursor_history.append(next_cursor_mark)
         st.session_state[f"{panel_key}-cursor-history"] = cursor_history
     if st.session_state.pop(f"{panel_key}-dashboard-pending", False):
         try:
@@ -601,43 +668,46 @@ def run_search_panel(
             st.session_state[f"{panel_key}-dashboard"] = yearly_counts
             st.session_state.pop(f"{panel_key}-dashboard-error", None)
 
-    total_results = response.total_results or len(response.papers)
+    total_results = total_results or len(papers)
     total_pages = max(1, ceil(total_results / int(request["page_size"])))
     st.caption(
         translate(
             language,
             "result_count",
             total=total_results,
-            shown=len(response.papers),
+            shown=len(papers),
         )
     )
     st.info(
         translate(
             language,
             "pagination_help",
-            shown=len(response.papers),
+            shown=len(papers),
             total=total_results,
         )
     )
     render_pagination(panel_key, page, total_pages, language, position="top")
 
     st.subheader(translate(language, "publication_dashboard"))
-    dashboard_error = st.session_state.get(f"{panel_key}-dashboard-error")
-    if dashboard_error:
-        st.warning(
-            translate(language, "dashboard_unavailable", error=dashboard_error)
-        )
+    if SOURCE_EUROPE_PMC not in sources:
+        st.caption(translate(language, "dashboard_europe_only"))
     else:
-        render_publication_dashboard(
-            st.session_state.get(f"{panel_key}-dashboard", []),
-            language,
-        )
+        dashboard_error = st.session_state.get(f"{panel_key}-dashboard-error")
+        if dashboard_error:
+            st.warning(
+                translate(language, "dashboard_unavailable", error=dashboard_error)
+            )
+        else:
+            render_publication_dashboard(
+                st.session_state.get(f"{panel_key}-dashboard", []),
+                language,
+            )
 
-    render_paper_exports(response.papers, panel_key, language)
+    render_paper_exports(papers, panel_key, language)
     st.subheader(translate(language, "papers"))
     reading_list_ids = safe_reading_list_ids(cache)
     render_results(
-        response.papers,
+        papers,
         panel_key,
         summary_config,
         summary_available,
