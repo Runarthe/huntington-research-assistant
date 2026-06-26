@@ -26,6 +26,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "publication_year": "Publication year",
         "open_access_only": "Open access only",
         "results_to_show": "Articles per page",
+        "search_literature": "Search literature",
         "search_europe_pmc": "Search Europe PMC",
         "search_trials": "Search clinical trial literature",
         "search_recent": "Search recent publications",
@@ -63,12 +64,13 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "no_papers": "No papers found. Try a broader topic or fewer keywords.",
         "no_timeline": "No publication years available for a timeline.",
         "result_count": (
-            "Europe PMC matched approximately {total:,} records. "
+            "Selected sources matched approximately {total:,} records. "
             "Showing {shown} papers on this page."
         ),
-        "source_record": "Open Europe PMC source record",
+        "source_record": "Open source record",
         "open_access_pdf": "Open full-text PDF",
         "download_paper_details": "Download details and abstract",
+        "show_export_text": "View details text",
         "add_to_reading_list": "Add to reading list",
         "remove_from_reading_list": "Remove from reading list",
         "reading_list_title": "Saved reading list",
@@ -210,6 +212,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "publication_year": "Publikasjonsår",
         "open_access_only": "Kun åpen tilgang",
         "results_to_show": "Artikler per side",
+        "search_literature": "Søk i litteraturkilder",
         "search_europe_pmc": "Søk i Europe PMC",
         "search_trials": "Søk etter litteratur om kliniske studier",
         "search_recent": "Søk etter nylige publikasjoner",
@@ -247,12 +250,13 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "no_papers": "Ingen publikasjoner funnet. Prøv et bredere tema eller færre søkeord.",
         "no_timeline": "Ingen publikasjonsår er tilgjengelige for tidslinjen.",
         "result_count": (
-            "Europe PMC fant omtrent {total:,} treff. "
+            "Valgte kilder fant omtrent {total:,} treff. "
             "Viser {shown} publikasjoner på denne siden."
         ),
-        "source_record": "Åpne kildepost i Europe PMC",
+        "source_record": "Åpne kildepost",
         "open_access_pdf": "Åpne fulltekst som PDF",
         "download_paper_details": "Last ned detaljer og sammendrag",
+        "show_export_text": "Vis detaljtekst",
         "add_to_reading_list": "Legg til i leseliste",
         "remove_from_reading_list": "Fjern fra leseliste",
         "reading_list_title": "Lagret leseliste",

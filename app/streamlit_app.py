@@ -278,9 +278,10 @@ def render_paper(
             use_container_width=True,
         )
         action_index += 1
+    paper_export_text = paper_to_text(paper)
     action_columns[action_index].download_button(
         translate(language, "download_paper_details"),
-        data=paper_to_text(paper).encode("utf-8"),
+        data=paper_export_text.encode("utf-8"),
         file_name=paper_text_filename(paper),
         mime="text/plain",
         key=f"{panel_key}-download-paper-{paper.id}-{index}",
@@ -305,6 +306,9 @@ def render_paper(
         ):
             safe_cache_write(cache, "add_to_reading_list", paper)
             st.rerun()
+
+    with st.expander(translate(language, "show_export_text")):
+        st.code(paper_export_text, language="text")
 
     with st.expander(translate(language, "abstract")):
         st.write(paper.abstract or translate(language, "no_abstract"))
@@ -1129,7 +1133,7 @@ def main() -> None:
         run_search_panel(
             panel_key="general",
             default_query=DEFAULT_QUERY,
-            submit_label=translate(language, "search_europe_pmc"),
+            submit_label=translate(language, "search_literature"),
             summary_config=summary_config,
             summary_available=summary_available,
             language=language,

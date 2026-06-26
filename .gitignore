@@ -19,3 +19,4 @@ dist/
 build/
 .DS_Store
 README.release.md
+CONTEXT.md
