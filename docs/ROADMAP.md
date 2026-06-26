@@ -2,6 +2,8 @@
 
 This roadmap is directional, not a promise of clinical functionality.
 
+Reading lists planned for v0.3.
+
 ## v0.1: Public MVP
 
 - Europe PMC search with Huntington-focused query expansion.
