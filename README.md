@@ -2,7 +2,7 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The current release is **v0.2.0**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
+The current release is **v0.3.0**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
 
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
@@ -62,7 +62,7 @@ Norwegian UI labels and safety information are available. Norwegian translation 
 
 ![Clinical trials search and trends](docs/screenshots/Clinical_trials_search_tab_and_some_publishing_trends.png)
 
-This literature view remains useful for finding papers about clinical trials. v0.2 also includes a separate ClinicalTrials.gov tracker for registered-study metadata.
+This literature view remains useful for finding papers about clinical trials. The app also includes a separate ClinicalTrials.gov tracker for registered-study metadata.
 
 ### Recent publications
 
@@ -107,7 +107,7 @@ python -m build
 
 ## Automated Tests
 
-GitHub Actions runs the test suite automatically on Python 3.11 and 3.12 whenever code is pushed or a pull request is opened. It also verifies that the v0.2 package can be built. The workflow does not require Ollama, an API key, or access to personal data.
+GitHub Actions runs the test suite automatically on Python 3.11 and 3.12 whenever code is pushed or a pull request is opened. It also verifies that the package can be built. The workflow does not require Ollama, an API key, or access to personal data.
 
 The workflow is defined in [`.github/workflows/tests.yml`](.github/workflows/tests.yml). A green check means the automated tests passed; it does not certify medical or scientific accuracy.
 

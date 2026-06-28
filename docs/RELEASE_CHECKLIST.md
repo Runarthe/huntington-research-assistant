@@ -14,6 +14,8 @@ Use this checklist before publishing a tagged release.
 ## Manual App Checks
 
 - [ ] Search Europe PMC and open a source record.
+- [ ] Search PubMed and open a source record.
+- [ ] Run a combined-provider search and verify duplicate records are merged.
 - [ ] Browse to the next and previous publication page.
 - [ ] Verify publication dashboard counts render.
 - [ ] Search ClinicalTrials.gov and open a registry record.
@@ -21,6 +23,7 @@ Use this checklist before publishing a tagged release.
 - [ ] Confirm the app still works when Ollama is stopped.
 - [ ] Confirm English local summaries work when the configured Ollama model is available.
 - [ ] Confirm Norwegian UI states that generated translation and summaries come later.
+- [ ] Add, remove, persist, and export papers from the local reading list.
 - [ ] Build a research map and verify that every visible relationship has source evidence.
 
 ## Safety and Privacy
@@ -37,5 +40,5 @@ Use this checklist before publishing a tagged release.
 - [ ] Commit and push the release branch.
 - [ ] Review the complete pull-request diff.
 - [ ] Merge only after required checks pass.
-- [ ] Tag the merge commit as `v0.2.0`.
+- [ ] Tag the merge commit with the version declared in `pyproject.toml`.
 - [ ] Create the GitHub release from the changelog entry.
