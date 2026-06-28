@@ -30,6 +30,11 @@ from hra.clients.clinical_trials import (
 from hra.clients.europe_pmc import EuropePMCClient, EuropePMCError
 from hra.clients.pubmed import PubMedClient, PubMedError
 from hra.deduplication import deduplicate_papers
+from hra.evidence import (
+    EvidenceProfile,
+    build_evidence_profiles,
+    evidence_profiles_to_csv,
+)
 from hra.export import (
     paper_text_filename,
     paper_to_text,
@@ -923,6 +928,121 @@ def run_reading_list(
     )
 
 
+def run_evidence_explorer(cache: SearchCache | None, language: str) -> None:
+    st.subheader(translate(language, "evidence_title"))
+    st.info(translate(language, "evidence_intro"))
+    st.caption(translate(language, "evidence_scope"))
+    if cache is None:
+        st.warning(translate(language, "reading_list_unavailable"))
+        return
+
+    papers = safe_reading_list_papers(cache)
+    if len(papers) < 2:
+        st.warning(translate(language, "evidence_need_two"))
+        return
+
+    papers_by_id = {paper.id: paper for paper in papers}
+
+    def paper_label(paper_id: str) -> str:
+        paper = papers_by_id[paper_id]
+        year = f" ({paper.year})" if paper.year else ""
+        return f"{paper.title}{year}"
+
+    selected_ids = st.multiselect(
+        translate(language, "evidence_choose_papers"),
+        options=list(papers_by_id),
+        default=list(papers_by_id)[:2],
+        format_func=paper_label,
+        max_selections=5,
+        help=translate(language, "evidence_choose_help"),
+        key="evidence-selected-papers",
+    )
+    if len(selected_ids) < 2:
+        st.warning(translate(language, "evidence_select_two"))
+        return
+
+    selected_papers = [papers_by_id[paper_id] for paper_id in selected_ids]
+    profiles = build_evidence_profiles(selected_papers)
+
+    def study_design_label(study_design: str) -> str:
+        return translate(language, f"evidence_design_{study_design}")
+
+    def context_labels(contexts: list[str]) -> str:
+        if not contexts:
+            return translate(language, "evidence_context_not_identified")
+        return ", ".join(
+            translate(language, f"evidence_context_{context}") for context in contexts
+        )
+
+    def record_status(profile: EvidenceProfile) -> str:
+        if profile.is_retracted:
+            return translate(language, "evidence_status_retracted")
+        if profile.has_correction:
+            return translate(language, "evidence_status_corrected")
+        return translate(language, "evidence_status_clear")
+
+    st.subheader(translate(language, "evidence_comparison"))
+    st.dataframe(
+        [
+            {
+                translate(language, "evidence_paper"): profile.title,
+                translate(language, "year"): profile.year or "-",
+                translate(language, "evidence_study_design"): study_design_label(
+                    profile.study_design
+                ),
+                translate(language, "evidence_contexts"): context_labels(
+                    profile.research_contexts
+                ),
+                translate(language, "evidence_source"): profile.source_provider,
+                translate(language, "evidence_source_record"): profile.source_url,
+                translate(language, "evidence_record_status"): record_status(profile),
+            }
+            for profile in profiles
+        ],
+        column_config={
+            translate(language, "evidence_source_record"): st.column_config.LinkColumn(
+                translate(language, "evidence_source_record"),
+                display_text=translate(language, "evidence_open_source"),
+            )
+        },
+        hide_index=True,
+        use_container_width=True,
+    )
+    st.download_button(
+        translate(language, "evidence_download_csv"),
+        data=evidence_profiles_to_csv(profiles).encode("utf-8-sig"),
+        file_name="hra-evidence-comparison.csv",
+        mime="text/csv",
+        key="evidence-comparison-download",
+    )
+
+    st.subheader(translate(language, "evidence_passages"))
+    st.caption(translate(language, "evidence_passage_note"))
+    for profile in profiles:
+        with st.expander(profile.title):
+            st.markdown(f"**{translate(language, 'evidence_outcome_passages')}**")
+            if profile.outcome_passages:
+                for passage in profile.outcome_passages:
+                    st.write(passage)
+            else:
+                st.caption(translate(language, "evidence_no_outcome_passages"))
+
+            st.markdown(f"**{translate(language, 'evidence_limitation_passages')}**")
+            if profile.limitation_passages:
+                for passage in profile.limitation_passages:
+                    st.write(passage)
+            else:
+                st.caption(translate(language, "evidence_no_limitation_passages"))
+
+            if profile.source_url:
+                st.link_button(
+                    translate(language, "source_record"),
+                    profile.source_url,
+                )
+            else:
+                st.warning(translate(language, "evidence_source_unavailable"))
+
+
 def run_knowledge_graph(language: str) -> None:
     st.subheader(translate(language, "knowledge_title"))
     st.info(translate(language, "knowledge_intro"))
@@ -1119,10 +1239,18 @@ def main() -> None:
 
     cache = get_cache()
 
-    search_tab, reading_list_tab, clinical_tab, recent_tab, knowledge_tab = st.tabs(
+    (
+        search_tab,
+        reading_list_tab,
+        evidence_tab,
+        clinical_tab,
+        recent_tab,
+        knowledge_tab,
+    ) = st.tabs(
         [
             translate(language, "search_tab"),
             translate(language, "reading_list_tab"),
+            translate(language, "evidence_tab"),
             translate(language, "clinical_tab"),
             translate(language, "recent_tab"),
             translate(language, "knowledge_tab"),
@@ -1153,6 +1281,9 @@ def main() -> None:
             language=language,
             summary_mode=summary_mode,
         )
+
+    with evidence_tab:
+        run_evidence_explorer(cache, language)
 
     with recent_tab:
         run_search_panel(

@@ -9,6 +9,7 @@ Current measures include:
 - Heading-based paper and section structure.
 - Original abstracts and source links kept adjacent to generated explanations.
 - A tabular alternative to the publication trend chart.
+- A tabular Evidence Explorer comparison with source passages available as ordinary text.
 - Keyboard-operable controls supplied by Streamlit.
 - English and Norwegian interface labels.
 

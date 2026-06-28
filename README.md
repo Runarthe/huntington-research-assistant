@@ -163,13 +163,15 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-Near-term priorities include improving the provider-comparison workflow, Norwegian refinement, accessibility testing, and stronger summary evaluation. AlphaFold, BioNeMo, autonomous agents, personalized medical features, and automated claims about study suitability remain out of scope.
+Near-term priorities include an Evidence Explorer, provider-comparison improvements, Norwegian refinement, accessibility testing, and stronger summary evaluation. Optional BioNeMo, NIM, Blueprint, and protein-model experiments are planned in a separate Digital Biology Lab; they will not be required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 Norwegian quality and accessibility are documented in [docs/NORWEGIAN_LANGUAGE.md](docs/NORWEGIAN_LANGUAGE.md) and [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
 
 The experimental research map and its strict "mentioned in" semantics are documented in [docs/KNOWLEDGE_GRAPH.md](docs/KNOWLEDGE_GRAPH.md).
+
+The optional scientific-AI learning track is documented in [docs/DIGITAL_BIOLOGY_LAB.md](docs/DIGITAL_BIOLOGY_LAB.md) and isolated under [`labs/`](labs/README.md).
 
 Maintainers can use [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) before creating a GitHub release.
 

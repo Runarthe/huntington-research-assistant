@@ -4,6 +4,19 @@ All notable project changes are documented here. The project follows semantic ve
 
 ## [Unreleased]
 
+### Added
+
+- A source-linked Evidence Explorer for comparing two to five papers from the local reading list.
+- Conservative, rule-based study-design and research-context classification.
+- Exact abstract passages that may describe results, limitations, or uncertainty, with no generated interpretation.
+- Detailed Evidence Explorer CSV export with source URLs and extraction output.
+- An isolated Digital Biology Lab foundation with learning documentation and an experiment-manifest example.
+
+### Safety
+
+- Evidence Explorer passages are labelled as navigation aids rather than assessments of evidence strength, study quality, clinical relevance, or treatment effectiveness.
+- Digital Biology Lab experiments remain optional and separate from the core application.
+
 ## [0.3.0] - 2026-06-29
 
 ### Added

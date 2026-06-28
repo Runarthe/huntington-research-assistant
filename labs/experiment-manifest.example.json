@@ -1,0 +1,38 @@
+{
+  "schema_version": "0.1",
+  "experiment_id": "example-protein-embedding",
+  "status": "planned",
+  "purpose": "Demonstrate a bounded protein embedding workflow without biomedical claims.",
+  "component_type": "foundation_model",
+  "model": {
+    "provider": "example-provider",
+    "name": "example-model",
+    "version": "pin-before-running",
+    "licence": "record-governing-terms"
+  },
+  "inputs": [
+    {
+      "identifier": "authoritative-database-id",
+      "source_url": "https://example.org/source-record",
+      "retrieved_at": "YYYY-MM-DD",
+      "checksum": "sha256:record-after-download"
+    }
+  ],
+  "runtime": {
+    "interface": "local-or-nim-api",
+    "container": "pin-image-and-digest-if-used",
+    "hardware": "record-gpu-or-cpu",
+    "parameters": {}
+  },
+  "outputs": {
+    "path": "outputs/example-protein-embedding/",
+    "confidence_measures": [],
+    "generated_at": "YYYY-MM-DD"
+  },
+  "evaluation": {
+    "method": "define-before-running",
+    "limitations": [
+      "Model output is experimental and is not clinically validated."
+    ]
+  }
+}
