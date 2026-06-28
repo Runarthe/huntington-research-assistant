@@ -2,6 +2,7 @@ from hra.query import (
     DEFAULT_QUERY,
     build_dashboard_query,
     build_literature_query,
+    build_pubmed_query,
     expand_huntington_query,
     normalize_user_query,
 )
@@ -43,3 +44,16 @@ def test_literature_query_adds_provider_side_year_range() -> None:
 
     assert "PUB_YEAR:[2020 TO 2026]" in query
     assert "OPEN_ACCESS:Y" in query
+
+
+def test_build_pubmed_query_adds_pubmed_filters() -> None:
+    query = build_pubmed_query(
+        "(huntingtin) AND (biomarker)",
+        selected_tags=["biomarkers"],
+        year_range=(2020, 2026),
+        open_access_only=True,
+    )
+
+    assert '"2020"[Date - Publication] : "2026"[Date - Publication]' in query
+    assert "free full text[sb]" in query
+    assert "neurofilament" in query

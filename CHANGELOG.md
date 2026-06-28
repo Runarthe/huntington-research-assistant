@@ -2,6 +2,34 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [Unreleased]
+
+## [0.3.0] - 2026-06-29
+
+### Added
+
+- Local saved reading list for papers, including add/remove controls, source-preserving exports, and cache tests.
+- PubMed search through official NCBI E-utilities.
+- Combined Europe PMC and PubMed search with deduplication by PMID, DOI, and title/year.
+- Provider provenance on merged records, including combined source labels.
+- In-app detail fallback when a browser blocks Streamlit downloads.
+
+### Changed
+
+- Search actions and source links now use provider-neutral labels.
+- Release documentation now separates the stable public-good application from optional future Digital Biology Lab experiments.
+
+### Safety
+
+- PubMed integration preserves direct source links and does not add generated medical interpretation.
+- Reading lists remain local and do not require user profiles or personal health information.
+
+### Known Limitations
+
+- Combined-provider totals and pagination reflect different upstream provider semantics.
+- Downloads may be handled differently by embedded browsers; the detail fallback remains available.
+- PubMed citation counts and Europe PMC open-access metadata are not always available from both providers.
+
 ## [0.2.0] - 2026-06-24
 
 ### Added

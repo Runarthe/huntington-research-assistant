@@ -32,6 +32,7 @@ class Paper(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
     id: str = Field(..., min_length=1)
+    source_provider: str = "unknown"
     title: str = Field(default="Untitled")
     authors: list[Author] = Field(default_factory=list)
     year: int | None = None

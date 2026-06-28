@@ -140,6 +140,7 @@ class EuropePMCClient:
         full_text_url, pdf_url = self._open_access_urls(item)
         return Paper(
             id=str(paper_id),
+            source_provider="Europe PMC",
             title=_plain_text(item.get("title") or "Untitled"),
             authors=self._parse_authors(item),
             year=item.get("pubYear") or item.get("firstPublicationDate"),

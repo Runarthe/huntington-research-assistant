@@ -72,6 +72,14 @@ class SearchCache:
                 )
                 """
             )
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS reading_list (
+                    paper_id TEXT PRIMARY KEY,
+                    added_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
 
     def record_search(self, query: str, expanded_query: str) -> None:
         with self._connect() as connection:
@@ -121,3 +129,48 @@ class SearchCache:
         if row is None:
             return None
         return Paper.model_validate(json.loads(row[0]))
+
+    def add_to_reading_list(self, paper: Paper) -> None:
+        with self._connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO papers (id, payload, updated_at)
+                VALUES (?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(id) DO UPDATE SET
+                    payload = excluded.payload,
+                    updated_at = CURRENT_TIMESTAMP
+                """,
+                (paper.id, paper.model_dump_json()),
+            )
+            connection.execute(
+                """
+                INSERT INTO reading_list (paper_id, added_at)
+                VALUES (?, CURRENT_TIMESTAMP)
+                ON CONFLICT(paper_id) DO NOTHING
+                """,
+                (paper.id,),
+            )
+
+    def remove_from_reading_list(self, paper_id: str) -> None:
+        with self._connect() as connection:
+            connection.execute(
+                "DELETE FROM reading_list WHERE paper_id = ?",
+                (paper_id,),
+            )
+
+    def reading_list_ids(self) -> set[str]:
+        with self._connect() as connection:
+            rows = connection.execute("SELECT paper_id FROM reading_list").fetchall()
+        return {row[0] for row in rows}
+
+    def reading_list_papers(self) -> list[Paper]:
+        with self._connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT papers.payload
+                FROM reading_list
+                JOIN papers ON papers.id = reading_list.paper_id
+                ORDER BY reading_list.added_at DESC, reading_list.paper_id DESC
+                """
+            ).fetchall()
+        return [Paper.model_validate(json.loads(row[0])) for row in rows]
