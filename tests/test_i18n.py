@@ -11,6 +11,8 @@ def test_translate_returns_norwegian_ui_label() -> None:
     assert "senere oppdatering" in translate(
         "no", "norwegian_summary_later"
     )
+    assert translate("en", "evidence_source_record") == "Source record"
+    assert translate("en", "evidence_open_source") == "Open source"
 
 
 def test_unknown_language_falls_back_to_english() -> None:

@@ -92,6 +92,37 @@ def test_evidence_profile_keeps_unclassified_human_work_neutral() -> None:
     assert profile.research_contexts == ["human_participants"]
 
 
+def test_background_patient_mention_does_not_create_human_study_context() -> None:
+    paper = Paper(
+        id="mouse-1",
+        title="Mutant huntingtin in BACHD mice",
+        publication_types=["Journal Article"],
+        abstract=(
+            "Patients with Huntington disease have motor and cognitive changes. "
+            "We reduced mutant huntingtin expression in BACHD mice."
+        ),
+    )
+
+    profile = extract_evidence_profile(paper)
+
+    assert profile.study_design == "preclinical_study"
+    assert profile.research_contexts == ["animal_model"]
+
+
+def test_molecular_experiment_is_used_as_a_conservative_fallback() -> None:
+    paper = Paper(
+        id="lab-1",
+        title="Silencing of human HTT by CRISPR/dCas9 epigenetic editing",
+        publication_types=["Journal Article"],
+        abstract="We targeted DNA methylation at the HTT locus and observed gene silencing.",
+    )
+
+    profile = extract_evidence_profile(paper)
+
+    assert profile.study_design == "laboratory_study"
+    assert profile.research_contexts == ["molecular_experiment"]
+
+
 def test_evidence_csv_preserves_sources_and_passages() -> None:
     profile = extract_evidence_profile(
         Paper(

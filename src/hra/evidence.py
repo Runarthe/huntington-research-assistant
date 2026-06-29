@@ -46,12 +46,14 @@ _LIMITATION_PATTERNS = (
 )
 _CONTEXT_PATTERNS: dict[str, tuple[re.Pattern[str], ...]] = {
     "human_participants": (
-        re.compile(r"\bpatients?\b", re.IGNORECASE),
-        re.compile(r"\bparticipants?\b", re.IGNORECASE),
-        re.compile(r"\bdonors?\b", re.IGNORECASE),
+        re.compile(r"\bpatient-derived\b", re.IGNORECASE),
+        re.compile(r"\bwe (?:enrolled|recruited|included|studied|assessed)\b[^.]*\b(?:patients?|participants?)\b", re.IGNORECASE),
+        re.compile(
+            r"\b\d+(?:\s+\w+){0,3}\s+(?:patients?|participants?|donors?)\b",
+            re.IGNORECASE,
+        ),
+        re.compile(r"\bhuman\b[^.]{0,60}\b(?:participants?|subjects?|patients?|samples?|tissues?|cells?|donors?)\b", re.IGNORECASE),
         re.compile(r"\bpostmortem\b", re.IGNORECASE),
-        re.compile(r"\bclinical trial\b", re.IGNORECASE),
-        re.compile(r"\bhuman (?:participants|subjects|patients|samples|tissue)\b", re.IGNORECASE),
     ),
     "animal_model": (
         re.compile(r"\banimal models?\b", re.IGNORECASE),
@@ -68,6 +70,12 @@ _CONTEXT_PATTERNS: dict[str, tuple[re.Pattern[str], ...]] = {
         re.compile(r"\bmolecular dynamics\b", re.IGNORECASE),
     ),
 }
+_MOLECULAR_EXPERIMENT_PATTERNS = (
+    re.compile(r"\b(?:CRISPR|dCas9|gene editing|epigenetic editing)\b", re.IGNORECASE),
+    re.compile(r"\b(?:DNA methylation|RNA interference|microRNA|miRNA)\b", re.IGNORECASE),
+    re.compile(r"\b(?:gene silencing|knockdown|knockout)\b", re.IGNORECASE),
+    re.compile(r"\b(?:PCR|transcriptomic|proteomic)\b", re.IGNORECASE),
+)
 
 
 def _sentences(text: str | None) -> list[str]:
@@ -93,11 +101,14 @@ def _matching_passages(
 
 def detect_research_contexts(paper: Paper) -> list[str]:
     text = f"{paper.title} {paper.abstract or ''}"
-    return [
+    contexts = [
         context
         for context, patterns in _CONTEXT_PATTERNS.items()
         if any(pattern.search(text) for pattern in patterns)
     ]
+    if not contexts and any(pattern.search(text) for pattern in _MOLECULAR_EXPERIMENT_PATTERNS):
+        contexts.append("molecular_experiment")
+    return contexts
 
 
 def classify_study_design(paper: Paper, contexts: list[str] | None = None) -> str:
@@ -130,6 +141,8 @@ def classify_study_design(paper: Paper, contexts: list[str] | None = None) -> st
         return "preclinical_study"
     if "human_participants" in detected_contexts:
         return "human_study"
+    if "molecular_experiment" in detected_contexts:
+        return "laboratory_study"
     if "preprint" in publication_text:
         return "preprint"
     if publication_text:

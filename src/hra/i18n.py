@@ -88,7 +88,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "rule-based comparison."
         ),
         "evidence_scope": (
-            "Study design and research contexts are automatically classified from metadata and abstract text. "
+            "Study design and research-context signals are automatically identified from metadata and abstract text. "
             "Highlighted passages are exact excerpts, not an assessment of evidence strength, study quality, "
             "clinical relevance, or treatment effectiveness."
         ),
@@ -99,7 +99,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "evidence_comparison": "Structured comparison",
         "evidence_paper": "Paper",
         "evidence_study_design": "Study design",
-        "evidence_contexts": "Contexts detected",
+        "evidence_contexts": "Research context signals",
         "evidence_record_status": "Record notices",
         "evidence_source": "Source",
         "evidence_source_record": "Source record",
@@ -128,13 +128,15 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "evidence_design_preprint": "Preprint",
         "evidence_design_preclinical_study": "Preclinical study",
         "evidence_design_human_study": "Human study / not further classified",
+        "evidence_design_laboratory_study": "Molecular or laboratory study",
         "evidence_design_journal_article": "Journal article / not further classified",
         "evidence_design_not_classified": "Not classified",
         "evidence_context_human_participants": "Human participants or samples",
         "evidence_context_animal_model": "Animal model",
         "evidence_context_cell_or_tissue_model": "Cell or tissue model",
         "evidence_context_computational_model": "Computational model",
-        "evidence_context_not_identified": "Not identified",
+        "evidence_context_molecular_experiment": "Molecular or genetic experiment",
+        "evidence_context_not_identified": "Not reported or not identified",
         "abstract": "Abstract",
         "no_abstract": "No abstract available.",
         "summarize": "Summarize abstract",
@@ -328,7 +330,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "regelbasert sammenligning."
         ),
         "evidence_scope": (
-            "Studiedesign og forskningskontekst klassifiseres automatisk fra metadata og abstrakttekst. "
+            "Studiedesign og signaler om forskningskontekst identifiseres automatisk fra metadata og abstrakttekst. "
             "Markerte passasjer er eksakte utdrag, ikke en vurdering av evidensstyrke, studiekvalitet, "
             "klinisk betydning eller behandlingseffekt."
         ),
@@ -339,7 +341,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "evidence_comparison": "Strukturert sammenligning",
         "evidence_paper": "Publikasjon",
         "evidence_study_design": "Studiedesign",
-        "evidence_contexts": "Kontekster som ble funnet",
+        "evidence_contexts": "Signaler om forskningskontekst",
         "evidence_record_status": "Merknader om kildeposten",
         "evidence_source": "Kilde",
         "evidence_source_record": "Kildepost",
@@ -368,13 +370,15 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "evidence_design_preprint": "Preprint",
         "evidence_design_preclinical_study": "Preklinisk studie",
         "evidence_design_human_study": "Studie med mennesker / ikke nærmere klassifisert",
+        "evidence_design_laboratory_study": "Molekylær studie eller laboratoriestudie",
         "evidence_design_journal_article": "Tidsskriftartikkel / ikke nærmere klassifisert",
         "evidence_design_not_classified": "Ikke klassifisert",
         "evidence_context_human_participants": "Menneskelige deltakere eller prøver",
         "evidence_context_animal_model": "Dyremodell",
         "evidence_context_cell_or_tissue_model": "Celle- eller vevsmodell",
         "evidence_context_computational_model": "Datamodell",
-        "evidence_context_not_identified": "Ikke identifisert",
+        "evidence_context_molecular_experiment": "Molekylært eller genetisk eksperiment",
+        "evidence_context_not_identified": "Ikke rapportert eller ikke identifisert",
         "abstract": "Originalt abstrakt (engelsk)",
         "no_abstract": "Originalt engelsk abstrakt er ikke tilgjengelig.",
         "summarize": "Lag norsk forklaring",

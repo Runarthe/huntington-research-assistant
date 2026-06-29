@@ -12,6 +12,10 @@ All notable project changes are documented here. The project follows semantic ve
 - Detailed Evidence Explorer CSV export with source URLs and extraction output.
 - An isolated Digital Biology Lab foundation with learning documentation and an experiment-manifest example.
 
+### Changed
+
+- Evidence Explorer context detection now avoids treating background patient mentions as study populations and uses a neutral molecular/laboratory fallback when the experimental system is not otherwise reported.
+
 ### Safety
 
 - Evidence Explorer passages are labelled as navigation aids rather than assessments of evidence strength, study quality, clinical relevance, or treatment effectiveness.
