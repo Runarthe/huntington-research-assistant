@@ -66,7 +66,7 @@ Lab work should live under an isolated `labs/` area or optional package. It must
 - Add stronger summary evaluation and citation-preservation tests.
 - Update release documentation, changelog, screenshots, and package metadata.
 
-## v0.4: Evidence Explorer and Lab Foundation
+## v0.4: Evidence Explorer and Lab Foundation (Released)
 
 ### Public-Good Application
 

@@ -4,6 +4,8 @@ All notable project changes are documented here. The project follows semantic ve
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-06-29
+
 ### Added
 
 - A source-linked Evidence Explorer for comparing two to five papers from the local reading list.
@@ -23,6 +25,12 @@ All notable project changes are documented here. The project follows semantic ve
 
 - Evidence Explorer passages are labelled as navigation aids rather than assessments of evidence strength, study quality, clinical relevance, or treatment effectiveness.
 - Digital Biology Lab experiments remain optional and separate from the core application.
+
+### Known Limitations
+
+- Evidence classifications are conservative rule-based navigation signals, not assessments of study quality or evidence strength.
+- Classification fixtures are maintainer-reviewed synthetic regression cases rather than biomedical ground truth.
+- Mobile layout was checked in an emulated viewport; physical-device, keyboard-only, 200% zoom, and screen-reader reviews remain outstanding.
 
 ## [0.3.0] - 2026-06-29
 
