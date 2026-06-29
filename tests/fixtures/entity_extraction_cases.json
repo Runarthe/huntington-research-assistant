@@ -1,0 +1,50 @@
+[
+  {
+    "id": "htt-gene-and-protein",
+    "title": "Silencing the HTT gene",
+    "abstract": "Mutant huntingtin was measured after the intervention.",
+    "expected_entity_ids": ["gene-htt", "protein-huntingtin"]
+  },
+  {
+    "id": "nfl-biomarker",
+    "title": "A fluid biomarker study",
+    "abstract": "Plasma neurofilament light was measured at each visit.",
+    "expected_entity_ids": ["biomarker-nfl"]
+  },
+  {
+    "id": "nfl-case-sensitive-negative",
+    "title": "Unrelated abbreviation",
+    "abstract": "The NFL season was included in an unrelated example.",
+    "expected_entity_ids": []
+  },
+  {
+    "id": "embedded-gene-symbol-negative",
+    "title": "Internal labels",
+    "abstract": "The workflow used fan1like as an internal label.",
+    "expected_entity_ids": []
+  },
+  {
+    "id": "catalogued-pathways",
+    "title": "Cellular processes",
+    "abstract": "Autophagy and mismatch repair were examined in the model.",
+    "expected_entity_ids": ["pathway-autophagy", "pathway-dna-repair"]
+  },
+  {
+    "id": "catalogued-compounds",
+    "title": "Two investigational compounds",
+    "abstract": "The review discussed tominersen and branaplam.",
+    "expected_entity_ids": ["compound-tominersen", "compound-branaplam"]
+  },
+  {
+    "id": "uppercase-protein-symbol",
+    "title": "Protein measurement",
+    "abstract": "BDNF was quantified in the experimental samples.",
+    "expected_entity_ids": ["protein-bdnf"]
+  },
+  {
+    "id": "no-catalogued-entity",
+    "title": "General research methods",
+    "abstract": "The authors described recruitment and statistical analysis.",
+    "expected_entity_ids": []
+  }
+]

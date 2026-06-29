@@ -37,7 +37,7 @@ This project is not affiliated with any medical association, including the Norwe
 - Track registered Huntington's disease studies by status, phase, country, intervention, sponsor, and registry update date.
 - Export visible registered studies as CSV.
 - Include a dedicated view for recent publications from the last couple of years.
-- Explore a source-linked experimental research map of catalogued genes, proteins, pathways, and compounds mentioned in retrieved papers.
+- Explore source-linked genes, proteins, biomarkers, pathways, and compounds with canonical catalogue entries, exact evidence passages, and clearly labelled paper-level co-occurrences.
 - Offer English and Norwegian UI labels and safety disclaimers.
 - Offer English plain-language and research-detail summary modes.
 - Keep experimental Norwegian generation available to developers, but disabled by default until it passes linguistic and biomedical review.

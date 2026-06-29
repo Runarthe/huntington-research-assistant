@@ -1,4 +1,4 @@
-# Experimental Research Map
+# Experimental Entity Explorer
 
 A knowledge graph represents named things as nodes and relationships as edges. In this project, a paper and a catalogued biomedical term are nodes. An edge currently means only that the term was **mentioned in** the paper's title or abstract.
 
@@ -14,18 +14,24 @@ This can help readers find papers connected by recurring terminology. It does no
 
 ## Current Implementation
 
-- The research map has its own Streamlit tab and Europe PMC search state.
+- The entity explorer has its own Streamlit tab and Europe PMC search state.
 - Entity extraction is deterministic and uses a small reviewed-in-code vocabulary.
-- Initial entity types are genes, proteins, pathways or biological processes, and compounds.
+- Entity types are genes, proteins, biomarkers, pathways or biological processes, and compounds.
+- Every entity has a stable internal catalogue ID, canonical name, aliases, and catalogue version.
 - Every mention keeps the exact title or abstract sentence, matched alias, paper title, and Europe PMC source URL.
+- Every mention reports its deterministic extraction method and confidence in the alias match. This confidence applies only to detecting the term, not to any scientific claim.
+- The entity view lists other terms found in the same source papers. These are paper-level co-occurrences, not asserted biological relationships.
 - The graph is bounded for readability and has a source-evidence view beneath it.
 - No LLM is used for entity extraction or relationship generation.
 
-The controlled vocabulary is defined in `src/hra/knowledge_graph.py`. New aliases should be specific enough to avoid substring matches and ambiguous biomedical meanings.
+The controlled vocabulary is defined in `src/hra/knowledge_graph.py`. New aliases should be specific enough to avoid substring matches and ambiguous biomedical meanings. Short or case-sensitive aliases need explicit regression cases in `tests/fixtures/entity_extraction_cases.json`.
+
+The current fixture is synthetic and intended to catch deterministic regressions. It is not a biomedical ground-truth set and does not replace review against representative source abstracts.
 
 ## Important Limitations
 
 - A mention is not evidence of a biological relationship.
+- Co-occurrence in a paper does not establish causation, interaction, treatment effect, clinical relevance, or scientific consensus.
 - The vocabulary is intentionally small, so many valid entities will be missed.
 - Alias matching cannot resolve every gene/protein ambiguity.
 - The tool does not rank evidence quality or identify scientific consensus.

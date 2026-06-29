@@ -44,7 +44,11 @@ from hra.export import (
 )
 from hra.filters import filter_local_reading_state
 from hra.i18n import LANGUAGE_OPTIONS, translate
-from hra.knowledge_graph import build_research_map, graphviz_dot
+from hra.knowledge_graph import (
+    build_entity_connections,
+    build_research_map,
+    graphviz_dot,
+)
 from hra.models import ClinicalTrial, ClinicalTrialResponse, Paper, SearchResponse
 from hra.norwegian_language import SummaryIntegrityError
 from hra.query import (
@@ -1149,6 +1153,7 @@ def run_knowledge_graph(language: str) -> None:
     type_labels = {
         "gene": translate(language, "entity_gene"),
         "protein": translate(language, "entity_protein"),
+        "biomarker": translate(language, "entity_biomarker"),
         "pathway": translate(language, "entity_pathway"),
         "compound": translate(language, "entity_compound"),
     }
@@ -1170,8 +1175,10 @@ def run_knowledge_graph(language: str) -> None:
         for mention in research_map.mentions
         if mention.entity_type in selected_types
     ]
+    entity_catalog = {entity.id: entity for entity in research_map.entities}
     visible_entities = {
-        mention.entity_id: mention for mention in visible_mentions
+        mention.entity_id: entity_catalog[mention.entity_id]
+        for mention in visible_mentions
     }
 
     entity_col, paper_col, mention_col = st.columns(3)
@@ -1197,7 +1204,7 @@ def run_knowledge_graph(language: str) -> None:
         translate(language, "knowledge_inspect_entity"),
         options=entity_options,
         format_func=lambda entity_id: (
-            f"{visible_entities[entity_id].entity_name} "
+            f"{visible_entities[entity_id].name} "
             f"({type_labels[visible_entities[entity_id].entity_type]})"
         ),
         key=f"knowledge-selected-entity-{language}",
@@ -1208,7 +1215,45 @@ def run_knowledge_graph(language: str) -> None:
         if mention.entity_id == selected_entity_id
     ]
 
-    selected_entity_name = visible_entities[selected_entity_id].entity_name
+    selected_entity = visible_entities[selected_entity_id]
+    selected_entity_name = selected_entity.name
+    st.caption(
+        f"{translate(language, 'knowledge_catalog_id')}: `{selected_entity.id}` | "
+        f"{translate(language, 'knowledge_catalog_version')}: "
+        f"`{research_map.catalog_version}`"
+    )
+    st.caption(
+        f"{translate(language, 'knowledge_aliases')}: "
+        f"{', '.join(selected_entity.aliases)}"
+    )
+
+    st.subheader(translate(language, "knowledge_related_title"))
+    st.caption(translate(language, "knowledge_related_help"))
+    related_entities = [
+        connection
+        for connection in build_entity_connections(research_map, selected_entity_id)
+        if connection.entity_type in selected_types
+    ]
+    if related_entities:
+        st.dataframe(
+            [
+                {
+                    translate(language, "knowledge_related_entity"): connection.entity_name,
+                    translate(language, "knowledge_entity_type"): type_labels[
+                        connection.entity_type
+                    ],
+                    translate(language, "knowledge_shared_papers"): (
+                        connection.shared_paper_count
+                    ),
+                }
+                for connection in related_entities
+            ],
+            hide_index=True,
+            use_container_width=True,
+        )
+    else:
+        st.info(translate(language, "knowledge_related_none"))
+
     st.subheader(
         translate(
             language,
@@ -1247,7 +1292,11 @@ def run_knowledge_graph(language: str) -> None:
             f"{translate(language, 'knowledge_matched_term')}: "
             f"`{mention.matched_alias}` | "
             f"{translate(language, 'knowledge_evidence_location')}: "
-            f"{translate(language, f'knowledge_location_{mention.evidence_location}')}"
+            f"{translate(language, f'knowledge_location_{mention.evidence_location}')} | "
+            f"{translate(language, 'knowledge_extraction_method')}: "
+            f"{translate(language, f'knowledge_method_{mention.extraction_method}')} | "
+            f"{translate(language, 'knowledge_confidence')}: "
+            f"{translate(language, f'knowledge_confidence_{mention.mention_confidence}')}"
         )
 
 

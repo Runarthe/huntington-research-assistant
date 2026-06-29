@@ -84,7 +84,7 @@ Lab work should live under an isolated `labs/` area or optional package. It must
 - Resolve selected literature entities to stable external identifiers before running model inference.
 - Record model version, parameters, input, output, licence, runtime, and provenance for every experiment.
 
-## v0.5: Structured Research Map and Protein Intelligence Prototype
+## v0.5: Structured Research Map and Protein Intelligence Prototype (In Progress)
 
 ### Research Map
 

@@ -4,6 +4,17 @@ All notable project changes are documented here. The project follows semantic ve
 
 ## [Unreleased]
 
+### Added
+
+- A v0.5 entity-explorer foundation with versioned canonical entities, aliases, extraction method, and mention-confidence labels.
+- Biomarkers as a distinct catalogued entity type, beginning with neurofilament light.
+- Source-paper co-occurrence tables that help users find related terms without asserting biological relationships.
+- An eight-case maintainer-reviewed synthetic entity-extraction fixture with positive and negative alias examples.
+
+### Safety
+
+- Entity co-occurrence is labelled only as appearing in the same source papers and never as evidence of causation, efficacy, or clinical relevance.
+
 ## [0.4.0] - 2026-06-29
 
 ### Added
