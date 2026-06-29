@@ -1198,7 +1198,7 @@ def run_knowledge_graph(language: str) -> None:
 
     entity_options = sorted(
         visible_entities,
-        key=lambda entity_id: visible_entities[entity_id].entity_name.casefold(),
+        key=lambda entity_id: visible_entities[entity_id].name.casefold(),
     )
     selected_entity_id = st.selectbox(
         translate(language, "knowledge_inspect_entity"),
