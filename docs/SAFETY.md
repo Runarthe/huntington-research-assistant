@@ -40,6 +40,7 @@ The app must always show a prominent disclaimer explaining that it is not medica
 - ClinicalTrials.gov receives tracker filter queries.
 - Local Ollama summaries should remain local by default.
 - SQLite history must not be treated as a place for sensitive or medical data.
+- Reading-list and seen-paper states are local workflow metadata and must not be interpreted as health information or scientific endorsement.
 - New telemetry or analytics must be documented and opt-in before introduction.
 
 ## Reporting Safety Issues

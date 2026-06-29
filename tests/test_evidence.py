@@ -1,11 +1,36 @@
 import csv
 import io
+import json
+from pathlib import Path
+
+import pytest
 
 from hra.evidence import (
     evidence_profiles_to_csv,
     extract_evidence_profile,
 )
 from hra.models import CorrectionNotice, Paper
+
+
+CLASSIFICATION_CASES = json.loads(
+    (Path(__file__).parent / "fixtures" / "evidence_classification_cases.json").read_text(
+        encoding="utf-8"
+    )
+)
+
+
+@pytest.mark.parametrize(
+    "case",
+    CLASSIFICATION_CASES,
+    ids=[case["id"] for case in CLASSIFICATION_CASES],
+)
+def test_reviewed_classification_fixture(case: dict[str, object]) -> None:
+    paper = Paper.model_validate(case["paper"])
+
+    profile = extract_evidence_profile(paper)
+
+    assert profile.study_design == case["expected_design"]
+    assert profile.research_contexts == case["expected_contexts"]
 
 
 def test_evidence_profile_detects_design_contexts_and_exact_passages() -> None:

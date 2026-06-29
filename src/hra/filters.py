@@ -39,6 +39,26 @@ def sort_papers_by_year(papers: Iterable[Paper], descending: bool = True) -> lis
     )
 
 
+def filter_local_reading_state(
+    papers: Iterable[Paper],
+    *,
+    reading_list_ids: set[str],
+    seen_paper_ids: set[str],
+    hide_saved: bool,
+    hide_seen: bool,
+) -> tuple[list[Paper], int]:
+    """Hide explicit local reading states without changing provider queries."""
+
+    source = list(papers)
+    filtered = [
+        paper
+        for paper in source
+        if not (hide_saved and paper.id in reading_list_ids)
+        and not (hide_seen and paper.id in seen_paper_ids)
+    ]
+    return filtered, len(source) - len(filtered)
+
+
 def timeline_counts(papers: Iterable[Paper]) -> list[dict[str, int]]:
     counts = Counter(paper.year for paper in papers if paper.year is not None)
     return [{"year": year, "papers": counts[year]} for year in sorted(counts)]

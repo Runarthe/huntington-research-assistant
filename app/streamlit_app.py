@@ -42,6 +42,7 @@ from hra.export import (
     papers_to_csv,
     trials_to_csv,
 )
+from hra.filters import filter_local_reading_state
 from hra.i18n import LANGUAGE_OPTIONS, translate
 from hra.knowledge_graph import build_research_map, graphviz_dot
 from hra.models import ClinicalTrial, ClinicalTrialResponse, Paper, SearchResponse
@@ -199,6 +200,17 @@ def safe_reading_list_papers(cache: SearchCache | None) -> list[Paper]:
         return []
 
 
+def safe_seen_paper_ids(cache: SearchCache | None) -> set[str]:
+    if cache is None:
+        return set()
+
+    try:
+        return cache.seen_paper_ids()
+    except (OSError, sqlite3.Error) as exc:
+        st.warning(f"Seen-paper history is unavailable. Details: {exc}")
+        return set()
+
+
 def render_paper(
     paper: Paper,
     index: int,
@@ -209,6 +221,7 @@ def render_paper(
     summary_mode: str,
     cache: SearchCache | None,
     reading_list_ids: set[str],
+    seen_paper_ids: set[str],
 ) -> None:
     summaries = get_summary_store(st.session_state)
     summary_key = (
@@ -312,6 +325,17 @@ def render_paper(
             safe_cache_write(cache, "add_to_reading_list", paper)
             st.rerun()
 
+    paper_is_seen = paper.id in seen_paper_ids
+    if st.button(
+        translate(language, "mark_as_unseen" if paper_is_seen else "mark_as_seen"),
+        key=f"{panel_key}-seen-state-{paper.id}-{index}",
+        disabled=cache is None,
+        use_container_width=True,
+    ):
+        action = "mark_paper_unseen" if paper_is_seen else "mark_paper_seen"
+        safe_cache_write(cache, action, paper.id)
+        st.rerun()
+
     with st.expander(translate(language, "show_export_text")):
         st.code(paper_export_text, language="text")
 
@@ -387,6 +411,7 @@ def render_results(
     summary_mode: str,
     cache: SearchCache | None,
     reading_list_ids: set[str],
+    seen_paper_ids: set[str],
 ) -> None:
     if not papers:
         st.info(translate(language, "no_papers"))
@@ -404,6 +429,7 @@ def render_results(
                 summary_mode,
                 cache,
                 reading_list_ids,
+                seen_paper_ids,
             )
 
 
@@ -554,6 +580,16 @@ def run_search_panel(
             value=False,
             key=f"{panel_key}-open-access",
         )
+        hide_saved_papers = st.checkbox(
+            translate(language, "hide_saved_papers"),
+            value=False,
+            key=f"{panel_key}-hide-saved",
+        )
+        hide_seen_papers = st.checkbox(
+            translate(language, "hide_seen_papers"),
+            value=False,
+            key=f"{panel_key}-hide-seen",
+        )
         page_size = st.selectbox(
             translate(language, "results_to_show"),
             options=[10, 25, 50],
@@ -595,6 +631,8 @@ def run_search_panel(
             "year_range": (int(year_range[0]), int(year_range[1])),
             "page_size": int(page_size),
             "sources": list(selected_sources),
+            "hide_saved_papers": bool(hide_saved_papers),
+            "hide_seen_papers": bool(hide_seen_papers),
         }
         st.session_state[f"{panel_key}-page"] = 1
         st.session_state[f"{panel_key}-cursor-history"] = ["*"]
@@ -657,8 +695,18 @@ def run_search_panel(
             papers.extend(pubmed_response.papers)
             total_results += pubmed_response.total_results or len(pubmed_response.papers)
 
-    papers = deduplicate_papers(papers)[: int(request["page_size"])]
+    papers = deduplicate_papers(papers)
     safe_cache_write(cache, "upsert_papers", papers)
+    reading_list_ids = safe_reading_list_ids(cache)
+    seen_paper_ids = safe_seen_paper_ids(cache)
+    papers, locally_hidden_count = filter_local_reading_state(
+        papers,
+        reading_list_ids=reading_list_ids,
+        seen_paper_ids=seen_paper_ids,
+        hide_saved=bool(request.get("hide_saved_papers", False)),
+        hide_seen=bool(request.get("hide_seen_papers", False)),
+    )
+    papers = papers[: int(request["page_size"])]
     if next_cursor_mark and len(cursor_history) == page:
         cursor_history.append(next_cursor_mark)
         st.session_state[f"{panel_key}-cursor-history"] = cursor_history
@@ -687,6 +735,10 @@ def run_search_panel(
             shown=len(papers),
         )
     )
+    if locally_hidden_count:
+        st.caption(
+            translate(language, "local_hidden_papers", count=locally_hidden_count)
+        )
     st.info(
         translate(
             language,
@@ -714,7 +766,6 @@ def run_search_panel(
 
     render_paper_exports(papers, panel_key, language)
     st.subheader(translate(language, "papers"))
-    reading_list_ids = safe_reading_list_ids(cache)
     render_results(
         papers,
         panel_key,
@@ -724,6 +775,7 @@ def run_search_panel(
         summary_mode,
         cache,
         reading_list_ids,
+        seen_paper_ids,
     )
     render_pagination(panel_key, page, total_pages, language, position="bottom")
 
@@ -925,6 +977,7 @@ def run_reading_list(
         summary_mode,
         cache,
         {paper.id for paper in papers},
+        safe_seen_paper_ids(cache),
     )
 
 

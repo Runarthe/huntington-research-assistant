@@ -59,6 +59,20 @@ def test_search_cache_manages_reading_list() -> None:
     assert [paper.id for paper in cache.reading_list_papers()] == ["p2"]
 
 
+def test_search_cache_manages_explicit_seen_state() -> None:
+    cache = SearchCache(temp_cache_dir() / "cache.sqlite3")
+
+    cache.mark_paper_seen("p1")
+    cache.mark_paper_seen("p2")
+    cache.mark_paper_seen("p1")
+
+    assert cache.seen_paper_ids() == {"p1", "p2"}
+
+    cache.mark_paper_unseen("p1")
+
+    assert cache.seen_paper_ids() == {"p2"}
+
+
 def test_search_cache_falls_back_when_default_dir_is_unusable(monkeypatch) -> None:
     blocker = temp_cache_dir() / "not-a-directory"
     blocker.write_text("blocks mkdir", encoding="utf-8")

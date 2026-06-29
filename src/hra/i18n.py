@@ -26,6 +26,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "category_filters": "Category filters",
         "publication_year": "Publication year",
         "open_access_only": "Open access only",
+        "hide_saved_papers": "Hide papers already in reading list",
+        "hide_seen_papers": "Hide papers marked as seen",
+        "local_hidden_papers": "Hidden by local reading filters on this page: {count}",
         "results_to_show": "Articles per page",
         "search_literature": "Search literature",
         "search_europe_pmc": "Search Europe PMC",
@@ -74,6 +77,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "show_export_text": "View details text",
         "add_to_reading_list": "Add to reading list",
         "remove_from_reading_list": "Remove from reading list",
+        "mark_as_seen": "Mark as seen",
+        "mark_as_unseen": "Mark as not seen",
         "reading_list_title": "Saved reading list",
         "reading_list_intro": (
             "Save papers locally for later reading. The list is stored only in your local "
@@ -268,6 +273,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "category_filters": "Kategorifiltre",
         "publication_year": "Publikasjonsår",
         "open_access_only": "Kun åpen tilgang",
+        "hide_saved_papers": "Skjul publikasjoner som allerede er i leselisten",
+        "hide_seen_papers": "Skjul publikasjoner som er merket som sett",
+        "local_hidden_papers": "Skjult av lokale lesefiltre på denne siden: {count}",
         "results_to_show": "Artikler per side",
         "search_literature": "Søk i litteraturkilder",
         "search_europe_pmc": "Søk i Europe PMC",
@@ -316,6 +324,8 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "show_export_text": "Vis detaljtekst",
         "add_to_reading_list": "Legg til i leseliste",
         "remove_from_reading_list": "Fjern fra leseliste",
+        "mark_as_seen": "Merk som sett",
+        "mark_as_unseen": "Merk som ikke sett",
         "reading_list_title": "Lagret leseliste",
         "reading_list_intro": (
             "Lagre publikasjoner lokalt for senere lesing. Listen lagres bare i lokal cache "

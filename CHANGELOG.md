@@ -11,10 +11,13 @@ All notable project changes are documented here. The project follows semantic ve
 - Exact abstract passages that may describe results, limitations, or uncertainty, with no generated interpretation.
 - Detailed Evidence Explorer CSV export with source URLs and extraction output.
 - An isolated Digital Biology Lab foundation with learning documentation and an experiment-manifest example.
+- Explicit local "seen" state plus search filters for hiding saved or previously seen papers.
+- A 12-case maintainer-reviewed classification fixture covering human, animal, cell, molecular, computational, review, and unknown contexts.
 
 ### Changed
 
 - Evidence Explorer context detection now avoids treating background patient mentions as study populations and uses a neutral molecular/laboratory fallback when the experimental system is not otherwise reported.
+- Search and paper-card controls were verified at a 390 x 844 emulated mobile viewport; physical-device and screen-reader checks remain outstanding.
 
 ### Safety
 
