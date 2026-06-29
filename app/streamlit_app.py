@@ -30,6 +30,11 @@ from hra.clients.clinical_trials import (
 from hra.clients.europe_pmc import EuropePMCClient, EuropePMCError
 from hra.clients.pubmed import PubMedClient, PubMedError
 from hra.deduplication import deduplicate_papers
+from hra.evidence import (
+    EvidenceProfile,
+    build_evidence_profiles,
+    evidence_profiles_to_csv,
+)
 from hra.export import (
     paper_text_filename,
     paper_to_text,
@@ -37,6 +42,7 @@ from hra.export import (
     papers_to_csv,
     trials_to_csv,
 )
+from hra.filters import filter_local_reading_state
 from hra.i18n import LANGUAGE_OPTIONS, translate
 from hra.knowledge_graph import build_research_map, graphviz_dot
 from hra.models import ClinicalTrial, ClinicalTrialResponse, Paper, SearchResponse
@@ -194,6 +200,17 @@ def safe_reading_list_papers(cache: SearchCache | None) -> list[Paper]:
         return []
 
 
+def safe_seen_paper_ids(cache: SearchCache | None) -> set[str]:
+    if cache is None:
+        return set()
+
+    try:
+        return cache.seen_paper_ids()
+    except (OSError, sqlite3.Error) as exc:
+        st.warning(f"Seen-paper history is unavailable. Details: {exc}")
+        return set()
+
+
 def render_paper(
     paper: Paper,
     index: int,
@@ -204,6 +221,7 @@ def render_paper(
     summary_mode: str,
     cache: SearchCache | None,
     reading_list_ids: set[str],
+    seen_paper_ids: set[str],
 ) -> None:
     summaries = get_summary_store(st.session_state)
     summary_key = (
@@ -307,6 +325,17 @@ def render_paper(
             safe_cache_write(cache, "add_to_reading_list", paper)
             st.rerun()
 
+    paper_is_seen = paper.id in seen_paper_ids
+    if st.button(
+        translate(language, "mark_as_unseen" if paper_is_seen else "mark_as_seen"),
+        key=f"{panel_key}-seen-state-{paper.id}-{index}",
+        disabled=cache is None,
+        use_container_width=True,
+    ):
+        action = "mark_paper_unseen" if paper_is_seen else "mark_paper_seen"
+        safe_cache_write(cache, action, paper.id)
+        st.rerun()
+
     with st.expander(translate(language, "show_export_text")):
         st.code(paper_export_text, language="text")
 
@@ -382,6 +411,7 @@ def render_results(
     summary_mode: str,
     cache: SearchCache | None,
     reading_list_ids: set[str],
+    seen_paper_ids: set[str],
 ) -> None:
     if not papers:
         st.info(translate(language, "no_papers"))
@@ -399,6 +429,7 @@ def render_results(
                 summary_mode,
                 cache,
                 reading_list_ids,
+                seen_paper_ids,
             )
 
 
@@ -549,6 +580,16 @@ def run_search_panel(
             value=False,
             key=f"{panel_key}-open-access",
         )
+        hide_saved_papers = st.checkbox(
+            translate(language, "hide_saved_papers"),
+            value=False,
+            key=f"{panel_key}-hide-saved",
+        )
+        hide_seen_papers = st.checkbox(
+            translate(language, "hide_seen_papers"),
+            value=False,
+            key=f"{panel_key}-hide-seen",
+        )
         page_size = st.selectbox(
             translate(language, "results_to_show"),
             options=[10, 25, 50],
@@ -590,6 +631,8 @@ def run_search_panel(
             "year_range": (int(year_range[0]), int(year_range[1])),
             "page_size": int(page_size),
             "sources": list(selected_sources),
+            "hide_saved_papers": bool(hide_saved_papers),
+            "hide_seen_papers": bool(hide_seen_papers),
         }
         st.session_state[f"{panel_key}-page"] = 1
         st.session_state[f"{panel_key}-cursor-history"] = ["*"]
@@ -652,8 +695,18 @@ def run_search_panel(
             papers.extend(pubmed_response.papers)
             total_results += pubmed_response.total_results or len(pubmed_response.papers)
 
-    papers = deduplicate_papers(papers)[: int(request["page_size"])]
+    papers = deduplicate_papers(papers)
     safe_cache_write(cache, "upsert_papers", papers)
+    reading_list_ids = safe_reading_list_ids(cache)
+    seen_paper_ids = safe_seen_paper_ids(cache)
+    papers, locally_hidden_count = filter_local_reading_state(
+        papers,
+        reading_list_ids=reading_list_ids,
+        seen_paper_ids=seen_paper_ids,
+        hide_saved=bool(request.get("hide_saved_papers", False)),
+        hide_seen=bool(request.get("hide_seen_papers", False)),
+    )
+    papers = papers[: int(request["page_size"])]
     if next_cursor_mark and len(cursor_history) == page:
         cursor_history.append(next_cursor_mark)
         st.session_state[f"{panel_key}-cursor-history"] = cursor_history
@@ -682,6 +735,10 @@ def run_search_panel(
             shown=len(papers),
         )
     )
+    if locally_hidden_count:
+        st.caption(
+            translate(language, "local_hidden_papers", count=locally_hidden_count)
+        )
     st.info(
         translate(
             language,
@@ -709,7 +766,6 @@ def run_search_panel(
 
     render_paper_exports(papers, panel_key, language)
     st.subheader(translate(language, "papers"))
-    reading_list_ids = safe_reading_list_ids(cache)
     render_results(
         papers,
         panel_key,
@@ -719,6 +775,7 @@ def run_search_panel(
         summary_mode,
         cache,
         reading_list_ids,
+        seen_paper_ids,
     )
     render_pagination(panel_key, page, total_pages, language, position="bottom")
 
@@ -920,7 +977,123 @@ def run_reading_list(
         summary_mode,
         cache,
         {paper.id for paper in papers},
+        safe_seen_paper_ids(cache),
     )
+
+
+def run_evidence_explorer(cache: SearchCache | None, language: str) -> None:
+    st.subheader(translate(language, "evidence_title"))
+    st.info(translate(language, "evidence_intro"))
+    st.caption(translate(language, "evidence_scope"))
+    if cache is None:
+        st.warning(translate(language, "reading_list_unavailable"))
+        return
+
+    papers = safe_reading_list_papers(cache)
+    if len(papers) < 2:
+        st.warning(translate(language, "evidence_need_two"))
+        return
+
+    papers_by_id = {paper.id: paper for paper in papers}
+
+    def paper_label(paper_id: str) -> str:
+        paper = papers_by_id[paper_id]
+        year = f" ({paper.year})" if paper.year else ""
+        return f"{paper.title}{year}"
+
+    selected_ids = st.multiselect(
+        translate(language, "evidence_choose_papers"),
+        options=list(papers_by_id),
+        default=list(papers_by_id)[:2],
+        format_func=paper_label,
+        max_selections=5,
+        help=translate(language, "evidence_choose_help"),
+        key="evidence-selected-papers",
+    )
+    if len(selected_ids) < 2:
+        st.warning(translate(language, "evidence_select_two"))
+        return
+
+    selected_papers = [papers_by_id[paper_id] for paper_id in selected_ids]
+    profiles = build_evidence_profiles(selected_papers)
+
+    def study_design_label(study_design: str) -> str:
+        return translate(language, f"evidence_design_{study_design}")
+
+    def context_labels(contexts: list[str]) -> str:
+        if not contexts:
+            return translate(language, "evidence_context_not_identified")
+        return ", ".join(
+            translate(language, f"evidence_context_{context}") for context in contexts
+        )
+
+    def record_status(profile: EvidenceProfile) -> str:
+        if profile.is_retracted:
+            return translate(language, "evidence_status_retracted")
+        if profile.has_correction:
+            return translate(language, "evidence_status_corrected")
+        return translate(language, "evidence_status_clear")
+
+    st.subheader(translate(language, "evidence_comparison"))
+    st.dataframe(
+        [
+            {
+                translate(language, "evidence_paper"): profile.title,
+                translate(language, "year"): profile.year or "-",
+                translate(language, "evidence_study_design"): study_design_label(
+                    profile.study_design
+                ),
+                translate(language, "evidence_contexts"): context_labels(
+                    profile.research_contexts
+                ),
+                translate(language, "evidence_source"): profile.source_provider,
+                translate(language, "evidence_source_record"): profile.source_url,
+                translate(language, "evidence_record_status"): record_status(profile),
+            }
+            for profile in profiles
+        ],
+        column_config={
+            translate(language, "evidence_source_record"): st.column_config.LinkColumn(
+                translate(language, "evidence_source_record"),
+                display_text=translate(language, "evidence_open_source"),
+            )
+        },
+        hide_index=True,
+        use_container_width=True,
+    )
+    st.download_button(
+        translate(language, "evidence_download_csv"),
+        data=evidence_profiles_to_csv(profiles).encode("utf-8-sig"),
+        file_name="hra-evidence-comparison.csv",
+        mime="text/csv",
+        key="evidence-comparison-download",
+    )
+
+    st.subheader(translate(language, "evidence_passages"))
+    st.caption(translate(language, "evidence_passage_note"))
+    for profile in profiles:
+        with st.expander(profile.title):
+            st.markdown(f"**{translate(language, 'evidence_outcome_passages')}**")
+            if profile.outcome_passages:
+                for passage in profile.outcome_passages:
+                    st.write(passage)
+            else:
+                st.caption(translate(language, "evidence_no_outcome_passages"))
+
+            st.markdown(f"**{translate(language, 'evidence_limitation_passages')}**")
+            if profile.limitation_passages:
+                for passage in profile.limitation_passages:
+                    st.write(passage)
+            else:
+                st.caption(translate(language, "evidence_no_limitation_passages"))
+
+            if profile.source_url:
+                st.link_button(
+                    translate(language, "source_record"),
+                    profile.source_url,
+                )
+            else:
+                st.warning(translate(language, "evidence_source_unavailable"))
 
 
 def run_knowledge_graph(language: str) -> None:
@@ -1119,10 +1292,18 @@ def main() -> None:
 
     cache = get_cache()
 
-    search_tab, reading_list_tab, clinical_tab, recent_tab, knowledge_tab = st.tabs(
+    (
+        search_tab,
+        reading_list_tab,
+        evidence_tab,
+        clinical_tab,
+        recent_tab,
+        knowledge_tab,
+    ) = st.tabs(
         [
             translate(language, "search_tab"),
             translate(language, "reading_list_tab"),
+            translate(language, "evidence_tab"),
             translate(language, "clinical_tab"),
             translate(language, "recent_tab"),
             translate(language, "knowledge_tab"),
@@ -1153,6 +1334,9 @@ def main() -> None:
             language=language,
             summary_mode=summary_mode,
         )
+
+    with evidence_tab:
+        run_evidence_explorer(cache, language)
 
     with recent_tab:
         run_search_panel(

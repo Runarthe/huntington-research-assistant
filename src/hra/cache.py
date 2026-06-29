@@ -80,6 +80,14 @@ class SearchCache:
                 )
                 """
             )
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS seen_papers (
+                    paper_id TEXT PRIMARY KEY,
+                    seen_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
 
     def record_search(self, query: str, expanded_query: str) -> None:
         with self._connect() as connection:
@@ -174,3 +182,26 @@ class SearchCache:
                 """
             ).fetchall()
         return [Paper.model_validate(json.loads(row[0])) for row in rows]
+
+    def mark_paper_seen(self, paper_id: str) -> None:
+        with self._connect() as connection:
+            connection.execute(
+                """
+                INSERT INTO seen_papers (paper_id, seen_at)
+                VALUES (?, CURRENT_TIMESTAMP)
+                ON CONFLICT(paper_id) DO UPDATE SET seen_at = CURRENT_TIMESTAMP
+                """,
+                (paper_id,),
+            )
+
+    def mark_paper_unseen(self, paper_id: str) -> None:
+        with self._connect() as connection:
+            connection.execute(
+                "DELETE FROM seen_papers WHERE paper_id = ?",
+                (paper_id,),
+            )
+
+    def seen_paper_ids(self) -> set[str]:
+        with self._connect() as connection:
+            rows = connection.execute("SELECT paper_id FROM seen_papers").fetchall()
+        return {row[0] for row in rows}

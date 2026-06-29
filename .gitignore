@@ -20,3 +20,6 @@ build/
 .DS_Store
 README.release.md
 CONTEXT.md
+labs/**/.env
+labs/**/cache/
+labs/**/outputs/

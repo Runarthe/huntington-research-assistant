@@ -31,6 +31,8 @@ The app must always show a prominent disclaimer explaining that it is not medica
 - Registered studies must link to their ClinicalTrials.gov record.
 - Registry status must be presented as reported metadata, not as evidence that an intervention is safe or effective.
 - Users must be reminded that study status and registry details can change.
+- Evidence Explorer classifications must remain conservative and rule-based.
+- Automatically highlighted result or limitation passages must be copied from the abstract, linked to the source record, and must not be presented as an assessment of evidence strength, study quality, clinical relevance, or treatment effectiveness.
 
 ## Data Handling
 
@@ -38,6 +40,7 @@ The app must always show a prominent disclaimer explaining that it is not medica
 - ClinicalTrials.gov receives tracker filter queries.
 - Local Ollama summaries should remain local by default.
 - SQLite history must not be treated as a place for sensitive or medical data.
+- Reading-list and seen-paper states are local workflow metadata and must not be interpreted as health information or scientific endorsement.
 - New telemetry or analytics must be documented and opt-in before introduction.
 
 ## Reporting Safety Issues

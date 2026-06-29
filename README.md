@@ -2,7 +2,7 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The current release is **v0.3.0**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
+The current release is **v0.4.0**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
 
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
@@ -30,6 +30,9 @@ This project is not affiliated with any medical association, including the Norwe
 - Download each paper's metadata and abstract, with direct open-access PDF links where Europe PMC provides them.
 - Export the visible publication page as CSV or BibTeX with source links.
 - Save papers to a local reading list and export the saved set for later review.
+- Mark papers as seen and optionally hide saved or seen papers from search results.
+- Compare two to five saved papers in a source-linked Evidence Explorer with conservative study-design and research-context signals.
+- Export Evidence Explorer comparisons and inspect exact abstract passages used as navigation aids.
 - Show a publication dashboard with yearly Europe PMC result counts, the selected-period total, and the current-year count.
 - Track registered Huntington's disease studies by status, phase, country, intervention, sponsor, and registry update date.
 - Export visible registered studies as CSV.
@@ -41,6 +44,7 @@ This project is not affiliated with any medical association, including the Norwe
 - Optionally summarize abstracts with a local Ollama model such as Qwen.
 - Keep a small local SQLite cache/history.
 - Continue to work without any LLM by showing retrieved papers only.
+- Keep optional scientific-AI experiments isolated in a documented Digital Biology Lab that is not required by the app.
 
 Norwegian UI labels and safety information are available. Norwegian translation of abstracts and generated summaries is planned for a later update; the current experimental implementation is disabled by default.
 
@@ -163,13 +167,15 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-Near-term priorities include improving the provider-comparison workflow, Norwegian refinement, accessibility testing, and stronger summary evaluation. AlphaFold, BioNeMo, autonomous agents, personalized medical features, and automated claims about study suitability remain out of scope.
+Near-term priorities include a more structured, evidence-backed research map, reviewed entity extraction, Norwegian refinement, accessibility testing, and stronger summary evaluation. Optional BioNeMo, NIM, Blueprint, and protein-model experiments remain in a separate Digital Biology Lab and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 Norwegian quality and accessibility are documented in [docs/NORWEGIAN_LANGUAGE.md](docs/NORWEGIAN_LANGUAGE.md) and [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
 
 The experimental research map and its strict "mentioned in" semantics are documented in [docs/KNOWLEDGE_GRAPH.md](docs/KNOWLEDGE_GRAPH.md).
+
+The optional scientific-AI learning track is documented in [docs/DIGITAL_BIOLOGY_LAB.md](docs/DIGITAL_BIOLOGY_LAB.md) and isolated under [`labs/`](labs/README.md).
 
 Maintainers can use [docs/RELEASE_CHECKLIST.md](docs/RELEASE_CHECKLIST.md) before creating a GitHub release.
 

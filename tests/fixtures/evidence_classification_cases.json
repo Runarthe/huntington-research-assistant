@@ -1,0 +1,130 @@
+[
+  {
+    "id": "randomized-trial",
+    "paper": {
+      "id": "fixture-rct",
+      "title": "A randomized controlled trial of a biomarker intervention",
+      "publication_types": ["Randomized Controlled Trial", "Journal Article"],
+      "abstract": "We enrolled 80 participants in a randomized controlled trial."
+    },
+    "expected_design": "randomized_controlled_trial",
+    "expected_contexts": ["human_participants"]
+  },
+  {
+    "id": "systematic-review",
+    "paper": {
+      "id": "fixture-systematic-review",
+      "title": "A systematic review of Huntington disease biomarkers",
+      "publication_types": ["Systematic Review", "Review"]
+    },
+    "expected_design": "systematic_review",
+    "expected_contexts": []
+  },
+  {
+    "id": "review-mentions-trials",
+    "paper": {
+      "id": "fixture-review",
+      "title": "Review of emerging interventions",
+      "publication_types": ["Review", "Journal Article"],
+      "abstract": "This review discusses ongoing clinical trials and preclinical research."
+    },
+    "expected_design": "review",
+    "expected_contexts": []
+  },
+  {
+    "id": "animal-background-patient-mention",
+    "paper": {
+      "id": "fixture-mouse",
+      "title": "Mutant huntingtin expression in BACHD mice",
+      "publication_types": ["Journal Article"],
+      "abstract": "Patients with Huntington disease can have motor changes. We reduced mutant huntingtin expression in BACHD mice."
+    },
+    "expected_design": "preclinical_study",
+    "expected_contexts": ["animal_model"]
+  },
+  {
+    "id": "cell-model",
+    "paper": {
+      "id": "fixture-cells",
+      "title": "Huntingtin aggregation in cultured neuronal cells",
+      "publication_types": ["Journal Article"],
+      "abstract": "We measured protein aggregation in cultured neuronal cells."
+    },
+    "expected_design": "preclinical_study",
+    "expected_contexts": ["cell_or_tissue_model"]
+  },
+  {
+    "id": "human-donors",
+    "paper": {
+      "id": "fixture-donors",
+      "title": "DNA methylation in donor brain samples",
+      "publication_types": ["Journal Article"],
+      "abstract": "We profiled samples from 20 Huntington disease and 22 control donors."
+    },
+    "expected_design": "human_study",
+    "expected_contexts": ["human_participants"]
+  },
+  {
+    "id": "molecular-fallback",
+    "paper": {
+      "id": "fixture-crispr",
+      "title": "Silencing of HTT using CRISPR epigenetic editing",
+      "publication_types": ["Journal Article"],
+      "abstract": "We targeted DNA methylation at the HTT locus and measured gene silencing."
+    },
+    "expected_design": "laboratory_study",
+    "expected_contexts": ["molecular_experiment"]
+  },
+  {
+    "id": "computational-model",
+    "paper": {
+      "id": "fixture-computational",
+      "title": "Computational analysis of huntingtin interactions",
+      "publication_types": ["Journal Article"],
+      "abstract": "We performed an in silico analysis and molecular dynamics simulation."
+    },
+    "expected_design": "journal_article",
+    "expected_contexts": ["computational_model"]
+  },
+  {
+    "id": "preprint-animal-study",
+    "paper": {
+      "id": "fixture-preprint",
+      "title": "Huntingtin lowering in a mouse model",
+      "publication_types": ["Preprint"],
+      "abstract": "The candidate was evaluated in a mouse model."
+    },
+    "expected_design": "preclinical_study",
+    "expected_contexts": ["animal_model"]
+  },
+  {
+    "id": "no-abstract",
+    "paper": {
+      "id": "fixture-no-abstract",
+      "title": "Huntington disease research report",
+      "publication_types": ["Journal Article"]
+    },
+    "expected_design": "journal_article",
+    "expected_contexts": []
+  },
+  {
+    "id": "meta-analysis",
+    "paper": {
+      "id": "fixture-meta",
+      "title": "A meta-analysis of longitudinal biomarker studies",
+      "publication_types": ["Meta-Analysis", "Review"]
+    },
+    "expected_design": "meta_analysis",
+    "expected_contexts": []
+  },
+  {
+    "id": "case-report",
+    "paper": {
+      "id": "fixture-case",
+      "title": "A case report",
+      "publication_types": ["Case Reports", "Journal Article"]
+    },
+    "expected_design": "case_report",
+    "expected_contexts": []
+  }
+]
