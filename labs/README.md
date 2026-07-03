@@ -30,10 +30,11 @@ Experiments should support a mock or fixture-driven path where practical so thei
 
 ## Planned Sequence
 
-1. Resolve selected literature entities to authoritative database identifiers.
-2. Run a bounded protein-embedding example and document the vector output.
-3. Evaluate an AlphaFold or compatible NIM structure workflow on an educational example.
-4. Connect model outputs back to their inputs, versions, confidence metrics, and source records.
-5. Reproduce a small Blueprint workflow only after the individual components are understood.
+1. Resolve selected literature entities to authoritative database identifiers. The initial v0.6 target catalogue lives in [`protein_intelligence/`](protein_intelligence/).
+2. Retrieve and checksum authoritative protein sequences before model use.
+3. Run a bounded protein-embedding example and document the vector output.
+4. Evaluate an AlphaFold or compatible NIM structure workflow on an educational example.
+5. Connect model outputs back to their inputs, versions, confidence metrics, and source records.
+6. Reproduce a small Blueprint workflow only after the individual components are understood.
 
 See [`docs/DIGITAL_BIOLOGY_LAB.md`](../docs/DIGITAL_BIOLOGY_LAB.md) for the architecture and learning goals.
