@@ -8,11 +8,15 @@ from labs.protein_intelligence import (
     SequenceRetrievalError,
     embedding_manifest,
     fasta_sha256,
+    failed_embedding_manifest,
+    failed_sequence_manifest,
+    get_protein_target,
     parse_fasta_sequence,
     planned_sequence_manifest,
     retrieve_uniprot_sequence,
     sequence_manifest,
 )
+from labs.protein_intelligence.__main__ import build_mock_embedding_manifest, list_targets
 
 
 def test_protein_targets_have_stable_identifiers() -> None:
@@ -22,6 +26,12 @@ def test_protein_targets_have_stable_identifiers() -> None:
     assert by_entity["protein-bdnf"].identifiers["hgnc"] == "HGNC:1033"
     assert by_entity["biomarker-nfl"].symbol == "NEFL"
     assert all(target.organism == "Homo sapiens" for target in PROTEIN_TARGETS)
+
+
+def test_get_protein_target_accepts_symbol_entity_or_accession() -> None:
+    assert get_protein_target("HTT").entity_id == "protein-huntingtin"
+    assert get_protein_target("protein-bdnf").symbol == "BDNF"
+    assert get_protein_target("P07196").symbol == "NEFL"
 
 
 def test_parse_fasta_sequence_normalizes_sequence() -> None:
@@ -94,6 +104,19 @@ def test_sequence_manifest_marks_retrieval_complete() -> None:
     assert manifest["inputs"][0]["checksum"] == record.checksum
 
 
+def test_failed_sequence_manifest_records_reason_without_outputs() -> None:
+    manifest = failed_sequence_manifest(
+        PROTEIN_TARGETS[0],
+        reason="UniProt unavailable in test.",
+        attempted_at=date(2026, 7, 3),
+    )
+
+    assert manifest["status"] == "failed"
+    assert manifest["outputs"]["path"] is None
+    assert manifest["inputs"][0]["checksum"] is None
+    assert manifest["evaluation"]["limitations"][0] == "UniProt unavailable in test."
+
+
 def test_mock_embedding_provider_is_deterministic() -> None:
     record = retrieve_uniprot_sequence(
         PROTEIN_TARGETS[1],
@@ -126,3 +149,41 @@ def test_embedding_manifest_preserves_provenance_without_claims() -> None:
     assert manifest["runtime"]["parameters"]["dimensions"] == 3
     assert manifest["inputs"][0]["checksum"] == record.checksum
     assert "No biological similarity" in manifest["evaluation"]["limitations"][1]
+
+
+def test_failed_embedding_manifest_records_provider_and_reason() -> None:
+    record = retrieve_uniprot_sequence(
+        PROTEIN_TARGETS[1],
+        fetcher=lambda _url: ">BDNF\nACDEFG\n",
+        retrieved_at=date(2026, 7, 3),
+    )
+
+    manifest = failed_embedding_manifest(
+        record,
+        provider="example",
+        model_name="example-model",
+        model_version="blocked",
+        reason="Model service unavailable.",
+        attempted_at=date(2026, 7, 4),
+    )
+
+    assert manifest["status"] == "failed"
+    assert manifest["model"]["provider"] == "example"
+    assert manifest["outputs"]["path"] is None
+    assert manifest["outputs"]["generated_at"] == "2026-07-04"
+    assert manifest["evaluation"]["limitations"][0] == "Model service unavailable."
+
+
+def test_cli_helpers_list_targets_and_build_mock_manifest() -> None:
+    targets = list_targets()
+    manifest = build_mock_embedding_manifest(
+        "BDNF",
+        sequence="ACDE",
+        generated_at=date(2026, 7, 4),
+        dimensions=5,
+    )
+
+    assert {target["symbol"] for target in targets} == {"HTT", "BDNF", "NEFL"}
+    assert manifest["status"] == "generated"
+    assert manifest["runtime"]["parameters"]["dimensions"] == 5
+    assert manifest["inputs"][0]["symbol"] == "BDNF"

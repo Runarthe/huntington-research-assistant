@@ -120,3 +120,60 @@ def sequence_manifest(record: ProteinSequenceRecord) -> dict[str, object]:
             ],
         },
     }
+
+
+def failed_sequence_manifest(
+    target: ProteinTarget,
+    *,
+    reason: str,
+    attempted_at: date | None = None,
+) -> dict[str, object]:
+    """Create a manifest for a failed sequence retrieval attempt."""
+
+    failure_date = attempted_at or date.today()
+    return {
+        "schema_version": "0.1",
+        "experiment_id": f"sequence-retrieval-{target.symbol.lower()}",
+        "status": "failed",
+        "purpose": (
+            "Retrieve an authoritative protein sequence as input provenance "
+            "for later embedding or structure experiments."
+        ),
+        "component_type": "sequence_retrieval",
+        "model": {
+            "provider": "none",
+            "name": "authoritative-database-record",
+            "version": "not-applicable",
+            "licence": "record source database terms before use",
+        },
+        "inputs": [
+            {
+                "identifier": target.identifiers["uniprot"],
+                "entity_id": target.entity_id,
+                "symbol": target.symbol,
+                "organism": target.organism,
+                "source_url": target.uniprot_url,
+                "fasta_url": target.uniprot_fasta_url,
+                "retrieved_at": failure_date.isoformat(),
+                "checksum": None,
+            }
+        ],
+        "runtime": {
+            "interface": "http-download",
+            "container": "not-applicable",
+            "hardware": "cpu",
+            "parameters": {},
+        },
+        "outputs": {
+            "path": None,
+            "confidence_measures": [],
+            "generated_at": failure_date.isoformat(),
+        },
+        "evaluation": {
+            "method": "failure captured before model use",
+            "limitations": [
+                reason,
+                "No embedding, structure, function, or clinical claim is produced.",
+            ],
+        },
+    }
