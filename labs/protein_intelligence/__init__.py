@@ -22,6 +22,11 @@ from labs.protein_intelligence.embeddings import (
     embedding_manifest,
     failed_embedding_manifest,
 )
+from labs.protein_intelligence.manifests import (
+    ManifestValidationError,
+    manifest_summary,
+    validate_manifest,
+)
 
 __all__ = [
     "PROTEIN_TARGETS",
@@ -30,6 +35,8 @@ __all__ = [
     "failed_embedding_manifest",
     "failed_sequence_manifest",
     "get_protein_target",
+    "ManifestValidationError",
+    "manifest_summary",
     "MockEmbeddingProvider",
     "parse_fasta_sequence",
     "planned_sequence_manifest",
@@ -40,4 +47,5 @@ __all__ = [
     "sequence_manifest",
     "SequenceRetrievalError",
     "embedding_manifest",
+    "validate_manifest",
 ]

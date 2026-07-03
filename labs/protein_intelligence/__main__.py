@@ -4,10 +4,15 @@ import argparse
 import json
 import sys
 from datetime import date
+from pathlib import Path
 
 from labs.protein_intelligence.embeddings import (
     MockEmbeddingProvider,
     embedding_manifest,
+)
+from labs.protein_intelligence.manifests import (
+    ManifestValidationError,
+    manifest_summary,
 )
 from labs.protein_intelligence.sequences import (
     ProteinSequenceRecord,
@@ -31,6 +36,13 @@ def _date_arg(value: str | None) -> date | None:
 def _write_json(payload: object) -> None:
     json.dump(payload, sys.stdout, indent=2, sort_keys=True)
     sys.stdout.write("\n")
+
+
+def validate_manifest_file(path: str) -> dict[str, object]:
+    manifest = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(manifest, dict):
+        raise ManifestValidationError("Manifest JSON must be an object.")
+    return manifest_summary(manifest)
 
 
 def list_targets() -> list[dict[str, object]]:
@@ -154,6 +166,12 @@ def main(argv: list[str] | None = None) -> int:
         help="Mock vector dimensions.",
     )
 
+    validate_parser = subparsers.add_parser(
+        "validate-manifest",
+        help="Validate a lab manifest JSON file and print a compact summary.",
+    )
+    validate_parser.add_argument("path", help="Path to manifest JSON.")
+
     args = parser.parse_args(argv)
 
     try:
@@ -183,7 +201,10 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
             return 0
-    except (KeyError, ValueError) as exc:
+        if args.command == "validate-manifest":
+            _write_json(validate_manifest_file(args.path))
+            return 0
+    except (KeyError, ValueError, OSError, json.JSONDecodeError) as exc:
         parser.exit(2, f"{exc}\n")
 
     parser.exit(2, "Unknown command.\n")

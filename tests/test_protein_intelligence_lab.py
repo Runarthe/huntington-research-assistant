@@ -1,9 +1,11 @@
+import json
 from datetime import date
 from pathlib import Path
 
 import pytest
 
 from labs.protein_intelligence import (
+    ManifestValidationError,
     MockEmbeddingProvider,
     PROTEIN_TARGETS,
     SequenceRetrievalError,
@@ -12,16 +14,19 @@ from labs.protein_intelligence import (
     failed_embedding_manifest,
     failed_sequence_manifest,
     get_protein_target,
+    manifest_summary,
     parse_fasta_sequence,
     planned_sequence_manifest,
     retrieve_uniprot_sequence,
     sequence_manifest,
+    validate_manifest,
 )
 from labs.protein_intelligence.__main__ import (
     _sequence_from_args,
     build_retrieval_manifest,
     build_mock_embedding_manifest,
     list_targets,
+    validate_manifest_file,
 )
 
 
@@ -158,6 +163,7 @@ def test_embedding_manifest_preserves_provenance_without_claims() -> None:
     assert manifest["runtime"]["parameters"]["dimensions"] == 3
     assert manifest["inputs"][0]["checksum"] == record.checksum
     assert "No biological similarity" in manifest["evaluation"]["limitations"][1]
+    validate_manifest(manifest)
 
 
 def test_failed_embedding_manifest_records_provider_and_reason() -> None:
@@ -196,6 +202,7 @@ def test_cli_helpers_list_targets_and_build_mock_manifest() -> None:
     assert manifest["status"] == "generated"
     assert manifest["runtime"]["parameters"]["dimensions"] == 5
     assert manifest["inputs"][0]["symbol"] == "BDNF"
+    assert manifest_summary(manifest)["input_count"] == 1
 
 
 def test_cli_retrieve_is_offline_safe_by_default() -> None:
@@ -217,3 +224,29 @@ def test_cli_sequence_helper_reads_fixture_fasta() -> None:
     )
 
     assert sequence == "MSKGPVRR"
+
+
+def test_manifest_validation_rejects_missing_required_fields() -> None:
+    with pytest.raises(ManifestValidationError):
+        validate_manifest({"status": "planned"})
+
+
+def test_manifest_validation_rejects_unknown_status() -> None:
+    manifest = planned_sequence_manifest(PROTEIN_TARGETS[0])
+    manifest["status"] = "maybe"
+
+    with pytest.raises(ManifestValidationError):
+        validate_manifest(manifest)
+
+
+def test_validate_manifest_file_returns_summary(tmp_path: Path) -> None:
+    manifest = planned_sequence_manifest(PROTEIN_TARGETS[0], retrieved_at=date(2026, 7, 3))
+    path = tmp_path / "manifest.json"
+    path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    assert validate_manifest_file(str(path)) == {
+        "experiment_id": "sequence-retrieval-htt",
+        "status": "planned",
+        "component_type": "sequence_retrieval",
+        "input_count": 1,
+    }

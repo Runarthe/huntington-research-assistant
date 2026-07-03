@@ -53,6 +53,7 @@ python -m labs.protein_intelligence plan HTT --date 2026-07-03
 python -m labs.protein_intelligence retrieve HTT --date 2026-07-03
 python -m labs.protein_intelligence mock-embed BDNF --sequence ACDEFG --dimensions 8
 python -m labs.protein_intelligence mock-embed HTT --fasta-file labs/protein_intelligence/fixtures/htt.fragment.fasta
+python -m labs.protein_intelligence validate-manifest outputs/example-manifest.json
 ```
 
 `mock-embed` uses a deterministic fixture vector. It does not call ESM-2, BioNeMo, NIM, AlphaFold, or any external service.
@@ -67,3 +68,5 @@ python -m labs.protein_intelligence retrieve BDNF --live
 ```
 
 Do not use live retrieval in default CI tests.
+
+`validate-manifest` performs structural checks only. It confirms that required manifest fields are present, status is known, inputs exist, and limitations are recorded. It does not validate biological claims.
