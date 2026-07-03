@@ -14,6 +14,7 @@ from labs.protein_intelligence.targets import (
     PROTEIN_TARGETS,
     get_protein_target,
     planned_sequence_manifest,
+    parse_fasta_sequence,
 )
 
 
@@ -64,6 +65,14 @@ def build_mock_embedding_manifest(
     return embedding_manifest(embedding)
 
 
+def _sequence_from_args(sequence: str, fasta_file: str | None) -> str:
+    if not fasta_file:
+        return sequence
+    return parse_fasta_sequence(
+        open(fasta_file, encoding="utf-8").read()
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="python -m labs.protein_intelligence",
@@ -90,6 +99,10 @@ def main(argv: list[str] | None = None) -> int:
         default="ACDEFGHIKLMNPQRSTVWY",
         help="Fixture amino-acid sequence. Defaults to a short alphabetic sequence.",
     )
+    mock_parser.add_argument(
+        "--fasta-file",
+        help="Read a fixture FASTA file instead of using --sequence.",
+    )
     mock_parser.add_argument("--date", help="ISO date to record in the manifest.")
     mock_parser.add_argument(
         "--dimensions",
@@ -112,7 +125,7 @@ def main(argv: list[str] | None = None) -> int:
             _write_json(
                 build_mock_embedding_manifest(
                     args.target,
-                    sequence=args.sequence,
+                    sequence=_sequence_from_args(args.sequence, args.fasta_file),
                     generated_at=_date_arg(args.date),
                     dimensions=args.dimensions,
                 )
