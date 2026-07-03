@@ -1,4 +1,5 @@
 from datetime import date
+from pathlib import Path
 
 import pytest
 
@@ -16,7 +17,14 @@ from labs.protein_intelligence import (
     retrieve_uniprot_sequence,
     sequence_manifest,
 )
-from labs.protein_intelligence.__main__ import build_mock_embedding_manifest, list_targets
+from labs.protein_intelligence.__main__ import (
+    _sequence_from_args,
+    build_mock_embedding_manifest,
+    list_targets,
+)
+
+
+FIXTURE_DIR = Path(__file__).parents[1] / "labs" / "protein_intelligence" / "fixtures"
 
 
 def test_protein_targets_have_stable_identifiers() -> None:
@@ -187,3 +195,12 @@ def test_cli_helpers_list_targets_and_build_mock_manifest() -> None:
     assert manifest["status"] == "generated"
     assert manifest["runtime"]["parameters"]["dimensions"] == 5
     assert manifest["inputs"][0]["symbol"] == "BDNF"
+
+
+def test_cli_sequence_helper_reads_fixture_fasta() -> None:
+    sequence = _sequence_from_args(
+        "IGNORED",
+        str(FIXTURE_DIR / "bdnf.fragment.fasta"),
+    )
+
+    assert sequence == "MSKGPVRR"

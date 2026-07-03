@@ -51,6 +51,9 @@ The lab helper emits JSON manifests and is offline-safe by default:
 python -m labs.protein_intelligence list-targets
 python -m labs.protein_intelligence plan HTT --date 2026-07-03
 python -m labs.protein_intelligence mock-embed BDNF --sequence ACDEFG --dimensions 8
+python -m labs.protein_intelligence mock-embed HTT --fasta-file labs/protein_intelligence/fixtures/htt.fragment.fasta
 ```
 
 `mock-embed` uses a deterministic fixture vector. It does not call ESM-2, BioNeMo, NIM, AlphaFold, or any external service.
+
+The FASTA files in [`fixtures/`](fixtures/) are short offline fragments for tooling tests. They are not complete reference sequences and must not be used for biological interpretation.
