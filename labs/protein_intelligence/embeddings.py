@@ -112,3 +112,64 @@ def embedding_manifest(record: ProteinEmbeddingRecord) -> dict[str, object]:
             ],
         },
     }
+
+
+def failed_embedding_manifest(
+    sequence_record: ProteinSequenceRecord,
+    *,
+    provider: str,
+    model_name: str,
+    model_version: str,
+    reason: str,
+    attempted_at: date | None = None,
+) -> dict[str, object]:
+    """Create a manifest for a failed embedding attempt."""
+
+    failure_date = attempted_at or date.today()
+    target = sequence_record.target
+    return {
+        "schema_version": "0.1",
+        "experiment_id": f"protein-embedding-{target.symbol.lower()}",
+        "status": "failed",
+        "purpose": (
+            "Generate a protein embedding while preserving input and model "
+            "provenance."
+        ),
+        "component_type": "foundation_model",
+        "model": {
+            "provider": provider,
+            "name": model_name,
+            "version": model_version,
+            "licence": "record governing terms before real model use",
+        },
+        "inputs": [
+            {
+                "identifier": sequence_record.accession,
+                "entity_id": target.entity_id,
+                "symbol": target.symbol,
+                "organism": target.organism,
+                "source_url": sequence_record.source_url,
+                "retrieved_at": sequence_record.retrieved_at.isoformat(),
+                "checksum": sequence_record.checksum,
+                "sequence_length": sequence_record.sequence_length,
+            }
+        ],
+        "runtime": {
+            "interface": "provider-adapter",
+            "container": "record-if-used",
+            "hardware": "record-before-running",
+            "parameters": {},
+        },
+        "outputs": {
+            "path": None,
+            "confidence_measures": [],
+            "generated_at": failure_date.isoformat(),
+        },
+        "evaluation": {
+            "method": "failure captured without interpreting model output",
+            "limitations": [
+                reason,
+                "No biological similarity, function, structure, or clinical claim is produced.",
+            ],
+        },
+    }
