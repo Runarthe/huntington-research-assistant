@@ -69,6 +69,21 @@ PROTEIN_TARGETS: tuple[ProteinTarget, ...] = (
 )
 
 
+def get_protein_target(value: str) -> ProteinTarget:
+    """Find a target by entity ID, symbol, or UniProt accession."""
+
+    normalized = value.casefold()
+    for target in PROTEIN_TARGETS:
+        if normalized in {
+            target.entity_id.casefold(),
+            target.symbol.casefold(),
+            target.identifiers["uniprot"].casefold(),
+        }:
+            return target
+    known = ", ".join(target.symbol for target in PROTEIN_TARGETS)
+    raise KeyError(f"Unknown protein target '{value}'. Known targets: {known}.")
+
+
 def parse_fasta_sequence(fasta_text: str) -> str:
     """Return a normalized amino-acid sequence from a FASTA record."""
 
