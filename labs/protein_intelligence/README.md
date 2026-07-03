@@ -50,10 +50,20 @@ The lab helper emits JSON manifests and is offline-safe by default:
 ```bash
 python -m labs.protein_intelligence list-targets
 python -m labs.protein_intelligence plan HTT --date 2026-07-03
+python -m labs.protein_intelligence retrieve HTT --date 2026-07-03
 python -m labs.protein_intelligence mock-embed BDNF --sequence ACDEFG --dimensions 8
 python -m labs.protein_intelligence mock-embed HTT --fasta-file labs/protein_intelligence/fixtures/htt.fragment.fasta
 ```
 
 `mock-embed` uses a deterministic fixture vector. It does not call ESM-2, BioNeMo, NIM, AlphaFold, or any external service.
+`retrieve` is also offline-safe by default: without `--live`, it emits a failed manifest explaining that live UniProt retrieval was disabled.
 
 The FASTA files in [`fixtures/`](fixtures/) are short offline fragments for tooling tests. They are not complete reference sequences and must not be used for biological interpretation.
+
+To perform a real UniProt retrieval in a manual lab run, pass `--live`:
+
+```bash
+python -m labs.protein_intelligence retrieve BDNF --live
+```
+
+Do not use live retrieval in default CI tests.

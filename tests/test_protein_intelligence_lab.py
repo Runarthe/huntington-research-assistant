@@ -19,6 +19,7 @@ from labs.protein_intelligence import (
 )
 from labs.protein_intelligence.__main__ import (
     _sequence_from_args,
+    build_retrieval_manifest,
     build_mock_embedding_manifest,
     list_targets,
 )
@@ -195,6 +196,18 @@ def test_cli_helpers_list_targets_and_build_mock_manifest() -> None:
     assert manifest["status"] == "generated"
     assert manifest["runtime"]["parameters"]["dimensions"] == 5
     assert manifest["inputs"][0]["symbol"] == "BDNF"
+
+
+def test_cli_retrieve_is_offline_safe_by_default() -> None:
+    manifest = build_retrieval_manifest(
+        "HTT",
+        live=False,
+        attempted_at=date(2026, 7, 3),
+    )
+
+    assert manifest["status"] == "failed"
+    assert manifest["inputs"][0]["identifier"] == "P42858"
+    assert "Live retrieval disabled" in manifest["evaluation"]["limitations"][0]
 
 
 def test_cli_sequence_helper_reads_fixture_fasta() -> None:

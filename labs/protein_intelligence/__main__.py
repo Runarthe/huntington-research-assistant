@@ -9,7 +9,13 @@ from labs.protein_intelligence.embeddings import (
     MockEmbeddingProvider,
     embedding_manifest,
 )
-from labs.protein_intelligence.sequences import ProteinSequenceRecord
+from labs.protein_intelligence.sequences import (
+    ProteinSequenceRecord,
+    SequenceRetrievalError,
+    failed_sequence_manifest,
+    retrieve_uniprot_sequence,
+    sequence_manifest,
+)
 from labs.protein_intelligence.targets import (
     PROTEIN_TARGETS,
     get_protein_target,
@@ -65,6 +71,31 @@ def build_mock_embedding_manifest(
     return embedding_manifest(embedding)
 
 
+def build_retrieval_manifest(
+    target_name: str,
+    *,
+    live: bool,
+    attempted_at: date | None,
+) -> dict[str, object]:
+    target = get_protein_target(target_name)
+    if not live:
+        return failed_sequence_manifest(
+            target,
+            reason="Live retrieval disabled. Pass --live to call UniProt.",
+            attempted_at=attempted_at,
+        )
+    try:
+        return sequence_manifest(
+            retrieve_uniprot_sequence(target, retrieved_at=attempted_at)
+        )
+    except SequenceRetrievalError as exc:
+        return failed_sequence_manifest(
+            target,
+            reason=str(exc),
+            attempted_at=attempted_at,
+        )
+
+
 def _sequence_from_args(sequence: str, fasta_file: str | None) -> str:
     if not fasta_file:
         return sequence
@@ -88,6 +119,18 @@ def main(argv: list[str] | None = None) -> int:
     )
     plan_parser.add_argument("target", help="Target symbol, entity ID, or UniProt ID.")
     plan_parser.add_argument("--date", help="ISO date to record in the manifest.")
+
+    retrieve_parser = subparsers.add_parser(
+        "retrieve",
+        help="Print a sequence retrieval manifest. Requires --live for network.",
+    )
+    retrieve_parser.add_argument("target", help="Target symbol, entity ID, or UniProt ID.")
+    retrieve_parser.add_argument("--date", help="ISO date to record in the manifest.")
+    retrieve_parser.add_argument(
+        "--live",
+        action="store_true",
+        help="Call UniProt. Without this flag, emit a failed manifest instead.",
+    )
 
     mock_parser = subparsers.add_parser(
         "mock-embed",
@@ -120,6 +163,15 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "plan":
             target = get_protein_target(args.target)
             _write_json(planned_sequence_manifest(target, retrieved_at=_date_arg(args.date)))
+            return 0
+        if args.command == "retrieve":
+            _write_json(
+                build_retrieval_manifest(
+                    args.target,
+                    live=args.live,
+                    attempted_at=_date_arg(args.date),
+                )
+            )
             return 0
         if args.command == "mock-embed":
             _write_json(
