@@ -23,6 +23,7 @@ This can help readers find papers connected by recurring terminology. It does no
 - The entity view lists other terms found in the same source papers. These are paper-level co-occurrences, not asserted biological relationships.
 - The graph is bounded for readability and has a source-evidence view beneath it.
 - No LLM is used for entity extraction or relationship generation.
+- v0.5 is a structured navigation release. It does not include external identifier resolution, protein embeddings, sequence retrieval, structure prediction, or generated biological hypotheses.
 
 The controlled vocabulary is defined in `src/hra/knowledge_graph.py`. New aliases should be specific enough to avoid substring matches and ambiguous biomedical meanings. Short or case-sensitive aliases need explicit regression cases in `tests/fixtures/entity_extraction_cases.json`.
 
@@ -45,3 +46,15 @@ The current fixture is synthetic and intended to catch deterministic regressions
 3. Link entities to stable identifiers such as HGNC, UniProt, ChEBI, and Reactome only after identifier mappings are manually checked.
 4. Add new relationship types only when each relationship can be tied to an exact supporting passage and independently evaluated.
 5. Keep an accessible tabular evidence view even if the visual graph becomes more capable.
+
+## Release Scope
+
+v0.5 ships the conservative Entity Explorer foundation only:
+
+- controlled vocabulary entity mentions;
+- source evidence passages;
+- catalogue metadata;
+- mention confidence for alias matching;
+- paper-level co-occurrence navigation.
+
+Protein-sequence retrieval, embeddings, AlphaFold-compatible workflows, BioNeMo/NIM experiments, and identifier-backed relationship extraction belong in later lab releases until they have explicit provenance, failure-mode documentation, and evaluation.

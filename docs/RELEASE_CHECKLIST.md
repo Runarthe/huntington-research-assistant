@@ -26,7 +26,9 @@ Use this checklist before publishing a tagged release.
 - [ ] Add, remove, persist, and export papers from the local reading list.
 - [ ] Mark a paper as seen and verify the saved/seen search filters.
 - [ ] Compare two to five saved papers in Evidence Explorer and verify source-linked passages and CSV export.
-- [ ] Build a research map and verify that every visible relationship has source evidence.
+- [ ] Build an Entity Explorer map and verify that every visible mention has source evidence.
+- [ ] Confirm paper-level co-occurrences are labelled as navigation signals, not biological relationships.
+- [ ] Confirm catalogue ID, catalogue version, aliases, extraction method, and mention confidence are visible for inspected entities.
 - [ ] Check the main workflows at a narrow mobile viewport without clipped or overlapping controls.
 
 ## Safety and Privacy
@@ -34,8 +36,9 @@ Use this checklist before publishing a tagged release.
 - [ ] Confirm the medical disclaimer is visible in both languages.
 - [ ] Confirm no feature asks for personal health information.
 - [ ] Search tracked files for secrets, API keys, local databases, and personal data.
-- [ ] Confirm all generated summaries and research-map evidence retain source links.
+- [ ] Confirm all generated summaries and Entity Explorer evidence retain source links.
 - [ ] Confirm Evidence Explorer labels its classifications and passages as navigation aids rather than quality or effectiveness assessments.
+- [ ] Confirm Entity Explorer labels mention confidence as alias-match confidence only, not confidence in a scientific claim.
 - [ ] Confirm registry status is not described as evidence of safety or effectiveness.
 
 ## GitHub Release
