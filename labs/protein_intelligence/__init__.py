@@ -16,6 +16,9 @@ from labs.protein_intelligence.sequences import (
     sequence_manifest,
 )
 from labs.protein_intelligence.embeddings import (
+    DisabledEmbeddingProvider,
+    EmbeddingProviderConfig,
+    EmbeddingProviderUnavailable,
     MockEmbeddingProvider,
     ProteinEmbeddingProvider,
     ProteinEmbeddingRecord,
@@ -36,6 +39,9 @@ from labs.protein_intelligence.identifiers import (
 
 __all__ = [
     "PROTEIN_TARGETS",
+    "DisabledEmbeddingProvider",
+    "EmbeddingProviderConfig",
+    "EmbeddingProviderUnavailable",
     "ProteinTarget",
     "fasta_sha256",
     "failed_embedding_manifest",

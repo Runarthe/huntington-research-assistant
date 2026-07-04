@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 import hashlib
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
-from typing import Protocol
+from typing import Mapping, Protocol
 
 from labs.protein_intelligence.sequences import ProteinSequenceRecord
+
+
+class EmbeddingProviderUnavailable(RuntimeError):
+    """Raised when a configured embedding provider cannot run."""
 
 
 @dataclass(frozen=True)
@@ -22,6 +26,27 @@ class ProteinEmbeddingRecord:
         return len(self.vector)
 
 
+@dataclass(frozen=True)
+class EmbeddingProviderConfig:
+    """Runtime metadata and safety gate for a future real embedding adapter."""
+
+    provider: str
+    model_name: str
+    model_version: str
+    interface: str
+    licence: str
+    enabled: bool = False
+    container: str = "record-if-used"
+    hardware: str = "record-before-running"
+    parameters: Mapping[str, object] = field(default_factory=dict)
+
+    def require_enabled(self) -> None:
+        if not self.enabled:
+            raise EmbeddingProviderUnavailable(
+                f"Embedding provider '{self.provider}' is disabled by configuration."
+            )
+
+
 class ProteinEmbeddingProvider(Protocol):
     provider: str
     model_name: str
@@ -29,6 +54,42 @@ class ProteinEmbeddingProvider(Protocol):
 
     def embed(self, record: ProteinSequenceRecord) -> ProteinEmbeddingRecord:
         """Embed a protein sequence into a model-specific vector."""
+
+
+class DisabledEmbeddingProvider:
+    """Adapter placeholder that records provenance but never calls a model."""
+
+    def __init__(self, config: EmbeddingProviderConfig) -> None:
+        self.config = config
+        self.provider = config.provider
+        self.model_name = config.model_name
+        self.model_version = config.model_version
+
+    def embed(self, record: ProteinSequenceRecord) -> ProteinEmbeddingRecord:
+        self.config.require_enabled()
+        raise EmbeddingProviderUnavailable(
+            f"Embedding provider '{self.provider}' has no implementation configured."
+        )
+
+    def failed_manifest(
+        self,
+        record: ProteinSequenceRecord,
+        *,
+        attempted_at: date | None = None,
+    ) -> dict[str, object]:
+        return failed_embedding_manifest(
+            record,
+            provider=self.provider,
+            model_name=self.model_name,
+            model_version=self.model_version,
+            reason=f"Embedding provider '{self.provider}' is disabled by configuration.",
+            attempted_at=attempted_at,
+            interface=self.config.interface,
+            container=self.config.container,
+            hardware=self.config.hardware,
+            parameters=dict(self.config.parameters),
+            licence=self.config.licence,
+        )
 
 
 class MockEmbeddingProvider:
@@ -122,6 +183,11 @@ def failed_embedding_manifest(
     model_version: str,
     reason: str,
     attempted_at: date | None = None,
+    interface: str = "provider-adapter",
+    container: str = "record-if-used",
+    hardware: str = "record-before-running",
+    parameters: Mapping[str, object] | None = None,
+    licence: str = "record governing terms before real model use",
 ) -> dict[str, object]:
     """Create a manifest for a failed embedding attempt."""
 
@@ -140,7 +206,7 @@ def failed_embedding_manifest(
             "provider": provider,
             "name": model_name,
             "version": model_version,
-            "licence": "record governing terms before real model use",
+            "licence": licence,
         },
         "inputs": [
             {
@@ -155,10 +221,10 @@ def failed_embedding_manifest(
             }
         ],
         "runtime": {
-            "interface": "provider-adapter",
-            "container": "record-if-used",
-            "hardware": "record-before-running",
-            "parameters": {},
+            "interface": interface,
+            "container": container,
+            "hardware": hardware,
+            "parameters": dict(parameters or {}),
         },
         "outputs": {
             "path": None,

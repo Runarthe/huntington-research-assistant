@@ -9,6 +9,9 @@ from labs.protein_intelligence import (
     MockEmbeddingProvider,
     PROTEIN_TARGETS,
     SequenceRetrievalError,
+    DisabledEmbeddingProvider,
+    EmbeddingProviderConfig,
+    EmbeddingProviderUnavailable,
     embedding_manifest,
     fasta_sha256,
     failed_embedding_manifest,
@@ -234,6 +237,70 @@ def test_failed_embedding_manifest_records_provider_and_reason() -> None:
     assert manifest["outputs"]["path"] is None
     assert manifest["outputs"]["generated_at"] == "2026-07-04"
     assert manifest["evaluation"]["limitations"][0] == "Model service unavailable."
+
+
+def test_embedding_provider_config_is_disabled_by_default() -> None:
+    config = EmbeddingProviderConfig(
+        provider="example",
+        model_name="example-model",
+        model_version="blocked",
+        interface="http-api",
+        licence="manual-review-required",
+    )
+
+    assert config.enabled is False
+    with pytest.raises(EmbeddingProviderUnavailable):
+        config.require_enabled()
+
+
+def test_disabled_embedding_provider_records_failure_manifest() -> None:
+    record = retrieve_uniprot_sequence(
+        PROTEIN_TARGETS[0],
+        fetcher=lambda _url: ">HTT\nACDEFG\n",
+        retrieved_at=date(2026, 7, 5),
+    )
+    provider = DisabledEmbeddingProvider(
+        EmbeddingProviderConfig(
+            provider="bionemo",
+            model_name="example-embedding-model",
+            model_version="manual-lab-only",
+            interface="http-api",
+            licence="record-before-use",
+            container="nvcr.io/example@sha256:fixture",
+            hardware="gpu-record-required",
+            parameters={"timeout_seconds": 30},
+        )
+    )
+
+    manifest = provider.failed_manifest(record, attempted_at=date(2026, 7, 5))
+
+    validate_manifest(manifest)
+    assert manifest["status"] == "failed"
+    assert manifest["model"]["provider"] == "bionemo"
+    assert manifest["runtime"]["interface"] == "http-api"
+    assert manifest["runtime"]["container"] == "nvcr.io/example@sha256:fixture"
+    assert manifest["runtime"]["parameters"]["timeout_seconds"] == 30
+    assert "disabled by configuration" in manifest["evaluation"]["limitations"][0]
+
+
+def test_disabled_embedding_provider_never_calls_model() -> None:
+    record = retrieve_uniprot_sequence(
+        PROTEIN_TARGETS[1],
+        fetcher=lambda _url: ">BDNF\nACDEFG\n",
+        retrieved_at=date(2026, 7, 5),
+    )
+    provider = DisabledEmbeddingProvider(
+        EmbeddingProviderConfig(
+            provider="esm",
+            model_name="esm-fixture",
+            model_version="manual-lab-only",
+            interface="local-python",
+            licence="record-before-use",
+        )
+    )
+
+    with pytest.raises(EmbeddingProviderUnavailable):
+        provider.embed(record)
 
 
 def test_cli_helpers_list_targets_and_build_mock_manifest() -> None:

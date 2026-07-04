@@ -13,6 +13,7 @@ The first slice is deliberately small:
 - retrieve UniProt FASTA records through an injectable adapter that can be mocked in tests;
 - convert retrieved sequences into completed provenance manifests;
 - provide a deterministic mock embedding provider for interface and manifest testing;
+- define disabled-by-default embedding adapter configuration for future real providers;
 - keep every output labelled as experimental lab data, not literature evidence or medical guidance.
 
 The initial targets are:
@@ -61,6 +62,7 @@ python -m labs.protein_intelligence validate-manifest outputs/example-manifest.j
 
 `mock-embed` uses a deterministic fixture vector. It does not call ESM-2, BioNeMo, NIM, AlphaFold, or any external service.
 `retrieve` is also offline-safe by default: without `--live`, it emits a failed manifest explaining that live UniProt retrieval was disabled.
+Real embedding providers belong behind disabled-by-default adapter configuration. The default public test suite must keep using fixtures and failure manifests, not live model calls.
 
 The FASTA files in [`fixtures/`](fixtures/) are short offline fragments for tooling tests. They are not complete reference sequences and must not be used for biological interpretation.
 

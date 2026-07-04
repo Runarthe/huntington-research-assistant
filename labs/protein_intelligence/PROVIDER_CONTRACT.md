@@ -39,6 +39,10 @@ A real adapter manifest must record:
 - timeout and retry behavior;
 - licence and access constraints.
 
+Adapters start disabled by default. Enabling a real provider must be an explicit
+manual lab decision and must preserve the same manifest fields as the disabled
+adapter path.
+
 ## Test Requirements
 
 Every adapter needs:
