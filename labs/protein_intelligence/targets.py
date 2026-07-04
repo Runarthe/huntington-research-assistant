@@ -70,14 +70,14 @@ PROTEIN_TARGETS: tuple[ProteinTarget, ...] = (
 
 
 def get_protein_target(value: str) -> ProteinTarget:
-    """Find a target by entity ID, symbol, or UniProt accession."""
+    """Find a target by entity ID, symbol, or stable source identifier."""
 
     normalized = value.casefold()
     for target in PROTEIN_TARGETS:
         if normalized in {
             target.entity_id.casefold(),
             target.symbol.casefold(),
-            target.identifiers["uniprot"].casefold(),
+            *(identifier.casefold() for identifier in target.identifiers.values()),
         }:
             return target
     known = ", ".join(target.symbol for target in PROTEIN_TARGETS)

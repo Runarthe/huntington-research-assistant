@@ -7,6 +7,7 @@ This lab area contains the v0.6 foundation for bounded protein-sequence and mode
 The first slice is deliberately small:
 
 - define a few Huntington-relevant protein targets with stable identifiers;
+- resolve configured symbols, entity IDs, UniProt, HGNC, and NCBI Gene IDs locally;
 - generate planned sequence-retrieval manifests before any model work;
 - parse FASTA records and compute sequence checksums for provenance;
 - retrieve UniProt FASTA records through an injectable adapter that can be mocked in tests;
@@ -34,6 +35,7 @@ Those belong behind explicit adapters, fixtures, and provenance checks.
 
 ```text
 ProteinTarget
+  -> local identifier resolution
   -> UniProt FASTA retrieval
   -> ProteinSequenceRecord with checksum
   -> sequence retrieval manifest
@@ -49,6 +51,7 @@ The lab helper emits JSON manifests and is offline-safe by default:
 
 ```bash
 python -m labs.protein_intelligence list-targets
+python -m labs.protein_intelligence resolve-identifier HGNC:4851 --date 2026-07-03
 python -m labs.protein_intelligence plan HTT --date 2026-07-03
 python -m labs.protein_intelligence retrieve HTT --date 2026-07-03
 python -m labs.protein_intelligence mock-embed BDNF --sequence ACDEFG --dimensions 8
@@ -60,6 +63,8 @@ python -m labs.protein_intelligence validate-manifest outputs/example-manifest.j
 `retrieve` is also offline-safe by default: without `--live`, it emits a failed manifest explaining that live UniProt retrieval was disabled.
 
 The FASTA files in [`fixtures/`](fixtures/) are short offline fragments for tooling tests. They are not complete reference sequences and must not be used for biological interpretation.
+
+`resolve-identifier` only performs exact local catalogue matching. It does not call HGNC, UniProt, NCBI, or any ontology service, and it does not infer synonyms beyond the identifiers already configured in code.
 
 To perform a real UniProt retrieval in a manual lab run, pass `--live`:
 

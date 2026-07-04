@@ -14,15 +14,18 @@ from labs.protein_intelligence import (
     failed_embedding_manifest,
     failed_sequence_manifest,
     get_protein_target,
+    identifier_resolution_manifest,
     manifest_summary,
     parse_fasta_sequence,
     planned_sequence_manifest,
+    resolve_protein_identifier,
     retrieve_uniprot_sequence,
     sequence_manifest,
     validate_manifest,
 )
 from labs.protein_intelligence.__main__ import (
     _sequence_from_args,
+    build_identifier_resolution_manifest,
     build_retrieval_manifest,
     build_mock_embedding_manifest,
     list_targets,
@@ -46,6 +49,50 @@ def test_get_protein_target_accepts_symbol_entity_or_accession() -> None:
     assert get_protein_target("HTT").entity_id == "protein-huntingtin"
     assert get_protein_target("protein-bdnf").symbol == "BDNF"
     assert get_protein_target("P07196").symbol == "NEFL"
+    assert get_protein_target("HGNC:4851").symbol == "HTT"
+    assert get_protein_target("627").symbol == "BDNF"
+
+
+def test_resolve_protein_identifier_records_matched_field() -> None:
+    hgnc = resolve_protein_identifier(" hgnc:4851 ")
+    ncbi = resolve_protein_identifier("4747")
+
+    assert hgnc.status == "resolved"
+    assert hgnc.matched_field == "hgnc"
+    assert hgnc.target is not None
+    assert hgnc.target.symbol == "HTT"
+    assert ncbi.matched_field == "ncbi_gene"
+    assert ncbi.target is not None
+    assert ncbi.target.symbol == "NEFL"
+
+
+def test_resolve_protein_identifier_returns_unresolved_result() -> None:
+    result = resolve_protein_identifier("not-a-known-target")
+
+    assert result.status == "unresolved"
+    assert result.matched_field is None
+    assert result.target is None
+
+
+def test_identifier_resolution_manifest_is_valid_and_bounded() -> None:
+    manifest = identifier_resolution_manifest("P23560", resolved_at=date(2026, 7, 5))
+
+    validate_manifest(manifest)
+    assert manifest["status"] == "retrieved"
+    assert manifest["component_type"] == "identifier_resolution"
+    assert manifest["inputs"][0]["normalized_query"] == "p23560"
+    assert manifest["outputs"]["resolution"]["matched_field"] == "uniprot"
+    assert manifest["outputs"]["resolution"]["target"]["symbol"] == "BDNF"
+    assert "No fuzzy matching" in manifest["evaluation"]["limitations"][1]
+
+
+def test_identifier_resolution_manifest_records_failed_resolution() -> None:
+    manifest = identifier_resolution_manifest("unknown", resolved_at=date(2026, 7, 5))
+
+    validate_manifest(manifest)
+    assert manifest["status"] == "failed"
+    assert manifest["outputs"]["resolution"]["resolved"] is False
+    assert manifest["outputs"]["resolution"]["target"] is None
 
 
 def test_parse_fasta_sequence_normalizes_sequence() -> None:
@@ -203,6 +250,16 @@ def test_cli_helpers_list_targets_and_build_mock_manifest() -> None:
     assert manifest["runtime"]["parameters"]["dimensions"] == 5
     assert manifest["inputs"][0]["symbol"] == "BDNF"
     assert manifest_summary(manifest)["input_count"] == 1
+
+
+def test_cli_builds_identifier_resolution_manifest() -> None:
+    manifest = build_identifier_resolution_manifest(
+        "HGNC:1033",
+        resolved_at=date(2026, 7, 5),
+    )
+
+    assert manifest["status"] == "retrieved"
+    assert manifest["outputs"]["resolution"]["target"]["symbol"] == "BDNF"
 
 
 def test_cli_retrieve_is_offline_safe_by_default() -> None:

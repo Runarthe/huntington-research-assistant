@@ -10,6 +10,7 @@ from labs.protein_intelligence.embeddings import (
     MockEmbeddingProvider,
     embedding_manifest,
 )
+from labs.protein_intelligence.identifiers import identifier_resolution_manifest
 from labs.protein_intelligence.manifests import (
     ManifestValidationError,
     manifest_summary,
@@ -57,6 +58,14 @@ def list_targets() -> list[dict[str, object]]:
         }
         for target in PROTEIN_TARGETS
     ]
+
+
+def build_identifier_resolution_manifest(
+    target_name: str,
+    *,
+    resolved_at: date | None,
+) -> dict[str, object]:
+    return identifier_resolution_manifest(target_name, resolved_at=resolved_at)
 
 
 def build_mock_embedding_manifest(
@@ -132,6 +141,16 @@ def main(argv: list[str] | None = None) -> int:
     plan_parser.add_argument("target", help="Target symbol, entity ID, or UniProt ID.")
     plan_parser.add_argument("--date", help="ISO date to record in the manifest.")
 
+    resolve_parser = subparsers.add_parser(
+        "resolve-identifier",
+        help="Resolve a symbol, entity ID, UniProt, HGNC, or NCBI Gene ID locally.",
+    )
+    resolve_parser.add_argument(
+        "target",
+        help="Target symbol, entity ID, UniProt, HGNC, or NCBI Gene ID.",
+    )
+    resolve_parser.add_argument("--date", help="ISO date to record in the manifest.")
+
     retrieve_parser = subparsers.add_parser(
         "retrieve",
         help="Print a sequence retrieval manifest. Requires --live for network.",
@@ -181,6 +200,14 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "plan":
             target = get_protein_target(args.target)
             _write_json(planned_sequence_manifest(target, retrieved_at=_date_arg(args.date)))
+            return 0
+        if args.command == "resolve-identifier":
+            _write_json(
+                build_identifier_resolution_manifest(
+                    args.target,
+                    resolved_at=_date_arg(args.date),
+                )
+            )
             return 0
         if args.command == "retrieve":
             _write_json(
