@@ -45,7 +45,12 @@ class MockEmbeddingProvider:
         self.generated_at = generated_at or date.today()
 
     def embed(self, record: ProteinSequenceRecord) -> ProteinEmbeddingRecord:
-        digest = hashlib.sha256(record.sequence.encode("ascii")).digest()
+        seed = record.sequence.encode("ascii")
+        digest = hashlib.sha256(seed).digest()
+        while len(digest) < self.dimensions:
+            digest += hashlib.sha256(
+                seed + len(digest).to_bytes(4, byteorder="big")
+            ).digest()
         values = tuple(
             round(digest[index] / 255, 6)
             for index in range(self.dimensions)
