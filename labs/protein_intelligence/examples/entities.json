@@ -1,0 +1,26 @@
+[
+  {
+    "id": "protein-huntingtin",
+    "label": "huntingtin",
+    "aliases": ["HTT", "huntingtin protein"],
+    "type": "protein"
+  },
+  {
+    "id": "protein-bdnf",
+    "label": "brain-derived neurotrophic factor",
+    "aliases": ["BDNF"],
+    "type": "protein"
+  },
+  {
+    "id": "biomarker-nfl",
+    "label": "neurofilament light",
+    "aliases": ["NEFL", "NfL"],
+    "type": "biomarker"
+  },
+  {
+    "id": "clinical-scale-uhdrs",
+    "label": "Unified Huntington Disease Rating Scale",
+    "aliases": ["UHDRS"],
+    "type": "clinical_scale"
+  }
+]

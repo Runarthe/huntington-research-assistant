@@ -1,0 +1,26 @@
+[
+  {
+    "id": "fixture:htt-review",
+    "title": "Fixture source mentioning huntingtin biology",
+    "year": 2026,
+    "matched_terms": ["HTT", "huntingtin"]
+  },
+  {
+    "id": "fixture:bdnf-review",
+    "title": "Fixture source mentioning BDNF in Huntington research",
+    "year": 2026,
+    "matched_terms": ["BDNF", "brain-derived neurotrophic factor"]
+  },
+  {
+    "id": "fixture:nfl-biomarker",
+    "title": "Fixture source mentioning neurofilament light as a biomarker",
+    "year": 2026,
+    "matched_terms": ["neurofilament light", "NfL"]
+  },
+  {
+    "id": "fixture:clinical-scale",
+    "title": "Fixture source included to confirm unmapped clinical entities stay separate",
+    "year": 2026,
+    "matched_terms": ["UHDRS"]
+  }
+]
