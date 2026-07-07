@@ -87,3 +87,25 @@ def test_build_report_payload_combines_entities_manifests_and_sources(tmp_path: 
     assert report["literature"]["mapped_entity_count"] == 1
     assert report["literature"]["source_count"] == 1
     assert report["lab_artifacts"]["manifest_count"] == 1
+
+
+def test_build_report_payload_can_return_validated_summary(tmp_path: Path) -> None:
+    entities_path = tmp_path / "entities.json"
+    manifest_path = tmp_path / "planned-htt.json"
+    entities_path.write_text(json.dumps([{"id": "protein-huntingtin", "label": "HTT"}]), encoding="utf-8")
+    manifest_path.write_text(json.dumps(planned_sequence_manifest(PROTEIN_TARGETS[0])), encoding="utf-8")
+
+    summary = build_report_payload(
+        "HTT",
+        entity_path=str(entities_path),
+        manifest_paths=(str(manifest_path),),
+        summary=True,
+    )
+
+    assert summary == {
+        "schema_version": "protein-target-report.v1",
+        "symbol": "HTT",
+        "mapped_entity_count": 1,
+        "manifest_count": 1,
+        "interpretation_status": "literature-and-lab-provenance",
+    }

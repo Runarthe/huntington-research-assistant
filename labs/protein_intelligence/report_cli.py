@@ -16,6 +16,12 @@ from typing import Iterable, Mapping
 from .entity_mapping import map_entities_to_targets, mapping_manifest
 from .registry import build_manifest_registry, registry_payload
 from .reports import build_target_report
+from .report_validation import (
+    report_summary,
+    validate_mapping_batch,
+    validate_registry_payload,
+    validate_target_report,
+)
 
 
 def load_json_records(path: str | None) -> tuple[Mapping[str, object], ...]:
@@ -36,7 +42,7 @@ def build_mapping_payload(entity_path: str) -> dict[str, object]:
 
     entities = load_json_records(entity_path)
     mappings = map_entities_to_targets(entities)
-    return {
+    payload = {
         "schema_version": "protein-entity-mapping-batch.v1",
         "input_count": len(entities),
         "mapping_count": len(mappings),
@@ -45,12 +51,16 @@ def build_mapping_payload(entity_path: str) -> dict[str, object]:
             "claim_boundary": "Mappings are deterministic catalogue provenance, not biological claims.",
         },
     }
+    validate_mapping_batch(payload)
+    return payload
 
 
 def build_registry_payload(paths: Iterable[str]) -> dict[str, object]:
     """Index manifest paths and return registry JSON."""
 
-    return registry_payload(build_manifest_registry(paths))
+    payload = registry_payload(build_manifest_registry(paths))
+    validate_registry_payload(payload)
+    return payload
 
 
 def build_report_payload(
@@ -59,15 +69,20 @@ def build_report_payload(
     entity_path: str | None = None,
     manifest_paths: Iterable[str] = (),
     source_path: str | None = None,
+    summary: bool = False,
 ) -> dict[str, object]:
     """Build one target report from optional local JSON inputs."""
 
-    return build_target_report(
+    report = build_target_report(
         target,
         entities=load_json_records(entity_path),
         manifest_records=build_manifest_registry(manifest_paths),
         source_records=load_json_records(source_path),
     )
+    validate_target_report(report)
+    if summary:
+        return report_summary(report)
+    return report
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -108,6 +123,11 @@ def main(argv: list[str] | None = None) -> int:
         "--sources",
         help="Optional source-record JSON object or array for literature context.",
     )
+    report_parser.add_argument(
+        "--summary",
+        action="store_true",
+        help="Print a compact validated report summary instead of the full report.",
+    )
 
     args = parser.parse_args(argv)
 
@@ -125,6 +145,7 @@ def main(argv: list[str] | None = None) -> int:
                     entity_path=args.entities,
                     manifest_paths=args.manifest_path,
                     source_path=args.sources,
+                    summary=args.summary,
                 )
             )
             return 0

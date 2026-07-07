@@ -45,6 +45,12 @@ python -m labs.protein_intelligence.report_cli target-report BDNF --entities lab
 python -m labs.protein_intelligence.report_cli target-report NEFL --entities labs/protein_intelligence/examples/entities.json --sources labs/protein_intelligence/examples/sources.json --manifest-path labs/protein_intelligence/manifests/
 ```
 
+Build a compact summary for release review:
+
+```bash
+python -m labs.protein_intelligence.report_cli target-report HTT --entities labs/protein_intelligence/examples/entities.json --manifest-path labs/protein_intelligence/manifests/ --summary
+```
+
 ## Review
 
 - Confirm report outputs contain no generated biological hypotheses.

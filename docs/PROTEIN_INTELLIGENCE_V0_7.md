@@ -65,6 +65,17 @@ python -m labs.protein_intelligence.report_cli target-report HTT \
 
 The command prints JSON. The output is intended to be easy to snapshot-test, inspect in reviews, and later feed into a read-only application panel.
 
+For review checklists or release notes, emit a compact validated summary:
+
+```bash
+python -m labs.protein_intelligence.report_cli target-report HTT \
+  --entities labs/protein_intelligence/examples/entities.json \
+  --manifest-path labs/protein_intelligence/manifests/ \
+  --summary
+```
+
+Every CLI payload is validated before it is written to stdout. Invalid generated payloads fail fast instead of quietly producing report-shaped nonsense.
+
 ## Report Shape
 
 A target report contains:
