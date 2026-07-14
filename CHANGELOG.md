@@ -9,6 +9,7 @@ All notable project changes are documented here. The project follows semantic ve
 - Protein Lab reports can now use saved reading-list papers as their source context.
 - Reading-list papers are converted into controlled entity mentions before being mapped to curated protein targets.
 - Target reports now preserve source record URLs and exact evidence passages from matched paper titles or abstracts.
+- A sidebar toggle switches UI explanations between simple and detailed help text.
 - OpenClaw patch artifacts are ignored locally so they do not accidentally enter release commits.
 
 ### Safety
