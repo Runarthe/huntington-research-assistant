@@ -10,6 +10,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "search_tab": "Search",
         "reading_list_tab": "Reading list",
         "evidence_tab": "Evidence explorer",
+        "protein_lab_tab": "Protein Lab (experimental)",
         "clinical_tab": "Trial tracker",
         "recent_tab": "Recent publications",
         "knowledge_tab": "Entity explorer (experimental)",
@@ -267,6 +268,29 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "entity_biomarker": "Biomarker",
         "entity_pathway": "Pathway or biological process",
         "entity_compound": "Compound",
+        "protein_lab_title": "Protein Lab (experimental)",
+        "protein_lab_intro": (
+            "This lab makes the protein-target infrastructure visible for review. "
+            "It uses curated identifiers and local provenance reports only."
+        ),
+        "protein_lab_scope": (
+            "No live model calls are made here. Reports are navigation/provenance artifacts, "
+            "not biological hypotheses, treatment rankings, or medical advice."
+        ),
+        "protein_lab_symbol": "Symbol",
+        "protein_lab_name": "Protein name",
+        "protein_lab_entity_id": "Entity ID",
+        "protein_lab_source": "Source record",
+        "protein_lab_choose_target": "Protein target",
+        "protein_lab_open_uniprot": "Open UniProt record",
+        "protein_lab_mapped_entities": "Mapped entities",
+        "protein_lab_manifests": "Local manifests",
+        "protein_lab_report_status": "Report status",
+        "protein_lab_planned_manifest": "Planned sequence manifest",
+        "protein_lab_target_report": "Read-only target report",
+        "protein_lab_download_report": "Download target report JSON",
+        "protein_lab_cli_title": "CLI checks",
+        "protein_lab_cli_help": "Equivalent offline commands for reviewing this target outside the app.",
     },
     "no": {
         "summary_style": "Oppsummeringsstil",
@@ -275,6 +299,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "search_tab": "Søk",
         "reading_list_tab": "Leseliste",
         "evidence_tab": "Evidensutforsker",
+        "protein_lab_tab": "Proteinlab (eksperimentell)",
         "clinical_tab": "Studieregister",
         "recent_tab": "Nylige publikasjoner",
         "knowledge_tab": "Begrepsutforsker (eksperimentell)",
@@ -533,6 +558,29 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "entity_biomarker": "Biomarkør",
         "entity_pathway": "Biologisk prosess eller signalvei",
         "entity_compound": "Forbindelse",
+        "protein_lab_title": "Proteinlab (eksperimentell)",
+        "protein_lab_intro": (
+            "Denne labben gjor proteinmal-infrastrukturen synlig for gjennomgang. "
+            "Den bruker kuraterte identifikatorer og lokale proveniensrapporter."
+        ),
+        "protein_lab_scope": (
+            "Ingen levende modellkall kjores her. Rapportene er navigasjon og proveniens, "
+            "ikke biologiske hypoteser, behandlingsrangeringer eller medisinske rad."
+        ),
+        "protein_lab_symbol": "Symbol",
+        "protein_lab_name": "Proteinnavn",
+        "protein_lab_entity_id": "Begreps-ID",
+        "protein_lab_source": "Kildepost",
+        "protein_lab_choose_target": "Proteinmal",
+        "protein_lab_open_uniprot": "Apne UniProt-post",
+        "protein_lab_mapped_entities": "Koblede begreper",
+        "protein_lab_manifests": "Lokale manifester",
+        "protein_lab_report_status": "Rapportstatus",
+        "protein_lab_planned_manifest": "Planlagt sekvensmanifest",
+        "protein_lab_target_report": "Skrivebeskyttet malrapport",
+        "protein_lab_download_report": "Last ned malrapport som JSON",
+        "protein_lab_cli_title": "CLI-sjekker",
+        "protein_lab_cli_help": "Tilsvarende offline-kommandoer for gjennomgang utenfor appen.",
     },
 }
 

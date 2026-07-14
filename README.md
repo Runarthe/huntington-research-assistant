@@ -2,7 +2,7 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The current release is **v0.5.0**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
+The current development version is **v0.6.0**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
 
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
@@ -38,13 +38,14 @@ This project is not affiliated with any medical association, including the Norwe
 - Export visible registered studies as CSV.
 - Include a dedicated view for recent publications from the last couple of years.
 - Explore source-linked genes, proteins, biomarkers, pathways, and compounds with canonical catalogue entries, exact evidence passages, and clearly labelled paper-level co-occurrences.
+- Review an experimental Protein Lab tab with curated HTT, BDNF, and NEFL identifiers, planned sequence manifests, and read-only provenance reports.
 - Offer English and Norwegian UI labels and safety disclaimers.
 - Offer English plain-language and research-detail summary modes.
 - Keep experimental Norwegian generation available to developers, but disabled by default until it passes linguistic and biomedical review.
 - Optionally summarize abstracts with a local Ollama model such as Qwen.
 - Keep a small local SQLite cache/history.
 - Continue to work without any LLM by showing retrieved papers only.
-- Keep optional scientific-AI experiments isolated in a documented Digital Biology Lab that is not required by the app.
+- Keep optional scientific-AI experiments isolated in a documented Digital Biology Lab that is not required for literature search.
 
 Norwegian UI labels and safety information are available. Norwegian translation of abstracts and generated summaries is planned for a later update; the current experimental implementation is disabled by default.
 

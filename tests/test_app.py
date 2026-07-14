@@ -49,3 +49,12 @@ def test_entity_explorer_builds_map_from_provider_response() -> None:
         subheader.value.startswith("Papers mentioning")
         for subheader in app.subheader
     )
+
+
+def test_protein_lab_tab_renders_without_live_calls() -> None:
+    st.cache_data.clear()
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+
+    assert not app.exception
+    assert "Protein Lab (experimental)" in {subheader.value for subheader in app.subheader}
+    assert any("No live model calls" in info.value for info in app.caption)

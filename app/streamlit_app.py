@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sqlite3
 import sys
+import json
 from datetime import date
 from math import ceil
 from pathlib import Path
@@ -10,6 +11,8 @@ import streamlit as st
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
 SRC_DIR = ROOT_DIR / "src"
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
@@ -74,6 +77,12 @@ from hra.tagging import TAG_KEYWORDS
 from hra.trial_filters import filter_trials, trial_filter_options
 from hra.ui_keys import summarize_button_key
 
+from labs.protein_intelligence import PROTEIN_TARGETS, planned_sequence_manifest
+from labs.protein_intelligence.entity_mapping import LiteratureEntity
+from labs.protein_intelligence.registry import build_manifest_registry
+from labs.protein_intelligence.reports import build_target_report
+from labs.protein_intelligence.report_validation import report_summary
+
 
 st.set_page_config(
     page_title="Huntington Research Assistant",
@@ -99,6 +108,7 @@ DEFAULT_TRIAL_STATUSES = [
 SOURCE_EUROPE_PMC = "Europe PMC"
 SOURCE_PUBMED = "PubMed"
 SOURCE_OPTIONS = [SOURCE_EUROPE_PMC, SOURCE_PUBMED]
+PROTEIN_MANIFEST_DIR = ROOT_DIR / "labs" / "protein_intelligence" / "manifests"
 
 
 @st.cache_data(show_spinner=False, ttl=900)
@@ -1300,6 +1310,129 @@ def run_knowledge_graph(language: str) -> None:
         )
 
 
+def run_protein_lab(language: str) -> None:
+    st.subheader(translate(language, "protein_lab_title"))
+    st.info(translate(language, "protein_lab_intro"))
+    st.caption(translate(language, "protein_lab_scope"))
+
+    target_rows = [
+        {
+            translate(language, "protein_lab_symbol"): target.symbol,
+            translate(language, "protein_lab_name"): target.name,
+            translate(language, "protein_lab_entity_id"): target.entity_id,
+            "UniProt": target.identifiers["uniprot"],
+            "HGNC": target.identifiers["hgnc"],
+            "NCBI Gene": target.identifiers["ncbi_gene"],
+            translate(language, "protein_lab_source"): target.uniprot_url,
+        }
+        for target in PROTEIN_TARGETS
+    ]
+    st.dataframe(
+        target_rows,
+        column_config={
+            translate(language, "protein_lab_source"): st.column_config.LinkColumn(
+                translate(language, "protein_lab_source"),
+                display_text="UniProt",
+            )
+        },
+        hide_index=True,
+        use_container_width=True,
+    )
+
+    selected_symbol = st.selectbox(
+        translate(language, "protein_lab_choose_target"),
+        options=[target.symbol for target in PROTEIN_TARGETS],
+        key=f"protein-lab-target-{language}",
+    )
+    selected_target = next(
+        target for target in PROTEIN_TARGETS if target.symbol == selected_symbol
+    )
+
+    id_col, uniprot_col, hgnc_col, ncbi_col = st.columns(4)
+    id_col.metric(
+        translate(language, "protein_lab_entity_id"),
+        selected_target.entity_id,
+    )
+    uniprot_col.metric("UniProt", selected_target.identifiers["uniprot"])
+    hgnc_col.metric("HGNC", selected_target.identifiers["hgnc"])
+    ncbi_col.metric("NCBI Gene", selected_target.identifiers["ncbi_gene"])
+    st.caption(selected_target.notes)
+    st.link_button(
+        translate(language, "protein_lab_open_uniprot"),
+        selected_target.uniprot_url,
+    )
+
+    entities = _protein_lab_entities()
+    manifest_records = build_manifest_registry((PROTEIN_MANIFEST_DIR,))
+    report = build_target_report(
+        selected_target.symbol,
+        entities=entities,
+        manifest_records=manifest_records,
+    )
+    summary = report_summary(report)
+    interpretation = report["interpretation"]
+
+    report_col, manifest_col, status_col = st.columns(3)
+    report_col.metric(
+        translate(language, "protein_lab_mapped_entities"),
+        summary["mapped_entity_count"],
+    )
+    manifest_col.metric(
+        translate(language, "protein_lab_manifests"),
+        summary["manifest_count"],
+    )
+    status_col.metric(
+        translate(language, "protein_lab_report_status"),
+        str(summary["interpretation_status"]),
+    )
+    st.caption(str(interpretation["claim_boundary"]))
+
+    with st.expander(translate(language, "protein_lab_planned_manifest")):
+        st.json(planned_sequence_manifest(selected_target), expanded=False)
+
+    with st.expander(translate(language, "protein_lab_target_report")):
+        st.json(report, expanded=False)
+
+    st.download_button(
+        translate(language, "protein_lab_download_report"),
+        data=json.dumps(report, indent=2, sort_keys=True).encode("utf-8"),
+        file_name=f"hra-protein-report-{selected_target.symbol.lower()}.json",
+        mime="application/json",
+        key=f"protein-lab-report-download-{selected_target.symbol}",
+    )
+
+    st.subheader(translate(language, "protein_lab_cli_title"))
+    st.caption(translate(language, "protein_lab_cli_help"))
+    st.code(
+        "\n".join(
+            [
+                "python -m labs.protein_intelligence list-targets",
+                f"python -m labs.protein_intelligence plan {selected_target.symbol}",
+                (
+                    "python -m labs.protein_intelligence.report_cli "
+                    f"target-report {selected_target.symbol} "
+                    "--entities labs/protein_intelligence/examples/entities.json "
+                    "--manifest-path labs/protein_intelligence/manifests "
+                    "--summary"
+                ),
+            ]
+        ),
+        language="powershell",
+    )
+
+
+def _protein_lab_entities() -> tuple[LiteratureEntity, ...]:
+    return tuple(
+        LiteratureEntity(
+            entity_id=target.entity_id,
+            label=target.name,
+            aliases=(target.symbol,),
+            entity_type="protein",
+        )
+        for target in PROTEIN_TARGETS
+    )
+
+
 def main() -> None:
     language_name = st.sidebar.selectbox(
         "Language / Språk",
@@ -1345,6 +1478,7 @@ def main() -> None:
         search_tab,
         reading_list_tab,
         evidence_tab,
+        protein_lab_tab,
         clinical_tab,
         recent_tab,
         knowledge_tab,
@@ -1353,6 +1487,7 @@ def main() -> None:
             translate(language, "search_tab"),
             translate(language, "reading_list_tab"),
             translate(language, "evidence_tab"),
+            translate(language, "protein_lab_tab"),
             translate(language, "clinical_tab"),
             translate(language, "recent_tab"),
             translate(language, "knowledge_tab"),
@@ -1386,6 +1521,9 @@ def main() -> None:
 
     with evidence_tab:
         run_evidence_explorer(cache, language)
+
+    with protein_lab_tab:
+        run_protein_lab(language)
 
     with recent_tab:
         run_search_panel(

@@ -2,6 +2,23 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.6.0] - 2026-07-14
+
+### Added
+
+- An experimental Protein Lab tab that makes the optional protein-target infrastructure visible in the Streamlit app.
+- Curated HTT, BDNF, and NEFL target cards with UniProt, HGNC, and NCBI Gene identifiers.
+- Read-only target reports, planned sequence manifests, report summaries, JSON downloads, and matching CLI commands.
+
+### Safety
+
+- The Protein Lab remains offline and provenance-only in the app. It does not run live model calls, rank targets, generate hypotheses, or provide medical guidance.
+
+### Known Limitations
+
+- Protein Lab reports are navigation/provenance artifacts only and are not biomedical conclusions.
+- Live UniProt retrieval, real protein embeddings, AlphaFold/NIM workflows, and BioNeMo integrations remain gated future work.
+
 ## [0.5.0] - 2026-07-03
 
 ### Added
