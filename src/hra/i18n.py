@@ -238,9 +238,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "trial_registry_unavailable": "The clinical trial tracker is unavailable: {error}",
         "more_trials_available": "The registry returned more studies than this view loaded. Refine the filters to narrow the result.",
         "recent_intro": (
-            "Recent publications are retrieved from Europe PMC and filtered by year. "
-            "They are not curated breakthroughs or medical recommendations."
+            "Recent publications use the same literature search workflow, but start with the last couple of years selected. "
+            "They are not curated breakthroughs, clinical guidance, or medical recommendations."
         ),
+        "recent_intro_simple": "Search newer Huntington-related papers from the last couple of years.",
         "knowledge_title": "Source-linked entity explorer",
         "knowledge_intro": (
             "A knowledge graph is a map of things and their connections. This preview "
@@ -369,16 +370,16 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "recent_tab": "Nylige publikasjoner",
         "knowledge_tab": "Begrepsutforsker (eksperimentell)",
         "search_tab_intro": (
-            "Sok i offisielle litteraturkilder. Appen utvider temaet med Huntington-relaterte begreper."
+            "Søk i offisielle litteraturkilder. Appen utvider temaet med Huntington-relaterte begreper."
         ),
-        "search_tab_intro_simple": "Sok i offisielle litteraturkilder om Huntington-relatert forskning.",
+        "search_tab_intro_simple": "Søk i offisielle litteraturkilder om Huntington-relatert forskning.",
         "research_topic": "Forskningstema",
         "research_topic_placeholder": "gendemping, biomarkører, kliniske studier...",
         "research_topic_help": "Skriv inn et forskningstema, ikke personlige helseopplysninger.",
         "research_topic_help_simple": "Skriv inn et forskningstema, ikke personlige helseopplysninger.",
         "literature_sources": "Litteraturkilder",
         "literature_sources_help": (
-            "Velg hvor det skal sokes. Europe PMC er nyttig for metadata og apen tilgang; PubMed er NCBIs offisielle litteraturindeks."
+            "Velg hvor det skal søkes. Europe PMC er nyttig for metadata og åpen tilgang; PubMed er NCBIs offisielle litteraturindeks."
         ),
         "literature_sources_help_simple": "Velg hvilke litteraturdatabaser som skal brukes.",
         "source_provider": "Kilde",
@@ -389,15 +390,15 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "category_filters": "Kategorifiltre",
         "category_filters_help": (
-            "Valgfrie temafiltre basert pa enkle nokkelord i tittel og abstrakt."
+            "Valgfrie temafiltre basert på enkle nøkkelord i tittel og abstrakt."
         ),
-        "category_filters_help_simple": "Valgfrie temafiltre basert pa nokkelord.",
+        "category_filters_help_simple": "Valgfrie temafiltre basert på nøkkelord.",
         "publication_year": "Publikasjonsår",
-        "publication_year_help": "Avgrens resultatene til publikasjoner fra denne arsperioden.",
-        "publication_year_help_simple": "Avgrens etter publikasjonsar.",
+        "publication_year_help": "Avgrens resultatene til publikasjoner fra denne årsperioden.",
+        "publication_year_help_simple": "Avgrens etter publikasjonsår.",
         "open_access_only": "Kun åpen tilgang",
         "open_access_only_help": (
-            "Vis bare poster som kilden markerer som apen tilgang nar slik metadata finnes."
+            "Vis bare poster som kilden markerer som åpen tilgang når slik metadata finnes."
         ),
         "open_access_only_help_simple": "Vis bare poster merket som apen tilgang.",
         "hide_saved_papers": "Skjul publikasjoner som allerede er i leselisten",
@@ -589,9 +590,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "trial_registry_unavailable": "Studieregisteret er utilgjengelig: {error}",
         "more_trials_available": "Registeret fant flere studier enn visningen lastet inn. Bruk filtrene for å avgrense resultatet.",
         "recent_intro": (
-            "Nylige publikasjoner hentes fra Europe PMC og filtreres etter år. "
-            "De er ikke kuraterte gjennombrudd eller medisinske anbefalinger."
+            "Nylige publikasjoner bruker samme litteratursøk, men starter med de siste par årene valgt. "
+            "De er ikke kuraterte gjennombrudd, klinisk veiledning eller medisinske anbefalinger."
         ),
+        "recent_intro_simple": "Søk etter nyere Huntington-relaterte artikler fra de siste par årene.",
         "knowledge_title": "Kildekoblet begrepsutforsker",
         "knowledge_intro": (
             "En knowledge graph, eller kunnskapsgraf, er et kart over ting og forbindelsene "

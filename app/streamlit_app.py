@@ -568,7 +568,7 @@ def run_search_panel(
     intro: str | None = None,
 ) -> None:
     if intro:
-        st.caption(intro)
+        st.info(intro)
 
     with st.form(f"{panel_key}-form"):
         query = st.text_input(
@@ -1705,7 +1705,7 @@ def main() -> None:
             explanation_mode=explanation_mode,
             cache=cache,
             default_year_start=CURRENT_YEAR - 2,
-            intro=translate(language, "recent_intro"),
+            intro=explanation(language, "recent_intro", explanation_mode),
         )
 
     with knowledge_tab:
