@@ -12,7 +12,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "evidence_tab": "Evidence explorer",
         "clinical_tab": "Trial tracker",
         "recent_tab": "Recent publications",
-        "knowledge_tab": "Research map (experimental)",
+        "knowledge_tab": "Entity explorer (experimental)",
         "research_topic": "Research topic",
         "research_topic_placeholder": "gene silencing, biomarkers, clinical trials...",
         "research_topic_help": "Enter a research topic, not personal health information.",
@@ -207,14 +207,15 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Recent publications are retrieved from Europe PMC and filtered by year. "
             "They are not curated breakthroughs or medical recommendations."
         ),
-        "knowledge_title": "Source-linked research map",
+        "knowledge_title": "Source-linked entity explorer",
         "knowledge_intro": (
             "A knowledge graph is a map of things and their connections. This preview "
-            "links catalogued genes, proteins, pathways, and compounds to papers that mention them."
+            "links catalogued genes, proteins, biomarkers, pathways, and compounds to papers that mention them."
         ),
         "knowledge_scope": (
             "Connections mean 'mentioned in' only. They do not establish causation, treatment "
-            "effect, clinical relevance, or evidence quality. Open the source paper to verify context."
+            "effect, clinical relevance, or evidence quality. Mention confidence describes only "
+            "the alias match. Open the source paper to verify context."
         ),
         "knowledge_search_section": "Find source papers",
         "knowledge_query": "Research-map topic",
@@ -245,8 +246,25 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "knowledge_evidence_location": "Found in",
         "knowledge_location_title": "title",
         "knowledge_location_abstract": "abstract",
+        "knowledge_catalog_id": "Catalogue ID",
+        "knowledge_catalog_version": "Catalogue version",
+        "knowledge_aliases": "Known aliases",
+        "knowledge_related_title": "Also catalogued in the same source papers",
+        "knowledge_related_help": (
+            "Shared papers are a navigation signal only. They do not establish a biological or clinical relationship."
+        ),
+        "knowledge_related_none": "No other selected entity types were catalogued in the same papers.",
+        "knowledge_related_entity": "Entity",
+        "knowledge_entity_type": "Entity type",
+        "knowledge_shared_papers": "Shared source papers",
+        "knowledge_extraction_method": "Extraction method",
+        "knowledge_method_controlled_vocabulary_alias": "controlled vocabulary alias",
+        "knowledge_confidence": "Mention confidence",
+        "knowledge_confidence_high": "high",
+        "knowledge_confidence_medium": "medium",
         "entity_gene": "Gene",
         "entity_protein": "Protein",
+        "entity_biomarker": "Biomarker",
         "entity_pathway": "Pathway or biological process",
         "entity_compound": "Compound",
     },
@@ -259,7 +277,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "evidence_tab": "Evidensutforsker",
         "clinical_tab": "Studieregister",
         "recent_tab": "Nylige publikasjoner",
-        "knowledge_tab": "Forskningskart (eksperimentelt)",
+        "knowledge_tab": "Begrepsutforsker (eksperimentell)",
         "research_topic": "Forskningstema",
         "research_topic_placeholder": "gendemping, biomarkører, kliniske studier...",
         "research_topic_help": "Skriv inn et forskningstema, ikke personlige helseopplysninger.",
@@ -454,15 +472,16 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Nylige publikasjoner hentes fra Europe PMC og filtreres etter år. "
             "De er ikke kuraterte gjennombrudd eller medisinske anbefalinger."
         ),
-        "knowledge_title": "Kildekoblet forskningskart",
+        "knowledge_title": "Kildekoblet begrepsutforsker",
         "knowledge_intro": (
             "En knowledge graph, eller kunnskapsgraf, er et kart over ting og forbindelsene "
-            "mellom dem. Denne prøveversjonen kobler registrerte gener, proteiner, biologiske "
-            "prosesser og forbindelser til artikler som nevner dem."
+            "mellom dem. Denne prøveversjonen kobler registrerte gener, proteiner, "
+            "biomarkører, prosesser og forbindelser til artikler som nevner dem."
         ),
         "knowledge_scope": (
             "Koblingene betyr bare 'nevnt i'. De viser ikke årsak, behandlingseffekt, klinisk "
-            "betydning eller evidenskvalitet. Åpne kildeartikkelen for å kontrollere sammenhengen."
+            "betydning eller evidenskvalitet. Treffsikkerheten gjelder bare gjenkjenning av "
+            "begrepet. Åpne kildeartikkelen for å kontrollere sammenhengen."
         ),
         "knowledge_search_section": "Finn kildeartikler",
         "knowledge_query": "Tema for forskningskartet",
@@ -493,8 +512,25 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "knowledge_evidence_location": "Funnet i",
         "knowledge_location_title": "tittel",
         "knowledge_location_abstract": "abstrakt",
+        "knowledge_catalog_id": "Katalog-ID",
+        "knowledge_catalog_version": "Katalogversjon",
+        "knowledge_aliases": "Alternative skrivemåter",
+        "knowledge_related_title": "Også registrert i de samme kildeartiklene",
+        "knowledge_related_help": (
+            "Felles artikler er bare et navigasjonssignal. De viser ikke en biologisk eller klinisk sammenheng."
+        ),
+        "knowledge_related_none": "Ingen andre valgte begrepstyper ble funnet i de samme artiklene.",
+        "knowledge_related_entity": "Begrep",
+        "knowledge_entity_type": "Begrepstype",
+        "knowledge_shared_papers": "Felles kildeartikler",
+        "knowledge_extraction_method": "Uttrekksmetode",
+        "knowledge_method_controlled_vocabulary_alias": "kontrollert ordliste",
+        "knowledge_confidence": "Treffsikkerhet for omtale",
+        "knowledge_confidence_high": "høy",
+        "knowledge_confidence_medium": "middels",
         "entity_gene": "Gen",
         "entity_protein": "Protein",
+        "entity_biomarker": "Biomarkør",
         "entity_pathway": "Biologisk prosess eller signalvei",
         "entity_compound": "Forbindelse",
     },

@@ -9,7 +9,11 @@ from pydantic import BaseModel, Field
 from hra.models import Paper
 
 
-EntityType = Literal["gene", "protein", "pathway", "compound"]
+EntityType = Literal["gene", "protein", "biomarker", "pathway", "compound"]
+MentionConfidence = Literal["high", "medium"]
+ExtractionMethod = Literal["controlled_vocabulary_alias"]
+
+ENTITY_CATALOG_VERSION = "0.5"
 
 
 @dataclass(frozen=True)
@@ -18,12 +22,15 @@ class ControlledEntity:
     name: str
     entity_type: EntityType
     aliases: tuple[str, ...]
+    case_sensitive_aliases: tuple[str, ...] = ()
+    medium_confidence_aliases: tuple[str, ...] = ()
 
 
 class KnowledgeEntity(BaseModel):
     id: str
     name: str
     entity_type: EntityType
+    aliases: list[str] = Field(default_factory=list)
 
 
 class EntityMention(BaseModel):
@@ -36,18 +43,35 @@ class EntityMention(BaseModel):
     matched_alias: str
     evidence: str
     evidence_location: Literal["title", "abstract"]
+    extraction_method: ExtractionMethod = "controlled_vocabulary_alias"
+    mention_confidence: MentionConfidence = "high"
+
+
+class EntityConnection(BaseModel):
+    """A paper-level co-occurrence, not an asserted biological relationship."""
+
+    entity_id: str
+    entity_name: str
+    entity_type: EntityType
+    shared_paper_count: int
+    paper_ids: list[str] = Field(default_factory=list)
 
 
 class ResearchMap(BaseModel):
     entities: list[KnowledgeEntity] = Field(default_factory=list)
     mentions: list[EntityMention] = Field(default_factory=list)
     paper_count: int = 0
+    catalog_version: str = ENTITY_CATALOG_VERSION
 
 
 ENTITY_CATALOG: tuple[ControlledEntity, ...] = (
     ControlledEntity("gene-htt", "HTT", "gene", ("HTT gene", "huntingtin gene")),
-    ControlledEntity("gene-msh3", "MSH3", "gene", ("MSH3",)),
-    ControlledEntity("gene-fan1", "FAN1", "gene", ("FAN1",)),
+    ControlledEntity(
+        "gene-msh3", "MSH3", "gene", ("MSH3",), case_sensitive_aliases=("MSH3",)
+    ),
+    ControlledEntity(
+        "gene-fan1", "FAN1", "gene", ("FAN1",), case_sensitive_aliases=("FAN1",)
+    ),
     ControlledEntity(
         "protein-huntingtin",
         "huntingtin protein",
@@ -55,12 +79,22 @@ ENTITY_CATALOG: tuple[ControlledEntity, ...] = (
         ("huntingtin protein", "mutant huntingtin", "mHTT"),
     ),
     ControlledEntity(
-        "protein-nfl",
+        "biomarker-nfl",
         "neurofilament light",
-        "protein",
-        ("neurofilament light", "neurofilament light chain", "NfL"),
+        "biomarker",
+        (
+            "neurofilament light",
+            "neurofilament light chain",
+            "plasma neurofilament light",
+            "CSF neurofilament light",
+            "NfL",
+        ),
+        case_sensitive_aliases=("NfL",),
+        medium_confidence_aliases=("NfL",),
     ),
-    ControlledEntity("protein-bdnf", "BDNF", "protein", ("BDNF",)),
+    ControlledEntity(
+        "protein-bdnf", "BDNF", "protein", ("BDNF",), case_sensitive_aliases=("BDNF",)
+    ),
     ControlledEntity("pathway-autophagy", "autophagy", "pathway", ("autophagy",)),
     ControlledEntity(
         "pathway-dna-repair",
@@ -108,15 +142,20 @@ ENTITY_CATALOG: tuple[ControlledEntity, ...] = (
 _SENTENCE_PATTERN = re.compile(r"(?<=[.!?])\s+")
 
 
-def _alias_pattern(alias: str) -> re.Pattern[str]:
+def _alias_pattern(alias: str, *, case_sensitive: bool = False) -> re.Pattern[str]:
     return re.compile(
         rf"(?<![A-Za-z0-9]){re.escape(alias)}(?![A-Za-z0-9])",
-        re.IGNORECASE,
+        0 if case_sensitive else re.IGNORECASE,
     )
 
 
-def _matching_evidence(text: str, alias: str) -> str | None:
-    pattern = _alias_pattern(alias)
+def _matching_evidence(
+    text: str,
+    alias: str,
+    *,
+    case_sensitive: bool = False,
+) -> str | None:
+    pattern = _alias_pattern(alias, case_sensitive=case_sensitive)
     for sentence in _SENTENCE_PATTERN.split(" ".join(text.split())):
         if pattern.search(sentence):
             return sentence.strip()
@@ -132,7 +171,11 @@ def extract_mentions(paper: Paper) -> list[EntityMention]:
         match: tuple[str, str, str] | None = None
         for location, text in sources:
             for alias in sorted(entity.aliases, key=len, reverse=True):
-                evidence = _matching_evidence(text, alias)
+                evidence = _matching_evidence(
+                    text,
+                    alias,
+                    case_sensitive=alias in entity.case_sensitive_aliases,
+                )
                 if evidence:
                     match = (location, alias, evidence)
                     break
@@ -153,6 +196,11 @@ def extract_mentions(paper: Paper) -> list[EntityMention]:
                 matched_alias=alias,
                 evidence=evidence,
                 evidence_location=location,
+                mention_confidence=(
+                    "medium"
+                    if alias in entity.medium_confidence_aliases
+                    else "high"
+                ),
             )
         )
     return mentions
@@ -166,6 +214,7 @@ def build_research_map(papers: list[Paper]) -> ResearchMap:
             id=entity.id,
             name=entity.name,
             entity_type=entity.entity_type,
+            aliases=list(entity.aliases),
         )
         for entity in ENTITY_CATALOG
         if entity.id in entity_ids
@@ -174,6 +223,44 @@ def build_research_map(papers: list[Paper]) -> ResearchMap:
         entities=entities,
         mentions=mentions,
         paper_count=len({mention.paper_id for mention in mentions}),
+    )
+
+
+def build_entity_connections(
+    research_map: ResearchMap,
+    selected_entity_id: str,
+) -> list[EntityConnection]:
+    """Find entities catalogued in the same papers as the selected entity."""
+
+    selected_papers = {
+        mention.paper_id
+        for mention in research_map.mentions
+        if mention.entity_id == selected_entity_id
+    }
+    papers_by_entity: dict[str, set[str]] = {}
+    for mention in research_map.mentions:
+        if mention.entity_id == selected_entity_id or mention.paper_id not in selected_papers:
+            continue
+        papers_by_entity.setdefault(mention.entity_id, set()).add(mention.paper_id)
+
+    entities = {entity.id: entity for entity in research_map.entities}
+    connections = [
+        EntityConnection(
+            entity_id=entity_id,
+            entity_name=entities[entity_id].name,
+            entity_type=entities[entity_id].entity_type,
+            shared_paper_count=len(paper_ids),
+            paper_ids=sorted(paper_ids),
+        )
+        for entity_id, paper_ids in papers_by_entity.items()
+        if entity_id in entities
+    ]
+    return sorted(
+        connections,
+        key=lambda connection: (
+            -connection.shared_paper_count,
+            connection.entity_name.casefold(),
+        ),
     )
 
 
@@ -215,6 +302,7 @@ def graphviz_dot(
     colors = {
         "gene": "#3b82f6",
         "protein": "#22c55e",
+        "biomarker": "#06b6d4",
         "pathway": "#f59e0b",
         "compound": "#ef4444",
     }

@@ -2,7 +2,25 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
-## [Unreleased]
+## [0.5.0] - 2026-07-03
+
+### Added
+
+- A structured entity-explorer foundation with versioned canonical entities, aliases, extraction method, and mention-confidence labels.
+- Biomarkers as a distinct catalogued entity type, beginning with neurofilament light.
+- Source-paper co-occurrence tables that help users find related terms without asserting biological relationships.
+- An eight-case maintainer-reviewed synthetic entity-extraction fixture with positive and negative alias examples.
+
+### Safety
+
+- Entity co-occurrence is labelled only as appearing in the same source papers and never as evidence of causation, efficacy, or clinical relevance.
+
+### Known Limitations
+
+- The v0.5 entity catalogue is intentionally small and deterministic; it will miss many valid entities.
+- The current entity-extraction fixture is synthetic regression coverage, not biomedical ground truth.
+- Stable external identifiers such as HGNC, UniProt, ChEBI, and Reactome mappings are planned but not included in this release.
+- Protein-sequence retrieval, embeddings, structure prediction, and BioNeMo/NIM experiments remain future Digital Biology Lab work and are not part of the core v0.5 application.
 
 ## [0.4.0] - 2026-06-29
 

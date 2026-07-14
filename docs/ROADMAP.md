@@ -84,17 +84,17 @@ Lab work should live under an isolated `labs/` area or optional package. It must
 - Resolve selected literature entities to stable external identifiers before running model inference.
 - Record model version, parameters, input, output, licence, runtime, and provenance for every experiment.
 
-## v0.5: Structured Research Map and Protein Intelligence Prototype
+## v0.5: Structured Entity Explorer (Released)
 
-### Research Map
+### Public-Good Application
 
-- Normalize genes, proteins, biomarkers, compounds, pathways, publications, and registered studies.
-- Keep every entity and relationship linked to the passage or registry field that supports it.
-- Begin with conservative relationships such as "mentioned in", "described in", and "registered intervention".
+- Normalize an initial catalogue of genes, proteins, biomarkers, compounds, and pathways found in publication titles and abstracts.
+- Keep every entity mention linked to the exact source passage that supports it.
+- Begin with conservative relationships such as "mentioned in" and paper-level co-occurrence.
 - Show extraction method and confidence without implying scientific consensus.
-- Evaluate extraction against a manually reviewed Huntington abstract set.
+- Add deterministic regression coverage for positive and negative alias examples.
 
-### Protein Intelligence Lab
+## v0.6: Protein Intelligence Lab Prototype
 
 - Retrieve selected protein sequences from authoritative databases with stable identifiers.
 - Generate protein embeddings with a documented protein language model such as ESM-2.
@@ -103,7 +103,7 @@ Lab work should live under an isolated `labs/` area or optional package. It must
 - Visualize structure confidence, including pLDDT or PAE where available.
 - Clearly separate literature evidence, database annotations, and model predictions.
 
-## v0.6: Evidence-Grounded Scientific Workflow
+## v0.7: Evidence-Grounded Scientific Workflow
 
 - Build one end-to-end, reproducible workflow before introducing multiple agents.
 - Connect publication, biomedical entity, authoritative sequence, model inference, confidence, and provenance.
@@ -122,7 +122,7 @@ Paper
   -> provenance-linked exploration
 ```
 
-## v0.7: Blueprint Experiment
+## v0.8: Blueprint Experiment
 
 - Study and reproduce a bounded NVIDIA digital-biology or virtual-screening Blueprint tutorial.
 - Document container deployment, API contracts, GPU requirements, observability, evaluation, and licensing.
