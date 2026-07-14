@@ -148,6 +148,18 @@ def test_mock_embedding_provider_is_deterministic() -> None:
     assert first.generated_at.isoformat() == "2026-07-04"
 
 
+def test_mock_embedding_provider_supports_more_than_one_digest() -> None:
+    record = retrieve_uniprot_sequence(
+        PROTEIN_TARGETS[1],
+        fetcher=lambda _url: ">BDNF\nACDEFG\n",
+        retrieved_at=date(2026, 7, 3),
+    )
+
+    embedding = MockEmbeddingProvider(dimensions=40).embed(record)
+
+    assert embedding.dimensions == 40
+
+
 def test_embedding_manifest_preserves_provenance_without_claims() -> None:
     record = retrieve_uniprot_sequence(
         PROTEIN_TARGETS[0],

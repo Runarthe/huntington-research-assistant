@@ -45,7 +45,7 @@ def registry_payload(records: Iterable[ManifestRegistryRecord]) -> dict[str, obj
         "record_count": len(materialized),
         "records": [record.__dict__ for record in materialized],
         "safety": {
-            "claim_boundary": "Registry entries describe lab artifact provenance, not biomedical conclusions.",
+            "claim_boundary": "Registry entries describe lab artifact provenance, not biomedical claims or conclusions.",
         },
     }
 

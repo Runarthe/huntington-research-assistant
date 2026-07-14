@@ -45,7 +45,7 @@ def build_target_report(
         },
         "interpretation": {
             "status": _interpretation_status(mappings, records),
-            "claim_boundary": "This report links curated literature and lab provenance only. It does not assert therapeutic relevance, causality, efficacy, or clinical suitability.",
+            "claim_boundary": "This report links curated literature and lab provenance only. It is not a biomedical claim and does not assert therapeutic relevance, causality, efficacy, or clinical suitability.",
         },
     }
 
@@ -83,7 +83,7 @@ def _target_payload(target: ProteinTarget) -> dict[str, object]:
         "name": target.name,
         "organism": target.organism,
         "identifiers": dict(target.identifiers),
-        "uniprot_url": target.uniprot_url(),
+        "uniprot_url": target.uniprot_url,
         "notes": target.notes,
     }
 

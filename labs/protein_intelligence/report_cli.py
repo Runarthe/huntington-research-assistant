@@ -116,7 +116,6 @@ def main(argv: list[str] | None = None) -> int:
     report_parser.add_argument(
         "--manifest-path",
         action="append",
-        default=(),
         help="Optional manifest JSON file or directory. May be repeated.",
     )
     report_parser.add_argument(
@@ -143,7 +142,7 @@ def main(argv: list[str] | None = None) -> int:
                 build_report_payload(
                     args.target,
                     entity_path=args.entities,
-                    manifest_paths=args.manifest_path,
+                    manifest_paths=args.manifest_path or (),
                     source_path=args.sources,
                     summary=args.summary,
                 )
