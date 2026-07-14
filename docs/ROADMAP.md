@@ -94,8 +94,9 @@ Lab work should live under an isolated `labs/` area or optional package. It must
 - Show extraction method and confidence without implying scientific consensus.
 - Add deterministic regression coverage for positive and negative alias examples.
 
-## v0.6: Protein Intelligence Lab Prototype
+## v0.6: Protein Intelligence Lab Prototype (In Progress)
 
+- Make selected protein targets visible in the app with stable identifiers, planned manifests, and read-only provenance reports.
 - Retrieve selected protein sequences from authoritative databases with stable identifiers.
 - Generate protein embeddings with a documented protein language model such as ESM-2.
 - Explore similarity as a model output, not as proof of shared biological function.
