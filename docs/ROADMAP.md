@@ -104,10 +104,11 @@ Lab work should live under an isolated `labs/` area or optional package. It must
 - Visualize structure confidence, including pLDDT or PAE where available.
 - Clearly separate literature evidence, database annotations, and model predictions.
 
-## v0.7: Evidence-Grounded Scientific Workflow
+## v0.7: Evidence-Grounded Scientific Workflow (In Progress)
 
 - Build one end-to-end, reproducible workflow before introducing multiple agents.
-- Connect publication, biomedical entity, authoritative sequence, model inference, confidence, and provenance.
+- Connect locally saved publications, controlled biomedical entities, curated protein targets, and provenance reports.
+- Preserve exact source-paper passages before introducing model inference, confidence, or generated synthesis.
 - Add a cited research-comparison workflow that cannot silently discard contradictory sources.
 - Label generated synthesis and keep sentence-level links to supporting evidence where possible.
 - Evaluate factual consistency, source coverage, uncertainty, latency, and cost.

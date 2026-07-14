@@ -286,9 +286,28 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "protein_lab_mapped_entities": "Mapped entities",
         "protein_lab_manifests": "Local manifests",
         "protein_lab_report_status": "Report status",
+        "protein_lab_report_source": "Report source",
+        "protein_lab_report_source_catalogue": "Curated target catalogue",
+        "protein_lab_report_source_reading_list": "Saved reading list",
         "protein_lab_planned_manifest": "Planned sequence manifest",
         "protein_lab_target_report": "Read-only target report",
         "protein_lab_download_report": "Download target report JSON",
+        "protein_lab_source_papers": "Source papers linked to this target",
+        "protein_lab_source_papers_help": (
+            "These papers come from the local reading list and are linked by controlled entity mentions only."
+        ),
+        "protein_lab_reading_list_unavailable": (
+            "Local reading-list storage is unavailable. Using catalogue entities."
+        ),
+        "protein_lab_no_reading_list_papers": (
+            "No saved reading-list papers are available. Using catalogue entities."
+        ),
+        "protein_lab_using_reading_list": (
+            "Using {count} saved reading-list source paper(s) with catalogued mentions for {symbol}."
+        ),
+        "protein_lab_no_target_mentions": (
+            "No saved reading-list papers mention this selected protein target through the current controlled entity catalogue."
+        ),
         "protein_lab_cli_title": "CLI checks",
         "protein_lab_cli_help": "Equivalent offline commands for reviewing this target outside the app.",
     },
@@ -576,9 +595,28 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "protein_lab_mapped_entities": "Koblede begreper",
         "protein_lab_manifests": "Lokale manifester",
         "protein_lab_report_status": "Rapportstatus",
+        "protein_lab_report_source": "Rapportkilde",
+        "protein_lab_report_source_catalogue": "Kurert malkatalog",
+        "protein_lab_report_source_reading_list": "Lagret leseliste",
         "protein_lab_planned_manifest": "Planlagt sekvensmanifest",
         "protein_lab_target_report": "Skrivebeskyttet malrapport",
         "protein_lab_download_report": "Last ned malrapport som JSON",
+        "protein_lab_source_papers": "Kildeartikler koblet til dette malet",
+        "protein_lab_source_papers_help": (
+            "Disse artiklene kommer fra den lokale leselisten og kobles bare via kontrollerte begrepstreff."
+        ),
+        "protein_lab_reading_list_unavailable": (
+            "Lokal leseliste er utilgjengelig. Bruker kuraterte katalogbegreper."
+        ),
+        "protein_lab_no_reading_list_papers": (
+            "Ingen lagrede leselisteartikler er tilgjengelige. Bruker kuraterte katalogbegreper."
+        ),
+        "protein_lab_using_reading_list": (
+            "Bruker {count} lagrede kildeartikkel/artikler fra leselisten med katalogtreff for {symbol}."
+        ),
+        "protein_lab_no_target_mentions": (
+            "Ingen lagrede leselisteartikler nevner dette proteinmalet gjennom den gjeldende kontrollerte begrepskatalogen."
+        ),
         "protein_lab_cli_title": "CLI-sjekker",
         "protein_lab_cli_help": "Tilsvarende offline-kommandoer for gjennomgang utenfor appen.",
     },

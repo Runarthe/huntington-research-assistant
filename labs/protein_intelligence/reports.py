@@ -29,6 +29,7 @@ def build_target_report(
         if mapping.target.entity_id == target.entity_id
     )
     records = records_for_target(manifest_records, target.symbol)
+    sources = tuple(source_records)
 
     return {
         "schema_version": "protein-target-report.v1",
@@ -36,8 +37,8 @@ def build_target_report(
         "literature": {
             "mapped_entity_count": len(mappings),
             "mappings": [mapping_manifest(mapping) for mapping in mappings],
-            "source_count": len(tuple(source_records)),
-            "sources": [_source_payload(source) for source in source_records],
+            "source_count": len(sources),
+            "sources": [_source_payload(source) for source in sources],
         },
         "lab_artifacts": {
             "manifest_count": len(records),
@@ -93,7 +94,9 @@ def _source_payload(source: Mapping[str, object]) -> dict[str, object]:
         "id": source.get("id") or source.get("source_id"),
         "title": source.get("title"),
         "year": source.get("year"),
+        "source_url": source.get("source_url"),
         "matched_terms": list(source.get("matched_terms", ())),
+        "evidence_passages": list(source.get("evidence_passages", ())),
     }
 
 

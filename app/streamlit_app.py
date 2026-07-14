@@ -48,6 +48,7 @@ from hra.export import (
 from hra.filters import filter_local_reading_state
 from hra.i18n import LANGUAGE_OPTIONS, translate
 from hra.knowledge_graph import (
+    EntityMention,
     build_entity_connections,
     build_research_map,
     graphviz_dot,
@@ -78,7 +79,7 @@ from hra.trial_filters import filter_trials, trial_filter_options
 from hra.ui_keys import summarize_button_key
 
 from labs.protein_intelligence import PROTEIN_TARGETS, planned_sequence_manifest
-from labs.protein_intelligence.entity_mapping import LiteratureEntity
+from labs.protein_intelligence.entity_mapping import LiteratureEntity, map_entities_to_targets
 from labs.protein_intelligence.registry import build_manifest_registry
 from labs.protein_intelligence.reports import build_target_report
 from labs.protein_intelligence.report_validation import report_summary
@@ -1310,7 +1311,7 @@ def run_knowledge_graph(language: str) -> None:
         )
 
 
-def run_protein_lab(language: str) -> None:
+def run_protein_lab(language: str, cache: SearchCache | None) -> None:
     st.subheader(translate(language, "protein_lab_title"))
     st.info(translate(language, "protein_lab_intro"))
     st.caption(translate(language, "protein_lab_scope"))
@@ -1362,12 +1363,32 @@ def run_protein_lab(language: str) -> None:
         selected_target.uniprot_url,
     )
 
-    entities = _protein_lab_entities()
+    report_source = st.radio(
+        translate(language, "protein_lab_report_source"),
+        options=["catalogue", "reading_list"],
+        format_func=lambda value: translate(
+            language,
+            f"protein_lab_report_source_{value}",
+        ),
+        horizontal=True,
+        key=f"protein-lab-report-source-{language}",
+    )
+
+    entities, source_records, source_note = _protein_lab_report_inputs(
+        report_source,
+        selected_target.symbol,
+        cache,
+        language,
+    )
+    if source_note:
+        st.caption(source_note)
+
     manifest_records = build_manifest_registry((PROTEIN_MANIFEST_DIR,))
     report = build_target_report(
         selected_target.symbol,
         entities=entities,
         manifest_records=manifest_records,
+        source_records=source_records,
     )
     summary = report_summary(report)
     interpretation = report["interpretation"]
@@ -1401,6 +1422,31 @@ def run_protein_lab(language: str) -> None:
         key=f"protein-lab-report-download-{selected_target.symbol}",
     )
 
+    if source_records:
+        st.subheader(translate(language, "protein_lab_source_papers"))
+        st.caption(translate(language, "protein_lab_source_papers_help"))
+        st.dataframe(
+            [
+                {
+                    translate(language, "evidence_paper"): record["title"],
+                    translate(language, "year"): record["year"] or "-",
+                    translate(language, "knowledge_matched_term"): ", ".join(
+                        record["matched_terms"]
+                    ),
+                    translate(language, "source_record"): record["source_url"],
+                }
+                for record in source_records
+            ],
+            column_config={
+                translate(language, "source_record"): st.column_config.LinkColumn(
+                    translate(language, "source_record"),
+                    display_text=translate(language, "evidence_open_source"),
+                )
+            },
+            hide_index=True,
+            use_container_width=True,
+        )
+
     st.subheader(translate(language, "protein_lab_cli_title"))
     st.caption(translate(language, "protein_lab_cli_help"))
     st.code(
@@ -1431,6 +1477,94 @@ def _protein_lab_entities() -> tuple[LiteratureEntity, ...]:
         )
         for target in PROTEIN_TARGETS
     )
+
+
+def _protein_lab_report_inputs(
+    report_source: str,
+    selected_symbol: str,
+    cache: SearchCache | None,
+    language: str,
+) -> tuple[tuple[LiteratureEntity, ...], tuple[dict[str, object], ...], str | None]:
+    if report_source != "reading_list":
+        return _protein_lab_entities(), (), None
+
+    if cache is None:
+        return (
+            _protein_lab_entities(),
+            (),
+            translate(language, "protein_lab_reading_list_unavailable"),
+        )
+
+    papers = safe_reading_list_papers(cache)
+    if not papers:
+        return (
+            _protein_lab_entities(),
+            (),
+            translate(language, "protein_lab_no_reading_list_papers"),
+        )
+
+    research_map = build_research_map(papers)
+    entities = tuple(
+        LiteratureEntity(
+            entity_id=entity.id,
+            label=entity.name,
+            aliases=tuple(entity.aliases),
+            entity_type=entity.entity_type,
+        )
+        for entity in research_map.entities
+    )
+    mappings = map_entities_to_targets(entities)
+    mapped_entity_ids = {
+        mapping.entity.entity_id
+        for mapping in mappings
+        if mapping.target.symbol == selected_symbol
+    }
+    source_records = _protein_lab_source_records(
+        research_map.mentions,
+        mapped_entity_ids,
+        {paper.id: paper.year for paper in papers},
+    )
+    note = (
+        translate(
+            language,
+            "protein_lab_using_reading_list",
+            count=len(source_records),
+            symbol=selected_symbol,
+        )
+    )
+    if not source_records:
+        note = translate(
+            language,
+            "protein_lab_no_target_mentions",
+        )
+    return entities or _protein_lab_entities(), source_records, note
+
+
+def _protein_lab_source_records(
+    mentions: list[EntityMention],
+    mapped_entity_ids: set[str],
+    years_by_paper_id: dict[str, int | None],
+) -> tuple[dict[str, object], ...]:
+    records_by_paper: dict[str, dict[str, object]] = {}
+    for mention in mentions:
+        if mention.entity_id not in mapped_entity_ids:
+            continue
+        record = records_by_paper.setdefault(
+            mention.paper_id,
+            {
+                "id": mention.paper_id,
+                "title": mention.paper_title,
+                "year": years_by_paper_id.get(mention.paper_id),
+                "source_url": mention.source_url,
+                "matched_terms": [],
+                "evidence_passages": [],
+            },
+        )
+        if mention.matched_alias not in record["matched_terms"]:
+            record["matched_terms"].append(mention.matched_alias)
+        if mention.evidence not in record["evidence_passages"]:
+            record["evidence_passages"].append(mention.evidence)
+    return tuple(records_by_paper.values())
 
 
 def main() -> None:
@@ -1523,7 +1657,7 @@ def main() -> None:
         run_evidence_explorer(cache, language)
 
     with protein_lab_tab:
-        run_protein_lab(language)
+        run_protein_lab(language, cache)
 
     with recent_tab:
         run_search_panel(
