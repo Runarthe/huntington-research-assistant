@@ -2,6 +2,17 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.8.1] - Unreleased
+
+### Added
+
+- Added a Blueprint provider contract for future live adapters.
+- Added a mock provider implementation and gated live-provider placeholder.
+
+### Safety
+
+- Live provider families can be planned but still cannot execute without a future explicit adapter.
+
 ## [0.8.0] - 2026-07-15
 
 ### Added
