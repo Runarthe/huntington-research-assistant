@@ -108,3 +108,5 @@ Reasonable v0.8 candidates:
 - reviewed external identifier expansion;
 - optional provider adapters behind explicit local configuration;
 - richer manifest registry summaries.
+
+The first bounded v0.8 planning notes are in [V0_8_BLUEPRINT_PLAN.md](V0_8_BLUEPRINT_PLAN.md).

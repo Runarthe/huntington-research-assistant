@@ -2,6 +2,15 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.7.1] - 2026-07-15
+
+### Changed
+
+- Marked the v0.7 documentation as released rather than in-progress.
+- Added clearer v0.8 planning notes for a bounded Digital Biology Blueprint experiment.
+- Added Streamlit troubleshooting notes for stale local servers and confusing localhost ports.
+- Clarified README release wording and near-term roadmap links.
+
 ## [0.7.0] - 2026-07-14
 
 ### Added
