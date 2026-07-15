@@ -11,6 +11,7 @@ It is deliberately separate from the Streamlit application. The core Huntington 
 - A deterministic offline mock run using curated protein targets from `labs.protein_intelligence`.
 - CLI helpers for planning, mock execution, and manifest validation.
 - Tests that exercise the scaffold without live provider calls.
+- A provider contract that keeps future live adapters gated by default.
 
 ## What This Does Not Add
 
@@ -46,6 +47,8 @@ Validate a manifest:
 ```bash
 python -m labs.blueprint_experiments validate-manifest labs/blueprint_experiments/examples/mock-htt-manifest.json
 ```
+
+Future provider adapters should follow [PROVIDER_CONTRACT.md](PROVIDER_CONTRACT.md). Live provider families are planning targets only until an explicit adapter is implemented and reviewed.
 
 ## Safety Boundary
 
