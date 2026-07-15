@@ -2,7 +2,7 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The current development version is **v0.7.0**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
+The current released version is **v0.7.1**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
 
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
@@ -123,6 +123,8 @@ The workflow is defined in [`.github/workflows/tests.yml`](.github/workflows/tes
 streamlit run app/streamlit_app.py
 ```
 
+If the app appears to show stale labels or old behavior, check that you are using the newest Streamlit server. Older local servers can keep running on previous ports. See [docs/STREAMLIT_TROUBLESHOOTING.md](docs/STREAMLIT_TROUBLESHOOTING.md).
+
 ## Optional Local Summaries
 
 Summaries are optional and run locally through [Ollama](https://ollama.com/). No cloud LLM API key is used or needed. English summaries use the small Qwen 2.5 1.5B model:
@@ -169,9 +171,11 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-Near-term priorities include reviewed entity extraction, stable biomedical identifiers, Norwegian refinement, accessibility testing, stronger summary evaluation, and an optional protein-intelligence lab prototype. Optional BioNeMo, NIM, Blueprint, and protein-model experiments remain in a separate Digital Biology Lab and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
+Near-term priorities include a small v0.8 Digital Biology Blueprint experiment, reviewed entity extraction, stable biomedical identifiers, Norwegian refinement, accessibility testing, and stronger summary evaluation. Optional BioNeMo, NIM, Blueprint, and protein-model experiments remain in a separate Digital Biology Lab and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
+
+The first v0.8 planning notes are in [docs/V0_8_BLUEPRINT_PLAN.md](docs/V0_8_BLUEPRINT_PLAN.md).
 
 Norwegian quality and accessibility are documented in [docs/NORWEGIAN_LANGUAGE.md](docs/NORWEGIAN_LANGUAGE.md) and [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
 

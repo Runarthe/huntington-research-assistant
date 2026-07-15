@@ -94,24 +94,18 @@ Lab work should live under an isolated `labs/` area or optional package. It must
 - Show extraction method and confidence without implying scientific consensus.
 - Add deterministic regression coverage for positive and negative alias examples.
 
-## v0.6: Protein Intelligence Lab Prototype (In Progress)
+## v0.6: Protein Intelligence Lab Prototype (Released)
 
 - Make selected protein targets visible in the app with stable identifiers, planned manifests, and read-only provenance reports.
-- Retrieve selected protein sequences from authoritative databases with stable identifiers.
-- Generate protein embeddings with a documented protein language model such as ESM-2.
-- Explore similarity as a model output, not as proof of shared biological function.
-- Evaluate an AlphaFold or compatible NIM workflow on a bounded educational example.
-- Visualize structure confidence, including pLDDT or PAE where available.
-- Clearly separate literature evidence, database annotations, and model predictions.
+- Keep live retrieval, embeddings, AlphaFold/NIM workflows, and model inference gated outside the core app.
+- Clearly separate literature evidence, database annotations, planned manifests, and future model predictions.
 
-## v0.7: Evidence-Grounded Scientific Workflow (In Progress)
+## v0.7: Evidence-Grounded Scientific Workflow (Released)
 
 - Build one end-to-end, reproducible workflow before introducing multiple agents.
 - Connect locally saved publications, controlled biomedical entities, curated protein targets, and provenance reports.
 - Preserve exact source-paper passages before introducing model inference, confidence, or generated synthesis.
-- Add a cited research-comparison workflow that cannot silently discard contradictory sources.
-- Label generated synthesis and keep sentence-level links to supporting evidence where possible.
-- Evaluate factual consistency, source coverage, uncertainty, latency, and cost.
+- Keep generated synthesis, live inference, and multi-agent workflows out of the release until source coverage and factual-consistency checks are stronger.
 
 Example experimental flow:
 
@@ -131,6 +125,8 @@ Paper
 - Keep generated proteins or compounds in the experimental lab.
 - Do not claim that a generated molecule, protein, or model output is safe, effective, or a treatment for Huntington's disease.
 - Only promote lab components into the main application when they solve a demonstrated user need.
+
+See [V0_8_BLUEPRINT_PLAN.md](V0_8_BLUEPRINT_PLAN.md) for the initial experiment plan.
 
 ## Toward v1.0
 
