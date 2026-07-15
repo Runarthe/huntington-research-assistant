@@ -118,13 +118,14 @@ Paper
   -> provenance-linked exploration
 ```
 
-## v0.8: Blueprint Experiment
+## v0.8: Blueprint Experiment (In Progress)
 
 - Study and reproduce a bounded NVIDIA digital-biology or virtual-screening Blueprint tutorial.
 - Document container deployment, API contracts, GPU requirements, observability, evaluation, and licensing.
 - Keep generated proteins or compounds in the experimental lab.
 - Do not claim that a generated molecule, protein, or model output is safe, effective, or a treatment for Huntington's disease.
 - Only promote lab components into the main application when they solve a demonstrated user need.
+- Start with an offline scaffold that records planned provider families, mock output, provenance, and safety boundaries before any live provider is connected.
 
 See [V0_8_BLUEPRINT_PLAN.md](V0_8_BLUEPRINT_PLAN.md) for the initial experiment plan.
 

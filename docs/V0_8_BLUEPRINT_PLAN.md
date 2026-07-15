@@ -55,3 +55,7 @@ A good v0.8 release can be small:
 - a short report explaining what was learned and what remains gated.
 
 That is enough to move toward scientific foundation models without weakening the core public-good application.
+
+## Scaffold Status
+
+The initial scaffold lives in `labs/blueprint_experiments/`. It supports offline planning and mock manifests first. Live NVIDIA NIM, BioNeMo, AlphaFold, and Blueprint adapters remain future gated work.

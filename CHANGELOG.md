@@ -2,6 +2,20 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.8.0] - Unreleased
+
+### Added
+
+- Added an isolated Blueprint Experiments Lab scaffold under `labs/blueprint_experiments`.
+- Added a Blueprint-style manifest contract for planned and generated lab artifacts.
+- Added offline CLI helpers for listing provider families, planning gated experiments, running deterministic mock output, and validating manifests.
+- Added a deterministic HTT mock manifest fixture with explicit safety boundaries and no live provider calls.
+
+### Safety
+
+- The v0.8 scaffold does not run NVIDIA NIM, BioNeMo, AlphaFold, Blueprint workflows, GPU inference, or any live provider by default.
+- Mock outputs are fixture values for engineering tests only and are not structural predictions, biomedical findings, or clinical evidence.
+
 ## [0.7.1] - 2026-07-15
 
 ### Changed

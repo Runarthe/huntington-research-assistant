@@ -1,0 +1,124 @@
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from datetime import date
+from pathlib import Path
+
+from .manifests import (
+    BlueprintManifestValidationError,
+    VALID_PROVIDER_TYPES,
+    manifest_summary,
+    mock_blueprint_manifest,
+    planned_blueprint_manifest,
+)
+
+
+def _date_arg(value: str | None) -> date | None:
+    return date.fromisoformat(value) if value else None
+
+
+def _write_json(payload: object) -> None:
+    json.dump(payload, sys.stdout, indent=2, sort_keys=True)
+    sys.stdout.write("\n")
+
+
+def validate_manifest_file(path: str) -> dict[str, object]:
+    payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise BlueprintManifestValidationError("Manifest JSON must be an object.")
+    return manifest_summary(payload)
+
+
+def provider_payload() -> dict[str, object]:
+    return {
+        "schema_version": "blueprint-provider-catalogue.v1",
+        "providers": sorted(VALID_PROVIDER_TYPES),
+        "default": "mock",
+        "safety": {
+            "claim_boundary": "Provider names are integration targets, not validated biomedical capability claims.",
+        },
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        prog="python -m labs.blueprint_experiments",
+        description="Offline-safe v0.8 Blueprint Experiment scaffold.",
+    )
+    subparsers = parser.add_subparsers(dest="command", required=True)
+
+    subparsers.add_parser(
+        "list-providers",
+        help="List provider types supported by the manifest contract.",
+    )
+
+    plan_parser = subparsers.add_parser(
+        "plan",
+        help="Print a planned Blueprint-style experiment manifest.",
+    )
+    plan_parser.add_argument("target", help="Target symbol, entity ID, or UniProt ID.")
+    plan_parser.add_argument(
+        "--provider-type",
+        choices=sorted(VALID_PROVIDER_TYPES),
+        default="mock",
+        help="Provider family to plan for. Default: mock.",
+    )
+    plan_parser.add_argument("--date", help="ISO date to record in the manifest.")
+
+    mock_parser = subparsers.add_parser(
+        "run-mock",
+        help="Print a deterministic mock output manifest. No provider is called.",
+    )
+    mock_parser.add_argument("target", help="Target symbol, entity ID, or UniProt ID.")
+    mock_parser.add_argument("--date", help="ISO date to record in the manifest.")
+    mock_parser.add_argument(
+        "--points",
+        type=int,
+        default=8,
+        help="Number of mock confidence points to generate.",
+    )
+
+    validate_parser = subparsers.add_parser(
+        "validate-manifest",
+        help="Validate a Blueprint experiment manifest and print a compact summary.",
+    )
+    validate_parser.add_argument("path", help="Path to manifest JSON.")
+
+    args = parser.parse_args(argv)
+
+    try:
+        if args.command == "list-providers":
+            _write_json(provider_payload())
+            return 0
+        if args.command == "plan":
+            _write_json(
+                planned_blueprint_manifest(
+                    args.target,
+                    provider_type=args.provider_type,
+                    planned_at=_date_arg(args.date),
+                )
+            )
+            return 0
+        if args.command == "run-mock":
+            _write_json(
+                mock_blueprint_manifest(
+                    args.target,
+                    generated_at=_date_arg(args.date),
+                    points=args.points,
+                )
+            )
+            return 0
+        if args.command == "validate-manifest":
+            _write_json(validate_manifest_file(args.path))
+            return 0
+    except (KeyError, ValueError, OSError, json.JSONDecodeError) as exc:
+        parser.exit(2, f"{exc}\n")
+
+    parser.exit(2, "Unknown command.\n")
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
