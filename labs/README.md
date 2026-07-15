@@ -28,6 +28,8 @@ Every experiment should include a manifest based on [`experiment-manifest.exampl
 
 Experiments should support a mock or fixture-driven path where practical so their integration code can be tested without a GPU, paid service, or NVIDIA account.
 
+The initial v0.8 Blueprint-style scaffold lives in [`blueprint_experiments/`](blueprint_experiments/). It records planned providers, deterministic mock output, provenance, and safety boundaries before any live provider adapter is added.
+
 ## Planned Sequence
 
 1. Resolve selected literature entities to authoritative database identifiers. The initial v0.6 target catalogue lives in [`protein_intelligence/`](protein_intelligence/).

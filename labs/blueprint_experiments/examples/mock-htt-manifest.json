@@ -1,0 +1,79 @@
+{
+  "evaluation": {
+    "limitations": [
+      "Mock confidence values are not pLDDT, PAE, structural evidence, or biological predictions.",
+      "No NIM, BioNeMo, AlphaFold, Blueprint, or GPU workflow was executed.",
+      "No treatment, diagnosis, trial suitability, efficacy, or safety claim is produced."
+    ],
+    "method": "fixture shape, determinism, and manifest completeness checks"
+  },
+  "experiment_id": "blueprint-mock-htt",
+  "inputs": [
+    {
+      "entity_id": "protein-huntingtin",
+      "identifiers": {
+        "hgnc": "HGNC:4851",
+        "ncbi_gene": "3064",
+        "uniprot": "P42858"
+      },
+      "name": "huntingtin",
+      "organism": "Homo sapiens",
+      "recorded_at": "2026-07-15",
+      "source_url": "https://www.uniprot.org/uniprotkb/P42858/entry",
+      "symbol": "HTT"
+    }
+  ],
+  "model": {
+    "licence": "fixture-only; replace before real provider use",
+    "name": "deterministic-blueprint-fixture",
+    "provider": "mock",
+    "version": "0.1"
+  },
+  "outputs": {
+    "artifact_type": "mock_structure_confidence",
+    "confidence_measures": [
+      {
+        "description": "Deterministic fixture values for plumbing tests only.",
+        "mean": 0.551961,
+        "name": "mock_confidence",
+        "values": [
+          0.467647,
+          0.669608,
+          0.732353,
+          0.353922,
+          0.50098,
+          0.622549,
+          0.414706,
+          0.653922
+        ]
+      }
+    ],
+    "generated_at": "2026-07-15",
+    "path": "outputs/blueprint-experiments/mock/htt/mock-confidence.json"
+  },
+  "provider_type": "mock",
+  "purpose": "Exercise the Blueprint experiment manifest and provenance plumbing with deterministic fixture output. This is not a scientific model run.",
+  "runtime": {
+    "container": "not-applicable",
+    "hardware": "cpu",
+    "interface": "offline-fixture",
+    "parameters": {
+      "points": 8,
+      "seed": "P42858"
+    },
+    "requires_live_provider": false
+  },
+  "safety": {
+    "claim_boundary": "This artifact is for scientific-AI engineering practice and provenance navigation only. It is not medical advice, clinical evidence, a treatment recommendation, or a validated biomedical finding.",
+    "disallowed_uses": [
+      "diagnosis",
+      "treatment recommendations",
+      "personalized health guidance",
+      "trial matching or eligibility interpretation",
+      "claims about safety, efficacy, causality, or clinical suitability"
+    ],
+    "provider_type": "mock"
+  },
+  "schema_version": "blueprint-experiment-manifest.v1",
+  "status": "generated"
+}
