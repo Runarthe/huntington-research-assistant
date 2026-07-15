@@ -83,6 +83,15 @@ from labs.protein_intelligence.entity_mapping import LiteratureEntity, map_entit
 from labs.protein_intelligence.registry import build_manifest_registry
 from labs.protein_intelligence.reports import build_target_report
 from labs.protein_intelligence.report_validation import report_summary
+from labs.blueprint_experiments.manifests import (
+    VALID_PROVIDER_TYPES,
+    mock_blueprint_manifest,
+    planned_blueprint_manifest,
+)
+from labs.blueprint_experiments.registry import (
+    build_blueprint_registry,
+    registry_payload as blueprint_registry_payload,
+)
 
 
 st.set_page_config(
@@ -110,6 +119,7 @@ SOURCE_EUROPE_PMC = "Europe PMC"
 SOURCE_PUBMED = "PubMed"
 SOURCE_OPTIONS = [SOURCE_EUROPE_PMC, SOURCE_PUBMED]
 PROTEIN_MANIFEST_DIR = ROOT_DIR / "labs" / "protein_intelligence" / "manifests"
+BLUEPRINT_EXAMPLES_DIR = ROOT_DIR / "labs" / "blueprint_experiments" / "examples"
 
 
 def explanation(language: str, key: str, mode: str) -> str:
@@ -1484,6 +1494,135 @@ def run_protein_lab(
                     "--entities labs/protein_intelligence/examples/entities.json "
                     "--manifest-path labs/protein_intelligence/manifests "
                     "--summary"
+                ),
+            ]
+        ),
+        language="powershell",
+    )
+
+    st.divider()
+    _render_blueprint_lab_preview(language, explanation_mode)
+
+
+def _render_blueprint_lab_preview(language: str, explanation_mode: str) -> None:
+    st.subheader(translate(language, "blueprint_lab_title"))
+    st.info(translate(language, "blueprint_lab_intro"))
+    st.caption(translate(language, "blueprint_lab_scope"))
+
+    provider_options = sorted(VALID_PROVIDER_TYPES)
+    selected_provider = st.selectbox(
+        translate(language, "blueprint_lab_provider"),
+        options=provider_options,
+        index=provider_options.index("mock"),
+        format_func=lambda value: translate(language, f"blueprint_provider_{value}"),
+        help=explanation(language, "blueprint_lab_provider_help", explanation_mode),
+        key=f"blueprint-lab-provider-{language}",
+    )
+    selected_symbol = st.selectbox(
+        translate(language, "blueprint_lab_target"),
+        options=[target.symbol for target in PROTEIN_TARGETS],
+        help=explanation(language, "blueprint_lab_target_help", explanation_mode),
+        key=f"blueprint-lab-target-{language}",
+    )
+
+    registry = blueprint_registry_payload(
+        build_blueprint_registry((BLUEPRINT_EXAMPLES_DIR,))
+    )
+    count_col, valid_col, invalid_col = st.columns(3)
+    count_col.metric(
+        translate(language, "blueprint_lab_registry_records"),
+        registry["record_count"],
+    )
+    valid_col.metric(
+        translate(language, "blueprint_lab_registry_valid"),
+        registry["valid_count"],
+    )
+    invalid_col.metric(
+        translate(language, "blueprint_lab_registry_invalid"),
+        registry["invalid_count"],
+    )
+    st.caption(registry["safety"]["claim_boundary"])
+
+    records = registry["records"]
+    if records:
+        st.dataframe(
+            [
+                {
+                    translate(language, "blueprint_lab_experiment_id"): record[
+                        "experiment_id"
+                    ],
+                    translate(language, "blueprint_lab_provider"): translate(
+                        language,
+                        f"blueprint_provider_{record['provider_type']}",
+                    )
+                    if record["provider_type"] in VALID_PROVIDER_TYPES
+                    else record["provider_type"],
+                    translate(language, "blueprint_lab_status"): record["status"],
+                    translate(language, "blueprint_lab_targets"): ", ".join(
+                        record["target_symbols"]
+                    ),
+                    translate(language, "blueprint_lab_artifact_type"): record[
+                        "artifact_type"
+                    ]
+                    or "-",
+                    translate(language, "blueprint_lab_valid"): record["valid"],
+                    translate(language, "blueprint_lab_checksum"): record["checksum"][
+                        :12
+                    ],
+                }
+                for record in records
+            ],
+            hide_index=True,
+            use_container_width=True,
+        )
+    else:
+        st.info(translate(language, "blueprint_lab_no_registry_records"))
+
+    planned_manifest = planned_blueprint_manifest(
+        selected_symbol,
+        provider_type=selected_provider,
+    )
+    mock_manifest = mock_blueprint_manifest(selected_symbol)
+
+    with st.expander(translate(language, "blueprint_lab_planned_manifest")):
+        st.json(planned_manifest, expanded=False)
+
+    with st.expander(translate(language, "blueprint_lab_mock_manifest")):
+        st.json(mock_manifest, expanded=False)
+
+    download_col, registry_col = st.columns(2)
+    download_col.download_button(
+        translate(language, "blueprint_lab_download_mock"),
+        data=json.dumps(mock_manifest, indent=2, sort_keys=True).encode("utf-8"),
+        file_name=f"hra-blueprint-mock-{selected_symbol.lower()}.json",
+        mime="application/json",
+        key=f"blueprint-lab-mock-download-{selected_symbol}",
+    )
+    registry_col.download_button(
+        translate(language, "blueprint_lab_download_registry"),
+        data=json.dumps(registry, indent=2, sort_keys=True).encode("utf-8"),
+        file_name="hra-blueprint-registry.json",
+        mime="application/json",
+        key="blueprint-lab-registry-download",
+    )
+
+    st.subheader(translate(language, "blueprint_lab_cli_title"))
+    st.caption(translate(language, "blueprint_lab_cli_help"))
+    st.code(
+        "\n".join(
+            [
+                "python -m labs.blueprint_experiments list-providers",
+                (
+                    "python -m labs.blueprint_experiments "
+                    f"plan {selected_symbol} --provider-type {selected_provider}"
+                ),
+                (
+                    "python -m labs.blueprint_experiments "
+                    f"run-mock {selected_symbol} --points 8"
+                ),
+                (
+                    "python -m labs.blueprint_experiments "
+                    "index-manifests labs/blueprint_experiments/examples"
                 ),
             ]
         ),

@@ -2,6 +2,17 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.8.3] - Unreleased
+
+### Added
+
+- Added a Blueprint Lab preview inside the experimental Protein Lab tab.
+- Added UI controls for Blueprint provider family, target selection, planned manifests, mock manifests, registry inspection, and JSON downloads.
+
+### Safety
+
+- The Blueprint Lab preview remains mock/registry-only and does not execute live NVIDIA NIM, BioNeMo, AlphaFold, Blueprint, GPU, or provider calls.
+
 ## [0.8.2] - Unreleased
 
 ### Added
