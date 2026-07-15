@@ -7,6 +7,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "summary_style": "Summary style",
         "summary_mode_plain": "Plain language",
         "summary_mode_research": "Research detail",
+        "explanation_style": "Explanations",
+        "explanation_mode_simple": "Simple",
+        "explanation_mode_detailed": "Detailed",
         "search_tab": "Search",
         "reading_list_tab": "Reading list",
         "evidence_tab": "Evidence explorer",
@@ -14,10 +17,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "clinical_tab": "Trial tracker",
         "recent_tab": "Recent publications",
         "knowledge_tab": "Entity explorer (experimental)",
+        "search_tab_intro": (
+            "Search official literature sources. The app expands your topic with Huntington-related terms."
+        ),
+        "search_tab_intro_simple": "Search official literature sources for Huntington-related research.",
         "research_topic": "Research topic",
         "research_topic_placeholder": "gene silencing, biomarkers, clinical trials...",
         "research_topic_help": "Enter a research topic, not personal health information.",
+        "research_topic_help_simple": "Enter a research topic, not personal health information.",
         "literature_sources": "Literature sources",
+        "literature_sources_help": (
+            "Choose where to search. Europe PMC is best for metadata and open-access links; PubMed is the official NCBI literature index."
+        ),
+        "literature_sources_help_simple": "Choose which literature databases to search.",
         "source_provider": "Source",
         "pubmed_query": "PubMed query",
         "combined_source_note": (
@@ -25,12 +37,28 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Total counts are approximate across providers."
         ),
         "category_filters": "Category filters",
+        "category_filters_help": (
+            "Optional topic filters based on simple keywords in the title and abstract."
+        ),
+        "category_filters_help_simple": "Optional keyword-based topic filters.",
         "publication_year": "Publication year",
+        "publication_year_help": "Limit results to papers published within this year range.",
+        "publication_year_help_simple": "Limit results by publication year.",
         "open_access_only": "Open access only",
+        "open_access_only_help": (
+            "Show only records marked as open access by the source provider when that metadata is available."
+        ),
+        "open_access_only_help_simple": "Show only records marked as open access.",
         "hide_saved_papers": "Hide papers already in reading list",
+        "hide_saved_papers_help": "Use this to discover papers you have not saved locally yet.",
+        "hide_saved_papers_help_simple": "Hide papers you already saved.",
         "hide_seen_papers": "Hide papers marked as seen",
+        "hide_seen_papers_help": "Use this to skip papers you have already reviewed in this browser.",
+        "hide_seen_papers_help_simple": "Hide papers you marked as seen.",
         "local_hidden_papers": "Hidden by local reading filters on this page: {count}",
         "results_to_show": "Articles per page",
+        "results_to_show_help": "Choose how many paper cards to load for each result page.",
+        "results_to_show_help_simple": "Choose how many papers to show per page.",
         "search_literature": "Search literature",
         "search_europe_pmc": "Search Europe PMC",
         "search_trials": "Search clinical trial literature",
@@ -177,7 +205,12 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "trial_keywords": "Optional study keywords",
         "trial_keywords_placeholder": "gene therapy, exercise, biomarker...",
         "trial_keywords_help": "Filter registered studies by research terms. Do not enter personal health information.",
+        "trial_keywords_help_simple": "Optional research keywords. Do not enter personal health information.",
         "trial_statuses": "Registry status",
+        "trial_statuses_help": (
+            "Filter studies by their current ClinicalTrials.gov registry status. Status does not mean a study is suitable, safe, or effective."
+        ),
+        "trial_statuses_help_simple": "Filter studies by registry status.",
         "fetch_trials": "Search ClinicalTrials.gov",
         "fetching_trials": "Retrieving registered studies...",
         "trial_source_note": (
@@ -205,9 +238,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "trial_registry_unavailable": "The clinical trial tracker is unavailable: {error}",
         "more_trials_available": "The registry returned more studies than this view loaded. Refine the filters to narrow the result.",
         "recent_intro": (
-            "Recent publications are retrieved from Europe PMC and filtered by year. "
-            "They are not curated breakthroughs or medical recommendations."
+            "Recent publications use the same literature search workflow, but start with the last couple of years selected. "
+            "They are not curated breakthroughs, clinical guidance, or medical recommendations."
         ),
+        "recent_intro_simple": "Search newer Huntington-related papers from the last couple of years.",
         "knowledge_title": "Source-linked entity explorer",
         "knowledge_intro": (
             "A knowledge graph is a map of things and their connections. This preview "
@@ -226,6 +260,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "knowledge_loading": "Retrieving papers and matching controlled terms...",
         "knowledge_no_entities": "No catalogued entities were found in this paper batch.",
         "knowledge_entity_types": "Entity types",
+        "knowledge_entity_types_help": (
+            "Choose which controlled entity categories to show. These are exact term matches, not AI-discovered relationships."
+        ),
+        "knowledge_entity_types_help_simple": "Choose which entity categories to show.",
         "knowledge_entities": "Entities",
         "knowledge_source_papers": "Source papers",
         "knowledge_mentions": "Source-linked mentions",
@@ -282,13 +320,38 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "protein_lab_entity_id": "Entity ID",
         "protein_lab_source": "Source record",
         "protein_lab_choose_target": "Protein target",
+        "protein_lab_choose_target_help": "Choose one curated target to inspect. The list is intentionally small for review.",
+        "protein_lab_choose_target_help_simple": "Choose one curated protein target.",
         "protein_lab_open_uniprot": "Open UniProt record",
         "protein_lab_mapped_entities": "Mapped entities",
         "protein_lab_manifests": "Local manifests",
         "protein_lab_report_status": "Report status",
+        "protein_lab_report_source": "Report source",
+        "protein_lab_report_source_help": (
+            "Use the catalogue for a stable target report, or the reading list to link saved source papers by controlled mentions."
+        ),
+        "protein_lab_report_source_help_simple": "Choose catalogue data or saved reading-list papers.",
+        "protein_lab_report_source_catalogue": "Curated target catalogue",
+        "protein_lab_report_source_reading_list": "Saved reading list",
         "protein_lab_planned_manifest": "Planned sequence manifest",
         "protein_lab_target_report": "Read-only target report",
         "protein_lab_download_report": "Download target report JSON",
+        "protein_lab_source_papers": "Source papers linked to this target",
+        "protein_lab_source_papers_help": (
+            "These papers come from the local reading list and are linked by controlled entity mentions only."
+        ),
+        "protein_lab_reading_list_unavailable": (
+            "Local reading-list storage is unavailable. Using catalogue entities."
+        ),
+        "protein_lab_no_reading_list_papers": (
+            "No saved reading-list papers are available. Using catalogue entities."
+        ),
+        "protein_lab_using_reading_list": (
+            "Using {count} saved reading-list source paper(s) with catalogued mentions for {symbol}."
+        ),
+        "protein_lab_no_target_mentions": (
+            "No saved reading-list papers mention this selected protein target through the current controlled entity catalogue."
+        ),
         "protein_lab_cli_title": "CLI checks",
         "protein_lab_cli_help": "Equivalent offline commands for reviewing this target outside the app.",
     },
@@ -296,6 +359,9 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "summary_style": "Oppsummeringsstil",
         "summary_mode_plain": "Kort klarspråk",
         "summary_mode_research": "Detaljert forskningsforklaring",
+        "explanation_style": "Forklaringer",
+        "explanation_mode_simple": "Enkle",
+        "explanation_mode_detailed": "Detaljerte",
         "search_tab": "Søk",
         "reading_list_tab": "Leseliste",
         "evidence_tab": "Evidensutforsker",
@@ -303,10 +369,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "clinical_tab": "Studieregister",
         "recent_tab": "Nylige publikasjoner",
         "knowledge_tab": "Begrepsutforsker (eksperimentell)",
+        "search_tab_intro": (
+            "Søk i offisielle litteraturkilder. Appen utvider temaet med Huntington-relaterte begreper."
+        ),
+        "search_tab_intro_simple": "Søk i offisielle litteraturkilder om Huntington-relatert forskning.",
         "research_topic": "Forskningstema",
         "research_topic_placeholder": "gendemping, biomarkører, kliniske studier...",
         "research_topic_help": "Skriv inn et forskningstema, ikke personlige helseopplysninger.",
+        "research_topic_help_simple": "Skriv inn et forskningstema, ikke personlige helseopplysninger.",
         "literature_sources": "Litteraturkilder",
+        "literature_sources_help": (
+            "Velg hvor det skal søkes. Europe PMC er nyttig for metadata og åpen tilgang; PubMed er NCBIs offisielle litteraturindeks."
+        ),
+        "literature_sources_help_simple": "Velg hvilke litteraturdatabaser som skal brukes.",
         "source_provider": "Kilde",
         "pubmed_query": "PubMed-søk",
         "combined_source_note": (
@@ -314,12 +389,28 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Totalt antall treff er omtrentlig på tvers av kilder."
         ),
         "category_filters": "Kategorifiltre",
+        "category_filters_help": (
+            "Valgfrie temafiltre basert på enkle nøkkelord i tittel og abstrakt."
+        ),
+        "category_filters_help_simple": "Valgfrie temafiltre basert på nøkkelord.",
         "publication_year": "Publikasjonsår",
+        "publication_year_help": "Avgrens resultatene til publikasjoner fra denne årsperioden.",
+        "publication_year_help_simple": "Avgrens etter publikasjonsår.",
         "open_access_only": "Kun åpen tilgang",
+        "open_access_only_help": (
+            "Vis bare poster som kilden markerer som åpen tilgang når slik metadata finnes."
+        ),
+        "open_access_only_help_simple": "Vis bare poster merket som apen tilgang.",
         "hide_saved_papers": "Skjul publikasjoner som allerede er i leselisten",
+        "hide_saved_papers_help": "Bruk dette for a finne artikler du ikke allerede har lagret lokalt.",
+        "hide_saved_papers_help_simple": "Skjul artikler du allerede har lagret.",
         "hide_seen_papers": "Skjul publikasjoner som er merket som sett",
+        "hide_seen_papers_help": "Bruk dette for a hoppe over artikler du allerede har sett i denne nettleseren.",
+        "hide_seen_papers_help_simple": "Skjul artikler du har merket som sett.",
         "local_hidden_papers": "Skjult av lokale lesefiltre på denne siden: {count}",
         "results_to_show": "Artikler per side",
+        "results_to_show_help": "Velg hvor mange artikkelkort som lastes for hver resultatside.",
+        "results_to_show_help_simple": "Velg hvor mange artikler som vises per side.",
         "search_literature": "Søk i litteraturkilder",
         "search_europe_pmc": "Søk i Europe PMC",
         "search_trials": "Søk etter litteratur om kliniske studier",
@@ -466,7 +557,12 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "trial_keywords": "Valgfrie søkeord for studier",
         "trial_keywords_placeholder": "genterapi, trening, biomarkør...",
         "trial_keywords_help": "Filtrer registrerte studier etter forskningstema. Ikke skriv inn personlige helseopplysninger.",
+        "trial_keywords_help_simple": "Valgfrie forskningsord. Ikke skriv personlige helseopplysninger.",
         "trial_statuses": "Registerstatus",
+        "trial_statuses_help": (
+            "Filtrer studier etter gjeldende status i ClinicalTrials.gov. Status betyr ikke at en studie er egnet, trygg eller effektiv."
+        ),
+        "trial_statuses_help_simple": "Filtrer studier etter registerstatus.",
         "fetch_trials": "Søk i ClinicalTrials.gov",
         "fetching_trials": "Henter registrerte studier...",
         "trial_source_note": (
@@ -494,9 +590,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "trial_registry_unavailable": "Studieregisteret er utilgjengelig: {error}",
         "more_trials_available": "Registeret fant flere studier enn visningen lastet inn. Bruk filtrene for å avgrense resultatet.",
         "recent_intro": (
-            "Nylige publikasjoner hentes fra Europe PMC og filtreres etter år. "
-            "De er ikke kuraterte gjennombrudd eller medisinske anbefalinger."
+            "Nylige publikasjoner bruker samme litteratursøk, men starter med de siste par årene valgt. "
+            "De er ikke kuraterte gjennombrudd, klinisk veiledning eller medisinske anbefalinger."
         ),
+        "recent_intro_simple": "Søk etter nyere Huntington-relaterte artikler fra de siste par årene.",
         "knowledge_title": "Kildekoblet begrepsutforsker",
         "knowledge_intro": (
             "En knowledge graph, eller kunnskapsgraf, er et kart over ting og forbindelsene "
@@ -516,6 +613,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "knowledge_loading": "Henter artikler og finner kontrollerte begreper...",
         "knowledge_no_entities": "Ingen registrerte begreper ble funnet i disse artiklene.",
         "knowledge_entity_types": "Begrepstyper",
+        "knowledge_entity_types_help": (
+            "Velg hvilke kontrollerte begrepskategorier som vises. Dette er eksakte begrepstreff, ikke AI-oppdagede relasjoner."
+        ),
+        "knowledge_entity_types_help_simple": "Velg hvilke begrepstyper som vises.",
         "knowledge_entities": "Begreper",
         "knowledge_source_papers": "Kildeartikler",
         "knowledge_mentions": "Kildekoblede treff",
@@ -572,13 +673,38 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "protein_lab_entity_id": "Begreps-ID",
         "protein_lab_source": "Kildepost",
         "protein_lab_choose_target": "Proteinmal",
+        "protein_lab_choose_target_help": "Velg ett kuratert mal for gjennomgang. Listen er med vilje liten.",
+        "protein_lab_choose_target_help_simple": "Velg ett kuratert proteinmal.",
         "protein_lab_open_uniprot": "Apne UniProt-post",
         "protein_lab_mapped_entities": "Koblede begreper",
         "protein_lab_manifests": "Lokale manifester",
         "protein_lab_report_status": "Rapportstatus",
+        "protein_lab_report_source": "Rapportkilde",
+        "protein_lab_report_source_help": (
+            "Bruk katalogen for en stabil malrapport, eller leselisten for a koble lagrede kildeartikler via kontrollerte begrepstreff."
+        ),
+        "protein_lab_report_source_help_simple": "Velg katalogdata eller lagrede artikler fra leselisten.",
+        "protein_lab_report_source_catalogue": "Kurert malkatalog",
+        "protein_lab_report_source_reading_list": "Lagret leseliste",
         "protein_lab_planned_manifest": "Planlagt sekvensmanifest",
         "protein_lab_target_report": "Skrivebeskyttet malrapport",
         "protein_lab_download_report": "Last ned malrapport som JSON",
+        "protein_lab_source_papers": "Kildeartikler koblet til dette malet",
+        "protein_lab_source_papers_help": (
+            "Disse artiklene kommer fra den lokale leselisten og kobles bare via kontrollerte begrepstreff."
+        ),
+        "protein_lab_reading_list_unavailable": (
+            "Lokal leseliste er utilgjengelig. Bruker kuraterte katalogbegreper."
+        ),
+        "protein_lab_no_reading_list_papers": (
+            "Ingen lagrede leselisteartikler er tilgjengelige. Bruker kuraterte katalogbegreper."
+        ),
+        "protein_lab_using_reading_list": (
+            "Bruker {count} lagrede kildeartikkel/artikler fra leselisten med katalogtreff for {symbol}."
+        ),
+        "protein_lab_no_target_mentions": (
+            "Ingen lagrede leselisteartikler nevner dette proteinmalet gjennom den gjeldende kontrollerte begrepskatalogen."
+        ),
         "protein_lab_cli_title": "CLI-sjekker",
         "protein_lab_cli_help": "Tilsvarende offline-kommandoer for gjennomgang utenfor appen.",
     },

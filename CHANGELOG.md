@@ -2,6 +2,26 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.7.0] - 2026-07-14
+
+### Added
+
+- Protein Lab reports can now use saved reading-list papers as their source context.
+- Reading-list papers are converted into controlled entity mentions before being mapped to curated protein targets.
+- Target reports now preserve source record URLs and exact evidence passages from matched paper titles or abstracts.
+- A sidebar toggle switches UI explanations between simple and detailed help text.
+- OpenClaw patch artifacts are ignored locally so they do not accidentally enter release commits.
+
+### Safety
+
+- Reading-list powered target reports remain provenance/navigation artifacts only. A source-paper connection means a controlled term was mentioned, not that a paper supports causality, efficacy, clinical relevance, or treatment suitability.
+
+### Known Limitations
+
+- The reading-list workflow depends on the small deterministic entity catalogue and will miss many valid papers or concepts.
+- Source links are only as complete as the locally saved paper metadata.
+- No live model calls, protein embeddings, AlphaFold/NIM execution, or BioNeMo workflows are added in this release.
+
 ## [0.6.0] - 2026-07-14
 
 ### Added

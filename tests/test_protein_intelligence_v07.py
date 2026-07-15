@@ -97,7 +97,9 @@ def test_target_report_links_literature_mapping_and_manifest(tmp_path: Path) -> 
                 "id": "pmid:1",
                 "title": "BDNF and Huntington disease",
                 "year": 2026,
+                "source_url": "https://example.test/bdnf",
                 "matched_terms": ("BDNF",),
+                "evidence_passages": ("BDNF was measured in this fixture.",),
             },
         ),
     )
@@ -105,6 +107,10 @@ def test_target_report_links_literature_mapping_and_manifest(tmp_path: Path) -> 
     assert report["target"]["symbol"] == "BDNF"
     assert report["literature"]["mapped_entity_count"] == 1
     assert report["literature"]["source_count"] == 1
+    assert report["literature"]["sources"][0]["source_url"] == "https://example.test/bdnf"
+    assert report["literature"]["sources"][0]["evidence_passages"] == [
+        "BDNF was measured in this fixture."
+    ]
     assert report["lab_artifacts"]["manifest_count"] == 1
     assert report["interpretation"]["status"] == "literature-and-lab-provenance"
     assert "does not assert therapeutic relevance" in report["interpretation"]["claim_boundary"]

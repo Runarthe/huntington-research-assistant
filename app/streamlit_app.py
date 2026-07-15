@@ -48,6 +48,7 @@ from hra.export import (
 from hra.filters import filter_local_reading_state
 from hra.i18n import LANGUAGE_OPTIONS, translate
 from hra.knowledge_graph import (
+    EntityMention,
     build_entity_connections,
     build_research_map,
     graphviz_dot,
@@ -78,7 +79,7 @@ from hra.trial_filters import filter_trials, trial_filter_options
 from hra.ui_keys import summarize_button_key
 
 from labs.protein_intelligence import PROTEIN_TARGETS, planned_sequence_manifest
-from labs.protein_intelligence.entity_mapping import LiteratureEntity
+from labs.protein_intelligence.entity_mapping import LiteratureEntity, map_entities_to_targets
 from labs.protein_intelligence.registry import build_manifest_registry
 from labs.protein_intelligence.reports import build_target_report
 from labs.protein_intelligence.report_validation import report_summary
@@ -109,6 +110,12 @@ SOURCE_EUROPE_PMC = "Europe PMC"
 SOURCE_PUBMED = "PubMed"
 SOURCE_OPTIONS = [SOURCE_EUROPE_PMC, SOURCE_PUBMED]
 PROTEIN_MANIFEST_DIR = ROOT_DIR / "labs" / "protein_intelligence" / "manifests"
+
+
+def explanation(language: str, key: str, mode: str) -> str:
+    if mode == "simple":
+        return translate(language, f"{key}_simple")
+    return translate(language, key)
 
 
 @st.cache_data(show_spinner=False, ttl=900)
@@ -553,6 +560,7 @@ def run_search_panel(
     summary_available: bool,
     language: str,
     summary_mode: str,
+    explanation_mode: str,
     cache: SearchCache | None,
     default_tags: list[str] | None = None,
     default_year_start: int = 2015,
@@ -560,26 +568,30 @@ def run_search_panel(
     intro: str | None = None,
 ) -> None:
     if intro:
-        st.caption(intro)
+        st.info(intro)
 
     with st.form(f"{panel_key}-form"):
         query = st.text_input(
             translate(language, "research_topic"),
             value=default_query,
             placeholder=translate(language, "research_topic_placeholder"),
-            help=translate(language, "research_topic_help") if help_text else None,
+            help=explanation(language, "research_topic_help", explanation_mode)
+            if help_text
+            else None,
             key=f"{panel_key}-query",
         )
         selected_sources = st.multiselect(
             translate(language, "literature_sources"),
             options=SOURCE_OPTIONS,
             default=[SOURCE_EUROPE_PMC],
+            help=explanation(language, "literature_sources_help", explanation_mode),
             key=f"{panel_key}-sources",
         )
         selected_tags = st.multiselect(
             translate(language, "category_filters"),
             options=ALL_TAGS,
             default=default_tags or [],
+            help=explanation(language, "category_filters_help", explanation_mode),
             key=f"{panel_key}-tags",
         )
         year_range = st.slider(
@@ -587,27 +599,32 @@ def run_search_panel(
             min_value=MIN_YEAR,
             max_value=CURRENT_YEAR,
             value=(max(MIN_YEAR, default_year_start), CURRENT_YEAR),
+            help=explanation(language, "publication_year_help", explanation_mode),
             key=f"{panel_key}-year-range",
         )
         open_access_only = st.checkbox(
             translate(language, "open_access_only"),
             value=False,
+            help=explanation(language, "open_access_only_help", explanation_mode),
             key=f"{panel_key}-open-access",
         )
         hide_saved_papers = st.checkbox(
             translate(language, "hide_saved_papers"),
             value=False,
+            help=explanation(language, "hide_saved_papers_help", explanation_mode),
             key=f"{panel_key}-hide-saved",
         )
         hide_seen_papers = st.checkbox(
             translate(language, "hide_seen_papers"),
             value=False,
+            help=explanation(language, "hide_seen_papers_help", explanation_mode),
             key=f"{panel_key}-hide-seen",
         )
         page_size = st.selectbox(
             translate(language, "results_to_show"),
             options=[10, 25, 50],
             index=0,
+            help=explanation(language, "results_to_show_help", explanation_mode),
             key=f"{panel_key}-page-size",
         )
         submitted = st.form_submit_button(submit_label)
@@ -847,7 +864,7 @@ def render_trial(trial: ClinicalTrial, language: str) -> None:
     st.link_button(translate(language, "open_trial_record"), str(trial.source_url))
 
 
-def run_trial_tracker(language: str) -> None:
+def run_trial_tracker(language: str, explanation_mode: str) -> None:
     st.subheader(translate(language, "clinical_tracker_title"))
     st.info(translate(language, "clinical_intro"))
     status_labels = {
@@ -859,13 +876,14 @@ def run_trial_tracker(language: str) -> None:
         other_terms = st.text_input(
             translate(language, "trial_keywords"),
             placeholder=translate(language, "trial_keywords_placeholder"),
-            help=translate(language, "trial_keywords_help"),
+            help=explanation(language, "trial_keywords_help", explanation_mode),
             key="trial-other-terms",
         )
         selected_status_labels = st.multiselect(
             translate(language, "trial_statuses"),
             options=list(status_codes_by_label),
             default=[status_labels[status] for status in DEFAULT_TRIAL_STATUSES],
+            help=explanation(language, "trial_statuses_help", explanation_mode),
             key="trial-statuses",
         )
         submitted = st.form_submit_button(translate(language, "fetch_trials"))
@@ -1110,7 +1128,7 @@ def run_evidence_explorer(cache: SearchCache | None, language: str) -> None:
                 st.warning(translate(language, "evidence_source_unavailable"))
 
 
-def run_knowledge_graph(language: str) -> None:
+def run_knowledge_graph(language: str, explanation_mode: str) -> None:
     st.subheader(translate(language, "knowledge_title"))
     st.info(translate(language, "knowledge_intro"))
     st.caption(translate(language, "knowledge_scope"))
@@ -1120,7 +1138,7 @@ def run_knowledge_graph(language: str) -> None:
         query = st.text_input(
             translate(language, "knowledge_query"),
             value="HTT OR huntingtin OR autophagy OR biomarker",
-            help=translate(language, "research_topic_help"),
+            help=explanation(language, "research_topic_help", explanation_mode),
             key="knowledge-query",
         )
         paper_limit = st.selectbox(
@@ -1178,6 +1196,7 @@ def run_knowledge_graph(language: str) -> None:
         options=available_types,
         default=available_types,
         format_func=lambda value: type_labels[value],
+        help=explanation(language, "knowledge_entity_types_help", explanation_mode),
         key=f"knowledge-entity-types-{language}",
     )
     visible_mentions = [
@@ -1310,7 +1329,11 @@ def run_knowledge_graph(language: str) -> None:
         )
 
 
-def run_protein_lab(language: str) -> None:
+def run_protein_lab(
+    language: str,
+    cache: SearchCache | None,
+    explanation_mode: str,
+) -> None:
     st.subheader(translate(language, "protein_lab_title"))
     st.info(translate(language, "protein_lab_intro"))
     st.caption(translate(language, "protein_lab_scope"))
@@ -1342,6 +1365,7 @@ def run_protein_lab(language: str) -> None:
     selected_symbol = st.selectbox(
         translate(language, "protein_lab_choose_target"),
         options=[target.symbol for target in PROTEIN_TARGETS],
+        help=explanation(language, "protein_lab_choose_target_help", explanation_mode),
         key=f"protein-lab-target-{language}",
     )
     selected_target = next(
@@ -1362,12 +1386,33 @@ def run_protein_lab(language: str) -> None:
         selected_target.uniprot_url,
     )
 
-    entities = _protein_lab_entities()
+    report_source = st.radio(
+        translate(language, "protein_lab_report_source"),
+        options=["catalogue", "reading_list"],
+        format_func=lambda value: translate(
+            language,
+            f"protein_lab_report_source_{value}",
+        ),
+        horizontal=True,
+        help=explanation(language, "protein_lab_report_source_help", explanation_mode),
+        key=f"protein-lab-report-source-{language}",
+    )
+
+    entities, source_records, source_note = _protein_lab_report_inputs(
+        report_source,
+        selected_target.symbol,
+        cache,
+        language,
+    )
+    if source_note:
+        st.caption(source_note)
+
     manifest_records = build_manifest_registry((PROTEIN_MANIFEST_DIR,))
     report = build_target_report(
         selected_target.symbol,
         entities=entities,
         manifest_records=manifest_records,
+        source_records=source_records,
     )
     summary = report_summary(report)
     interpretation = report["interpretation"]
@@ -1401,6 +1446,31 @@ def run_protein_lab(language: str) -> None:
         key=f"protein-lab-report-download-{selected_target.symbol}",
     )
 
+    if source_records:
+        st.subheader(translate(language, "protein_lab_source_papers"))
+        st.caption(translate(language, "protein_lab_source_papers_help"))
+        st.dataframe(
+            [
+                {
+                    translate(language, "evidence_paper"): record["title"],
+                    translate(language, "year"): record["year"] or "-",
+                    translate(language, "knowledge_matched_term"): ", ".join(
+                        record["matched_terms"]
+                    ),
+                    translate(language, "source_record"): record["source_url"],
+                }
+                for record in source_records
+            ],
+            column_config={
+                translate(language, "source_record"): st.column_config.LinkColumn(
+                    translate(language, "source_record"),
+                    display_text=translate(language, "evidence_open_source"),
+                )
+            },
+            hide_index=True,
+            use_container_width=True,
+        )
+
     st.subheader(translate(language, "protein_lab_cli_title"))
     st.caption(translate(language, "protein_lab_cli_help"))
     st.code(
@@ -1433,6 +1503,94 @@ def _protein_lab_entities() -> tuple[LiteratureEntity, ...]:
     )
 
 
+def _protein_lab_report_inputs(
+    report_source: str,
+    selected_symbol: str,
+    cache: SearchCache | None,
+    language: str,
+) -> tuple[tuple[LiteratureEntity, ...], tuple[dict[str, object], ...], str | None]:
+    if report_source != "reading_list":
+        return _protein_lab_entities(), (), None
+
+    if cache is None:
+        return (
+            _protein_lab_entities(),
+            (),
+            translate(language, "protein_lab_reading_list_unavailable"),
+        )
+
+    papers = safe_reading_list_papers(cache)
+    if not papers:
+        return (
+            _protein_lab_entities(),
+            (),
+            translate(language, "protein_lab_no_reading_list_papers"),
+        )
+
+    research_map = build_research_map(papers)
+    entities = tuple(
+        LiteratureEntity(
+            entity_id=entity.id,
+            label=entity.name,
+            aliases=tuple(entity.aliases),
+            entity_type=entity.entity_type,
+        )
+        for entity in research_map.entities
+    )
+    mappings = map_entities_to_targets(entities)
+    mapped_entity_ids = {
+        mapping.entity.entity_id
+        for mapping in mappings
+        if mapping.target.symbol == selected_symbol
+    }
+    source_records = _protein_lab_source_records(
+        research_map.mentions,
+        mapped_entity_ids,
+        {paper.id: paper.year for paper in papers},
+    )
+    note = (
+        translate(
+            language,
+            "protein_lab_using_reading_list",
+            count=len(source_records),
+            symbol=selected_symbol,
+        )
+    )
+    if not source_records:
+        note = translate(
+            language,
+            "protein_lab_no_target_mentions",
+        )
+    return entities or _protein_lab_entities(), source_records, note
+
+
+def _protein_lab_source_records(
+    mentions: list[EntityMention],
+    mapped_entity_ids: set[str],
+    years_by_paper_id: dict[str, int | None],
+) -> tuple[dict[str, object], ...]:
+    records_by_paper: dict[str, dict[str, object]] = {}
+    for mention in mentions:
+        if mention.entity_id not in mapped_entity_ids:
+            continue
+        record = records_by_paper.setdefault(
+            mention.paper_id,
+            {
+                "id": mention.paper_id,
+                "title": mention.paper_title,
+                "year": years_by_paper_id.get(mention.paper_id),
+                "source_url": mention.source_url,
+                "matched_terms": [],
+                "evidence_passages": [],
+            },
+        )
+        if mention.matched_alias not in record["matched_terms"]:
+            record["matched_terms"].append(mention.matched_alias)
+        if mention.evidence not in record["evidence_passages"]:
+            record["evidence_passages"].append(mention.evidence)
+    return tuple(records_by_paper.values())
+
+
 def main() -> None:
     language_name = st.sidebar.selectbox(
         "Language / Språk",
@@ -1452,6 +1610,14 @@ def main() -> None:
             horizontal=True,
             key="summary-mode",
         )
+    explanation_mode = st.sidebar.radio(
+        translate(language, "explanation_style"),
+        options=["simple", "detailed"],
+        index=0,
+        format_func=lambda value: translate(language, f"explanation_mode_{value}"),
+        horizontal=True,
+        key="explanation-mode",
+    )
 
     st.title("Huntington Research Assistant")
     st.warning(medical_disclaimer(language))
@@ -1503,12 +1669,14 @@ def main() -> None:
             summary_available=summary_available,
             language=language,
             summary_mode=summary_mode,
+            explanation_mode=explanation_mode,
             cache=cache,
             default_year_start=2015,
+            intro=explanation(language, "search_tab_intro", explanation_mode),
         )
 
     with clinical_tab:
-        run_trial_tracker(language)
+        run_trial_tracker(language, explanation_mode)
 
     with reading_list_tab:
         run_reading_list(
@@ -1523,7 +1691,7 @@ def main() -> None:
         run_evidence_explorer(cache, language)
 
     with protein_lab_tab:
-        run_protein_lab(language)
+        run_protein_lab(language, cache, explanation_mode)
 
     with recent_tab:
         run_search_panel(
@@ -1534,13 +1702,14 @@ def main() -> None:
             summary_available=summary_available,
             language=language,
             summary_mode=summary_mode,
+            explanation_mode=explanation_mode,
             cache=cache,
             default_year_start=CURRENT_YEAR - 2,
-            intro=translate(language, "recent_intro"),
+            intro=explanation(language, "recent_intro", explanation_mode),
         )
 
     with knowledge_tab:
-        run_knowledge_graph(language)
+        run_knowledge_graph(language, explanation_mode)
 
     if cache is not None:
         with st.sidebar:
