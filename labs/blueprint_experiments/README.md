@@ -48,6 +48,12 @@ Validate a manifest:
 python -m labs.blueprint_experiments validate-manifest labs/blueprint_experiments/examples/mock-htt-manifest.json
 ```
 
+Index manifest files or folders:
+
+```bash
+python -m labs.blueprint_experiments index-manifests labs/blueprint_experiments/examples
+```
+
 Future provider adapters should follow [PROVIDER_CONTRACT.md](PROVIDER_CONTRACT.md). Live provider families are planning targets only until an explicit adapter is implemented and reviewed.
 
 ## Safety Boundary

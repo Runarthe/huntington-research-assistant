@@ -13,6 +13,7 @@ from .manifests import (
     mock_blueprint_manifest,
     planned_blueprint_manifest,
 )
+from .registry import build_blueprint_registry, registry_payload
 
 
 def _date_arg(value: str | None) -> date | None:
@@ -86,6 +87,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     validate_parser.add_argument("path", help="Path to manifest JSON.")
 
+    registry_parser = subparsers.add_parser(
+        "index-manifests",
+        help="Index Blueprint manifest JSON files or directories.",
+    )
+    registry_parser.add_argument("paths", nargs="+", help="Manifest JSON file or directory paths.")
+
     args = parser.parse_args(argv)
 
     try:
@@ -112,6 +119,9 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.command == "validate-manifest":
             _write_json(validate_manifest_file(args.path))
+            return 0
+        if args.command == "index-manifests":
+            _write_json(registry_payload(build_blueprint_registry(args.paths)))
             return 0
     except (KeyError, ValueError, OSError, json.JSONDecodeError) as exc:
         parser.exit(2, f"{exc}\n")

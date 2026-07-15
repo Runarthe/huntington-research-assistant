@@ -2,7 +2,7 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The current released version is **v0.8.1**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
+The current released version is **v0.8.1**. The current development branch is **v0.8.2**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
 
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
