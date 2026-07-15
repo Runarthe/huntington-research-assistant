@@ -2,7 +2,7 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The current released version is **v0.8.1**. The current development branch is **v0.8.3**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
+The current released version is **v0.8.1**. The current development branch is **v0.9.0**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
 
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
@@ -47,7 +47,7 @@ This project is not affiliated with any medical association, including the Norwe
 - Keep a small local SQLite cache/history.
 - Continue to work without any LLM by showing retrieved papers only.
 - Keep optional scientific-AI experiments isolated in a documented Digital Biology Lab that is not required for literature search.
-- Plan bounded Blueprint-style lab experiments with offline mock manifests before any live NVIDIA, BioNeMo, NIM, or AlphaFold provider is connected.
+- Plan bounded Blueprint-style lab experiments with offline mock manifests and explicit provider-adapter configs before any live NVIDIA, BioNeMo, NIM, or AlphaFold provider is connected.
 
 Norwegian UI labels and safety information are available. Norwegian translation of abstracts and generated summaries is planned for a later update; the current experimental implementation is disabled by default.
 
@@ -172,11 +172,13 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-Near-term priorities include a small v0.8 Digital Biology Blueprint experiment, reviewed entity extraction, stable biomedical identifiers, Norwegian refinement, accessibility testing, and stronger summary evaluation. Optional BioNeMo, NIM, Blueprint, and protein-model experiments remain in a separate Digital Biology Lab and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
+Near-term priorities include the v0.9 provider-adapter foundation, reviewed entity extraction, stable biomedical identifiers, Norwegian refinement, accessibility testing, and stronger summary evaluation. Optional BioNeMo, NIM, Blueprint, and protein-model experiments remain in a separate Digital Biology Lab and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
 
 The first v0.8 planning notes are in [docs/V0_8_BLUEPRINT_PLAN.md](docs/V0_8_BLUEPRINT_PLAN.md).
+
+The v0.9 provider-adapter notes are in [docs/V0_9_PROVIDER_ADAPTERS.md](docs/V0_9_PROVIDER_ADAPTERS.md).
 
 Norwegian quality and accessibility are documented in [docs/NORWEGIAN_LANGUAGE.md](docs/NORWEGIAN_LANGUAGE.md) and [docs/ACCESSIBILITY.md](docs/ACCESSIBILITY.md).
 

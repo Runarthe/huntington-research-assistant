@@ -6,12 +6,20 @@ import sys
 from datetime import date
 from pathlib import Path
 
+from pydantic import ValidationError
+
 from .manifests import (
     BlueprintManifestValidationError,
     VALID_PROVIDER_TYPES,
     manifest_summary,
     mock_blueprint_manifest,
     planned_blueprint_manifest,
+)
+from .providers import (
+    VALID_EXECUTION_MODES,
+    BlueprintProviderConfig,
+    provider_catalogue,
+    provider_metadata,
 )
 from .registry import build_blueprint_registry, registry_payload
 
@@ -33,14 +41,7 @@ def validate_manifest_file(path: str) -> dict[str, object]:
 
 
 def provider_payload() -> dict[str, object]:
-    return {
-        "schema_version": "blueprint-provider-catalogue.v1",
-        "providers": sorted(VALID_PROVIDER_TYPES),
-        "default": "mock",
-        "safety": {
-            "claim_boundary": "Provider names are integration targets, not validated biomedical capability claims.",
-        },
-    }
+    return provider_catalogue()
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -53,6 +54,36 @@ def main(argv: list[str] | None = None) -> int:
     subparsers.add_parser(
         "list-providers",
         help="List provider types supported by the manifest contract.",
+    )
+
+    describe_parser = subparsers.add_parser(
+        "describe-provider",
+        help="Print safe adapter metadata for one provider family.",
+    )
+    describe_parser.add_argument(
+        "provider_type",
+        choices=sorted(VALID_PROVIDER_TYPES),
+        help="Provider family to inspect.",
+    )
+
+    config_parser = subparsers.add_parser(
+        "provider-config",
+        help="Print a non-secret provider config skeleton.",
+    )
+    config_parser.add_argument(
+        "provider_type",
+        choices=sorted(VALID_PROVIDER_TYPES),
+        help="Provider family to configure.",
+    )
+    config_parser.add_argument(
+        "--execution-mode",
+        choices=sorted(VALID_EXECUTION_MODES),
+        default=None,
+        help="Execution mode to record in the config skeleton.",
+    )
+    config_parser.add_argument(
+        "--credentials-env-var",
+        help="Name of an environment variable that would hold credentials. Do not pass secret values.",
     )
 
     plan_parser = subparsers.add_parser(
@@ -99,6 +130,24 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "list-providers":
             _write_json(provider_payload())
             return 0
+        if args.command == "describe-provider":
+            _write_json(provider_metadata(args.provider_type))
+            return 0
+        if args.command == "provider-config":
+            payload = {
+                "provider_type": args.provider_type,
+                "execution_mode": (
+                    args.execution_mode
+                    or ("offline" if args.provider_type == "mock" else "planned")
+                ),
+                "credentials_env_var": args.credentials_env_var,
+                "notes": [
+                    "This config skeleton is safe to commit only if it contains no secret values.",
+                    "Live execution remains disabled until a reviewed adapter exists.",
+                ],
+            }
+            _write_json(BlueprintProviderConfig(**payload).model_dump(mode="json"))
+            return 0
         if args.command == "plan":
             _write_json(
                 planned_blueprint_manifest(
@@ -123,7 +172,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "index-manifests":
             _write_json(registry_payload(build_blueprint_registry(args.paths)))
             return 0
-    except (KeyError, ValueError, OSError, json.JSONDecodeError) as exc:
+    except (KeyError, ValueError, ValidationError, OSError, json.JSONDecodeError) as exc:
         parser.exit(2, f"{exc}\n")
 
     parser.exit(2, "Unknown command.\n")

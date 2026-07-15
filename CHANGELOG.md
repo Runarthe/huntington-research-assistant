@@ -2,6 +2,22 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.9.0] - Unreleased
+
+### Added
+
+- Added a provider-adapter configuration model for Blueprint experiments.
+- Added explicit `offline`, `planned`, and `live` execution modes for future scientific-AI providers.
+- Added provider metadata for UI and CLI inspection without calling live services.
+- Added `describe-provider` and `provider-config` CLI commands.
+- Added Blueprint Lab UI status fields for provider readiness, live execution, and credential requirements.
+
+### Safety
+
+- Live provider execution remains disabled by default.
+- Unreviewed live provider configs are rejected.
+- Provider catalogue entries describe integration boundaries only, not biomedical capability claims.
+
 ## [0.8.3] - Unreleased
 
 ### Added

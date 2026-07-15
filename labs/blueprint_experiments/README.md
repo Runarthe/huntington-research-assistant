@@ -12,6 +12,7 @@ It is deliberately separate from the Streamlit application. The core Huntington 
 - CLI helpers for planning, mock execution, and manifest validation.
 - Tests that exercise the scaffold without live provider calls.
 - A provider contract that keeps future live adapters gated by default.
+- A provider configuration model with explicit `offline`, `planned`, and future `live` execution modes.
 
 ## What This Does Not Add
 
@@ -52,6 +53,18 @@ Index manifest files or folders:
 
 ```bash
 python -m labs.blueprint_experiments index-manifests labs/blueprint_experiments/examples
+```
+
+Inspect a provider family without running it:
+
+```bash
+python -m labs.blueprint_experiments describe-provider bionemo
+```
+
+Generate a non-secret config skeleton:
+
+```bash
+python -m labs.blueprint_experiments provider-config bionemo --execution-mode planned --credentials-env-var BIONEMO_API_KEY
 ```
 
 Future provider adapters should follow [PROVIDER_CONTRACT.md](PROVIDER_CONTRACT.md). Live provider families are planning targets only until an explicit adapter is implemented and reviewed.

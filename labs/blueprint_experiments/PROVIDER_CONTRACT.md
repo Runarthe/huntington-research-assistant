@@ -9,6 +9,8 @@ The current implementation only executes the `mock` provider. All live provider 
 Every provider must:
 
 - accept a `BlueprintRunRequest`;
+- expose non-secret `BlueprintProviderConfig` metadata;
+- declare whether it is `offline`, `planned`, or future `live`;
 - return a manifest matching `blueprint-experiment-manifest.v1`;
 - preserve target identifiers and source URLs;
 - record provider name, model or service version, parameters, runtime, output path, and limitations;
@@ -33,5 +35,7 @@ Live `run` methods must remain unavailable until:
 
 - `MockBlueprintProvider` can plan and run deterministic offline fixtures.
 - `GatedLiveProvider` can plan future provider families but raises `LiveProviderDisabledError` for execution.
+- `BlueprintProviderConfig` records safe adapter configuration without storing secret values.
+- Unreviewed live configs are rejected before a provider object is used.
 
 This gives the project a safe extension point without implying that any provider output is validated biomedical evidence.

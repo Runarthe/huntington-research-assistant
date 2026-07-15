@@ -145,3 +145,66 @@ def test_blueprint_cli_run_mock() -> None:
         0.669608,
         0.732353,
     ]
+
+
+def test_blueprint_cli_describe_provider() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "labs.blueprint_experiments",
+            "describe-provider",
+            "nvidia_nim",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    payload = json.loads(result.stdout)
+    assert payload["provider_type"] == "nvidia_nim"
+    assert payload["implemented"] is False
+    assert payload["live_enabled"] is False
+
+
+def test_blueprint_cli_provider_config_skeleton() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "labs.blueprint_experiments",
+            "provider-config",
+            "bionemo",
+            "--execution-mode",
+            "planned",
+            "--credentials-env-var",
+            "BIONEMO_API_KEY",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    payload = json.loads(result.stdout)
+    assert payload["provider_type"] == "bionemo"
+    assert payload["execution_mode"] == "planned"
+    assert payload["credentials_env_var"] == "BIONEMO_API_KEY"
+
+
+def test_blueprint_cli_rejects_unreviewed_live_config() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "labs.blueprint_experiments",
+            "provider-config",
+            "bionemo",
+            "--execution-mode",
+            "live",
+        ],
+        capture_output=True,
+        text=True,
+    )
+
+    assert result.returncode == 2
+    assert "requires an explicit reviewed config" in result.stderr
