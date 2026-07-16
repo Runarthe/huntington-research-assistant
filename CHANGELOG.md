@@ -2,6 +2,29 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.8.3] - Unreleased
+
+### Added
+
+- Added a Blueprint Lab preview inside the experimental Protein Lab tab.
+- Added UI controls for Blueprint provider family, target selection, planned manifests, mock manifests, registry inspection, and JSON downloads.
+
+### Safety
+
+- The Blueprint Lab preview remains mock/registry-only and does not execute live NVIDIA NIM, BioNeMo, AlphaFold, Blueprint, GPU, or provider calls.
+
+## [0.8.2] - Unreleased
+
+### Added
+
+- Added a Blueprint manifest registry for indexing local lab manifests without executing providers.
+- Added an `index-manifests` CLI command for Blueprint experiment artifacts.
+- Added registry tests for valid manifests, invalid manifests, target filtering, and stable checksums.
+
+### Safety
+
+- Registry records describe provenance only. They are not biomedical findings, provider capability claims, clinical evidence, or treatment guidance.
+
 ## [0.8.1] - 2026-07-15
 
 ### Added

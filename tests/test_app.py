@@ -57,6 +57,7 @@ def test_protein_lab_tab_renders_without_live_calls() -> None:
 
     assert not app.exception
     assert "Protein Lab (experimental)" in {subheader.value for subheader in app.subheader}
+    assert "Blueprint Lab preview" in {subheader.value for subheader in app.subheader}
     assert any("No live model calls" in info.value for info in app.caption)
     assert "Report source" in {radio.label for radio in app.radio}
     assert "Explanations" in {radio.label for radio in app.radio}

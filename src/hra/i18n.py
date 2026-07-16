@@ -354,6 +354,45 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "protein_lab_cli_title": "CLI checks",
         "protein_lab_cli_help": "Equivalent offline commands for reviewing this target outside the app.",
+        "blueprint_lab_title": "Blueprint Lab preview",
+        "blueprint_lab_intro": (
+            "This preview shows the v0.8 Blueprint experiment scaffold in the app. "
+            "It can plan provider families and inspect local mock manifests without live provider calls."
+        ),
+        "blueprint_lab_scope": (
+            "Blueprint artifacts are engineering provenance records only. They are not model-validated findings, "
+            "clinical evidence, treatment guidance, or medical advice."
+        ),
+        "blueprint_lab_provider": "Provider family",
+        "blueprint_lab_provider_help": (
+            "Choose a provider family to plan for. Only the mock provider can generate an offline fixture today."
+        ),
+        "blueprint_lab_provider_help_simple": "Choose a provider family. Only mock runs execute offline.",
+        "blueprint_lab_target": "Blueprint target",
+        "blueprint_lab_target_help": "Choose one curated protein target for the planned or mock artifact.",
+        "blueprint_lab_target_help_simple": "Choose one curated protein target.",
+        "blueprint_lab_registry_records": "Registry records",
+        "blueprint_lab_registry_valid": "Valid",
+        "blueprint_lab_registry_invalid": "Invalid",
+        "blueprint_lab_experiment_id": "Experiment ID",
+        "blueprint_lab_status": "Status",
+        "blueprint_lab_targets": "Targets",
+        "blueprint_lab_artifact_type": "Artifact type",
+        "blueprint_lab_valid": "Valid",
+        "blueprint_lab_checksum": "Checksum",
+        "blueprint_lab_no_registry_records": "No local Blueprint manifests were found.",
+        "blueprint_lab_planned_manifest": "Planned Blueprint manifest",
+        "blueprint_lab_mock_manifest": "Mock Blueprint manifest",
+        "blueprint_lab_download_mock": "Download mock manifest JSON",
+        "blueprint_lab_download_registry": "Download registry JSON",
+        "blueprint_lab_cli_title": "Blueprint CLI checks",
+        "blueprint_lab_cli_help": "Equivalent offline commands for reviewing Blueprint manifests outside the app.",
+        "blueprint_provider_alphafold": "AlphaFold / structure workflow",
+        "blueprint_provider_bionemo": "BioNeMo",
+        "blueprint_provider_mock": "Mock fixture",
+        "blueprint_provider_nvidia_blueprint": "NVIDIA Blueprint",
+        "blueprint_provider_nvidia_nim": "NVIDIA NIM",
+        "blueprint_provider_other": "Other provider",
     },
     "no": {
         "summary_style": "Oppsummeringsstil",
@@ -707,6 +746,45 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "protein_lab_cli_title": "CLI-sjekker",
         "protein_lab_cli_help": "Tilsvarende offline-kommandoer for gjennomgang utenfor appen.",
+        "blueprint_lab_title": "Blueprint-labforhåndsvisning",
+        "blueprint_lab_intro": (
+            "Denne visningen viser v0.8-strukturen for Blueprint-eksperimenter i appen. "
+            "Den kan planlegge leverandørfamilier og vise lokale mock-manifester uten levende leverandørkall."
+        ),
+        "blueprint_lab_scope": (
+            "Blueprint-artefakter er bare tekniske proveniensposter. De er ikke modellvaliderte funn, "
+            "klinisk evidens, behandlingsveiledning eller medisinske råd."
+        ),
+        "blueprint_lab_provider": "Leverandørfamilie",
+        "blueprint_lab_provider_help": (
+            "Velg en leverandørfamilie å planlegge for. Bare mock-leverandøren kan lage en offline testpost nå."
+        ),
+        "blueprint_lab_provider_help_simple": "Velg leverandørfamilie. Bare mock-kjøringer utføres offline.",
+        "blueprint_lab_target": "Blueprint-mål",
+        "blueprint_lab_target_help": "Velg ett kuratert proteinmål for planlagt eller mock-basert artefakt.",
+        "blueprint_lab_target_help_simple": "Velg ett kuratert proteinmål.",
+        "blueprint_lab_registry_records": "Registerposter",
+        "blueprint_lab_registry_valid": "Gyldige",
+        "blueprint_lab_registry_invalid": "Ugyldige",
+        "blueprint_lab_experiment_id": "Eksperiment-ID",
+        "blueprint_lab_status": "Status",
+        "blueprint_lab_targets": "Mål",
+        "blueprint_lab_artifact_type": "Artefakttype",
+        "blueprint_lab_valid": "Gyldig",
+        "blueprint_lab_checksum": "Sjekksum",
+        "blueprint_lab_no_registry_records": "Ingen lokale Blueprint-manifester ble funnet.",
+        "blueprint_lab_planned_manifest": "Planlagt Blueprint-manifest",
+        "blueprint_lab_mock_manifest": "Mock-basert Blueprint-manifest",
+        "blueprint_lab_download_mock": "Last ned mock-manifest som JSON",
+        "blueprint_lab_download_registry": "Last ned register som JSON",
+        "blueprint_lab_cli_title": "Blueprint CLI-sjekker",
+        "blueprint_lab_cli_help": "Tilsvarende offline-kommandoer for gjennomgang av Blueprint-manifester utenfor appen.",
+        "blueprint_provider_alphafold": "AlphaFold / strukturarbeidsflyt",
+        "blueprint_provider_bionemo": "BioNeMo",
+        "blueprint_provider_mock": "Mock-testdata",
+        "blueprint_provider_nvidia_blueprint": "NVIDIA Blueprint",
+        "blueprint_provider_nvidia_nim": "NVIDIA NIM",
+        "blueprint_provider_other": "Annen leverandør",
     },
 }
 
