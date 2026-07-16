@@ -129,7 +129,7 @@ Paper
 
 See [V0_8_BLUEPRINT_PLAN.md](V0_8_BLUEPRINT_PLAN.md) for the initial experiment plan.
 
-## v0.9: Provider Adapter Foundations (In Progress)
+## v0.9: Provider Adapter Foundations (Released)
 
 - Add a non-secret provider configuration model for Blueprint-style lab providers.
 - Make execution mode explicit: offline fixtures, planned manifests, or future reviewed live adapters.
