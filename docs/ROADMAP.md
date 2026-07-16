@@ -118,7 +118,7 @@ Paper
   -> provenance-linked exploration
 ```
 
-## v0.8: Blueprint Experiment (Released / In Review)
+## v0.8: Blueprint Experiment (Released)
 
 - Study and reproduce a bounded NVIDIA digital-biology or virtual-screening Blueprint tutorial.
 - Document container deployment, API contracts, GPU requirements, observability, evaluation, and licensing.
