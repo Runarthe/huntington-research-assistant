@@ -8,6 +8,7 @@ It is deliberately separate from the Streamlit application. The core Huntington 
 
 - A manifest contract for planned or generated lab artifacts.
 - Provider-type placeholders for `mock`, `nvidia_nim`, `bionemo`, `alphafold`, `nvidia_blueprint`, and `other`.
+- A public `uniprot` provider family for sequence-provenance planning and reviewed retrieval metadata.
 - A deterministic offline mock run using curated protein targets from `labs.protein_intelligence`.
 - CLI helpers for planning, mock execution, and manifest validation.
 - Tests that exercise the scaffold without live provider calls.
@@ -65,6 +66,12 @@ Generate a non-secret config skeleton:
 
 ```bash
 python -m labs.blueprint_experiments provider-config bionemo --execution-mode planned --credentials-env-var BIONEMO_API_KEY
+```
+
+Plan a public UniProt provenance workflow:
+
+```bash
+python -m labs.blueprint_experiments plan HTT --provider-type uniprot
 ```
 
 Future provider adapters should follow [PROVIDER_CONTRACT.md](PROVIDER_CONTRACT.md). Live provider families are planning targets only until an explicit adapter is implemented and reviewed.

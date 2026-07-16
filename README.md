@@ -47,7 +47,7 @@ This project is not affiliated with any medical association, including the Norwe
 - Keep a small local SQLite cache/history.
 - Continue to work without any LLM by showing retrieved papers only.
 - Keep optional scientific-AI experiments isolated in a documented Digital Biology Lab that is not required for literature search.
-- Plan bounded Blueprint-style lab experiments with offline mock manifests and explicit provider-adapter configs before any live NVIDIA, BioNeMo, NIM, or AlphaFold provider is connected.
+- Plan bounded Blueprint-style lab experiments with offline mock manifests, explicit provider-adapter configs, and public UniProt provenance before any live NVIDIA, BioNeMo, NIM, or AlphaFold provider is connected.
 
 Norwegian UI labels and safety information are available. Norwegian translation of abstracts and generated summaries is planned for a later update; the current experimental implementation is disabled by default.
 

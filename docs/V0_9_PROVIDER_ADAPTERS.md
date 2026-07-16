@@ -62,3 +62,17 @@ The lab must not produce diagnosis, treatment recommendations, trial matching, p
 ## Next Good Step
 
 The next low-risk adapter should use public, deterministic metadata first, such as UniProt or AlphaFold Database metadata. Credentialed NVIDIA or BioNeMo workflows should stay gated until their inputs, outputs, licensing, runtime, and provenance contract are well understood.
+
+## First Public-Data Adapter
+
+The first public-data provider family is `uniprot`.
+
+It is intentionally modest:
+
+- planning mode records that UniProt sequence provenance would be used;
+- generated output records sequence length and checksum metadata;
+- no sequence interpretation is produced;
+- no embedding, structure prediction, function prediction, treatment ranking, or clinical claim is produced;
+- live retrieval still requires an explicit reviewed live config and an explicit run request.
+
+This makes it useful for learning adapter design while preserving the public-good app boundary.

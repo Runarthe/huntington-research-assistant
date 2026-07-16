@@ -6,11 +6,15 @@ from typing import Protocol
 
 from pydantic import BaseModel, Field, model_validator
 
+from labs.protein_intelligence.sequences import Fetcher, retrieve_uniprot_sequence
+from labs.protein_intelligence.targets import get_protein_target
+
 from .manifests import (
     ProviderType,
     VALID_PROVIDER_TYPES,
     mock_blueprint_manifest,
     planned_blueprint_manifest,
+    uniprot_sequence_blueprint_manifest,
 )
 
 ExecutionMode = str
@@ -141,6 +145,78 @@ class MockBlueprintProvider:
         )
 
 
+class PublicUniProtProvider:
+    """Public-data adapter for UniProt sequence provenance."""
+
+    provider_type: ProviderType = "uniprot"
+    provider_name = "uniprot-public-fasta"
+
+    def __init__(
+        self,
+        config: BlueprintProviderConfig | None = None,
+        *,
+        fetcher: Fetcher | None = None,
+    ) -> None:
+        self.config = config or BlueprintProviderConfig(
+            provider_type="uniprot",
+            execution_mode="planned",
+            provider_name=self.provider_name,
+        )
+        self.fetcher = fetcher
+
+    def describe(self) -> BlueprintProviderMetadata:
+        return BlueprintProviderMetadata(
+            provider_type=self.provider_type,
+            provider_name=self.provider_name,
+            execution_mode=self.config.execution_mode,
+            implemented=True,
+            live_enabled=self.config.execution_mode == "live" and self.config.live_reviewed,
+            requires_credentials=False,
+            claim_boundary=(
+                "UniProt output is public database provenance only. It is not a "
+                "model prediction, biological interpretation, clinical evidence, "
+                "or treatment guidance."
+            ),
+            notes=(
+                "Planning mode does not call UniProt.",
+                "Live retrieval must be explicitly reviewed and requested.",
+            ),
+        )
+
+    def plan(self, request: BlueprintRunRequest) -> dict[str, object]:
+        return planned_blueprint_manifest(
+            request.target,
+            provider_type="uniprot",
+            planned_at=request.run_date,
+        )
+
+    def run(self, request: BlueprintRunRequest) -> dict[str, object]:
+        if self.config.execution_mode != "live" or not self.config.live_reviewed:
+            raise LiveProviderDisabledError(
+                "UniProt retrieval is public data, but live execution still requires "
+                "an explicit reviewed live config."
+            )
+        if not request.allow_live:
+            raise LiveProviderDisabledError(
+                "UniProt retrieval is gated. Set allow_live=True for an explicit lab run."
+            )
+        target = get_protein_target(request.target)
+        if self.fetcher is None:
+            record = retrieve_uniprot_sequence(target, retrieved_at=request.run_date)
+        else:
+            record = retrieve_uniprot_sequence(
+                target,
+                fetcher=self.fetcher,
+                retrieved_at=request.run_date,
+            )
+        return uniprot_sequence_blueprint_manifest(
+            target.symbol,
+            sequence_length=record.sequence_length,
+            checksum=record.checksum,
+            generated_at=record.retrieved_at,
+        )
+
+
 class GatedLiveProvider:
     """Placeholder for future live providers that are not implemented yet."""
 
@@ -206,6 +282,18 @@ def default_provider_config(provider_type: ProviderType) -> BlueprintProviderCon
             model_version="0.1",
             notes=("Default local fixture provider.",),
         )
+    if provider_type == "uniprot":
+        return BlueprintProviderConfig(
+            provider_type="uniprot",
+            execution_mode="planned",
+            provider_name="uniprot-public-fasta",
+            model_name="UniProtKB FASTA record",
+            model_version="public database record",
+            notes=(
+                "Public-data adapter for sequence provenance.",
+                "Planning mode is default; live retrieval must be explicit.",
+            ),
+        )
     return BlueprintProviderConfig(
         provider_type=provider_type,
         execution_mode="planned",
@@ -224,6 +312,8 @@ def provider_for_config(config: BlueprintProviderConfig) -> BlueprintExperimentP
 
     if config.provider_type == "mock":
         return MockBlueprintProvider()
+    if config.provider_type == "uniprot":
+        return PublicUniProtProvider(config)
     return GatedLiveProvider(config)
 
 

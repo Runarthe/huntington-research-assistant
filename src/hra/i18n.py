@@ -406,6 +406,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "blueprint_provider_nvidia_blueprint": "NVIDIA Blueprint",
         "blueprint_provider_nvidia_nim": "NVIDIA NIM",
         "blueprint_provider_other": "Other provider",
+        "blueprint_provider_uniprot": "UniProt public data",
     },
     "no": {
         "summary_style": "Oppsummeringsstil",
@@ -811,6 +812,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "blueprint_provider_nvidia_blueprint": "NVIDIA Blueprint",
         "blueprint_provider_nvidia_nim": "NVIDIA NIM",
         "blueprint_provider_other": "Annen leverandør",
+        "blueprint_provider_uniprot": "UniProt offentlige data",
     },
 }
 

@@ -11,12 +11,14 @@ All notable project changes are documented here. The project follows semantic ve
 - Added provider metadata for UI and CLI inspection without calling live services.
 - Added `describe-provider` and `provider-config` CLI commands.
 - Added Blueprint Lab UI status fields for provider readiness, live execution, and credential requirements.
+- Added a public UniProt provider family for planned sequence-provenance workflows.
 
 ### Safety
 
 - Live provider execution remains disabled by default.
 - Unreviewed live provider configs are rejected.
 - Provider catalogue entries describe integration boundaries only, not biomedical capability claims.
+- UniProt adapter output is public source provenance only, not model output or biological interpretation.
 
 ## [0.8.3] - Unreleased
 

@@ -10,10 +10,12 @@ from labs.blueprint_experiments.providers import (
     GatedLiveProvider,
     LiveProviderDisabledError,
     MockBlueprintProvider,
+    PublicUniProtProvider,
     provider_catalogue,
     provider_for_type,
     provider_metadata,
 )
+from labs.blueprint_experiments.manifests import validate_blueprint_manifest
 
 
 def test_mock_provider_plans_and_runs_offline() -> None:
@@ -63,6 +65,7 @@ def test_gated_live_provider_still_fails_when_live_flag_is_set() -> None:
 
 def test_provider_factory_returns_mock_or_gated_provider() -> None:
     assert isinstance(provider_for_type("mock"), MockBlueprintProvider)
+    assert isinstance(provider_for_type("uniprot"), PublicUniProtProvider)
     assert isinstance(provider_for_type("alphafold"), GatedLiveProvider)
 
 
@@ -88,4 +91,54 @@ def test_provider_catalogue_lists_modes_and_providers() -> None:
         "mock",
         "bionemo",
         "nvidia_nim",
+        "uniprot",
     }
+
+
+def test_public_uniprot_provider_plans_without_live_retrieval() -> None:
+    provider = PublicUniProtProvider()
+    request = BlueprintRunRequest(target="HTT", run_date=date(2026, 7, 16))
+
+    metadata = provider.describe()
+    plan = provider.plan(request)
+
+    assert metadata.implemented is True
+    assert metadata.live_enabled is False
+    assert metadata.requires_credentials is False
+    assert plan["provider_type"] == "uniprot"
+    assert plan["status"] == "planned"
+    assert plan["runtime"]["requires_live_provider"] is True
+
+
+def test_public_uniprot_provider_requires_reviewed_live_config() -> None:
+    provider = PublicUniProtProvider()
+
+    with pytest.raises(LiveProviderDisabledError, match="reviewed live config"):
+        provider.run(BlueprintRunRequest(target="HTT", allow_live=True))
+
+
+def test_public_uniprot_provider_can_generate_metadata_with_injected_fetcher() -> None:
+    config = BlueprintProviderConfig(
+        provider_type="uniprot",
+        execution_mode="live",
+        live_reviewed=True,
+    )
+    provider = PublicUniProtProvider(
+        config,
+        fetcher=lambda _url: ">sp|P23560|BDNF_HUMAN Brain-derived neurotrophic factor\nMSKGQR\n",
+    )
+
+    manifest = provider.run(
+        BlueprintRunRequest(
+            target="BDNF",
+            run_date=date(2026, 7, 16),
+            allow_live=True,
+        )
+    )
+
+    validate_blueprint_manifest(manifest)
+    assert manifest["provider_type"] == "uniprot"
+    assert manifest["status"] == "generated"
+    assert manifest["outputs"]["artifact_type"] == "public_sequence_metadata"
+    assert manifest["runtime"]["parameters"]["sequence_length"] == 6
+    assert manifest["runtime"]["parameters"]["checksum"].startswith("sha256:")
