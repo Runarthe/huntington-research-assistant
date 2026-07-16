@@ -2,6 +2,16 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.9.1] - Unreleased
+
+### Changed
+
+- Clarified Blueprint Lab provider status labels so mock fixtures, public-data providers, planned-only adapters, and live-reviewed adapters are visually distinct.
+
+### Safety
+
+- The Blueprint Lab preview now states when a provider is fixture-only or public-data gated, reducing the chance that users mistake provenance planning for live model execution.
+
 ## [0.9.0] - 2026-07-16
 
 ### Added

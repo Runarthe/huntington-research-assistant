@@ -139,6 +139,12 @@ See [V0_8_BLUEPRINT_PLAN.md](V0_8_BLUEPRINT_PLAN.md) for the initial experiment 
 
 See [V0_9_PROVIDER_ADAPTERS.md](V0_9_PROVIDER_ADAPTERS.md) for the adapter boundary.
 
+## v0.9.1: Blueprint Status Polish (In Progress)
+
+- Make provider execution boundaries easier to inspect in the UI.
+- Distinguish mock fixtures, public-data providers, planned-only adapters, and live-reviewed adapters.
+- Keep the change limited to explanatory UI and tests; no live providers or model execution are added.
+
 ## Toward v1.0
 
 A mature release should combine reliable multi-provider research navigation, clinical-trial discovery, evidence comparison, reading workflows, transparent summaries, and a carefully evaluated structured research map. Optional scientific-AI modules should demonstrate reproducible engineering without weakening the safety, accessibility, or maintainability of the public application.

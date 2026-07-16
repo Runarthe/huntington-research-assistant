@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "huntington-research-assistant"
-version = "0.9.0"
+version = "0.9.1"
 description = "An open-source Streamlit app for navigating Huntington's disease research and registered clinical trials."
 readme = "README.md"
 requires-python = ">=3.11"

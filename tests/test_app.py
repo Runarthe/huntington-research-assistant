@@ -6,6 +6,7 @@ from streamlit.testing.v1 import AppTest
 
 from hra.clients.europe_pmc import EuropePMCClient
 from hra.models import Paper, SearchResponse
+from app.streamlit_app import _blueprint_provider_status_key
 
 
 APP_PATH = Path(__file__).parents[1] / "app" / "streamlit_app.py"
@@ -59,5 +60,36 @@ def test_protein_lab_tab_renders_without_live_calls() -> None:
     assert "Protein Lab (experimental)" in {subheader.value for subheader in app.subheader}
     assert "Blueprint Lab preview" in {subheader.value for subheader in app.subheader}
     assert any("No live model calls" in info.value for info in app.caption)
+    assert any(
+        "deterministic local fixture data" in info.value
+        for info in app.info
+    )
     assert "Report source" in {radio.label for radio in app.radio}
     assert "Explanations" in {radio.label for radio in app.radio}
+
+
+def test_blueprint_provider_status_keys_distinguish_provider_boundaries() -> None:
+    assert (
+        _blueprint_provider_status_key(
+            {"provider_type": "mock", "live_enabled": False}
+        )
+        == "blueprint_lab_provider_mock_fixture"
+    )
+    assert (
+        _blueprint_provider_status_key(
+            {"provider_type": "uniprot", "live_enabled": False}
+        )
+        == "blueprint_lab_provider_public_data_gated"
+    )
+    assert (
+        _blueprint_provider_status_key(
+            {"provider_type": "bionemo", "live_enabled": False}
+        )
+        == "blueprint_lab_provider_planned_only"
+    )
+    assert (
+        _blueprint_provider_status_key(
+            {"provider_type": "bionemo", "live_enabled": True}
+        )
+        == "blueprint_lab_provider_live_ready"
+    )

@@ -377,8 +377,22 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "blueprint_mode_planned": "Planned only",
         "blueprint_mode_live": "Live provider",
         "blueprint_lab_provider_status": "Provider status",
-        "blueprint_lab_provider_mock_ready": "Mock ready",
+        "blueprint_lab_provider_mock_fixture": "Mock fixture",
+        "blueprint_lab_provider_mock_fixture_detail": (
+            "This provider uses deterministic local fixture data only. It does not call a model, API, GPU, or external service."
+        ),
+        "blueprint_lab_provider_public_data_gated": "Public data / gated",
+        "blueprint_lab_provider_public_data_gated_detail": (
+            "This provider describes public source provenance. Live retrieval is still explicit and gated, and no interpretation is produced."
+        ),
         "blueprint_lab_provider_planned_only": "Planned only",
+        "blueprint_lab_provider_planned_only_detail": (
+            "This provider family is a planning target only. It records what would be run, without executing a live provider."
+        ),
+        "blueprint_lab_provider_live_ready": "Live reviewed",
+        "blueprint_lab_provider_live_ready_detail": (
+            "This provider has an explicit reviewed live configuration. Use only for bounded lab runs with recorded provenance."
+        ),
         "blueprint_lab_live_enabled": "Live enabled",
         "blueprint_lab_credentials": "Needs credentials",
         "blueprint_lab_target": "Blueprint target",
@@ -783,8 +797,22 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "blueprint_mode_planned": "Bare planlagt",
         "blueprint_mode_live": "Live-leverandør",
         "blueprint_lab_provider_status": "Leverandørstatus",
-        "blueprint_lab_provider_mock_ready": "Mock klar",
+        "blueprint_lab_provider_mock_fixture": "Mock-testdata",
+        "blueprint_lab_provider_mock_fixture_detail": (
+            "Denne leverandøren bruker bare deterministiske lokale testdata. Den kaller ikke modell, API, GPU eller ekstern tjeneste."
+        ),
+        "blueprint_lab_provider_public_data_gated": "Offentlige data / sperret",
+        "blueprint_lab_provider_public_data_gated_detail": (
+            "Denne leverandøren beskriver offentlig kildeproveniens. Live-henting er fortsatt eksplisitt og sperret, og ingen tolkning produseres."
+        ),
         "blueprint_lab_provider_planned_only": "Bare planlagt",
+        "blueprint_lab_provider_planned_only_detail": (
+            "Denne leverandørfamilien er bare et planleggingsmål. Den registrerer hva som ville blitt kjørt, uten å kjøre en live-leverandør."
+        ),
+        "blueprint_lab_provider_live_ready": "Live gjennomgått",
+        "blueprint_lab_provider_live_ready_detail": (
+            "Denne leverandøren har en eksplisitt gjennomgått live-konfigurasjon. Brukes bare til avgrensede labkjøringer med registrert proveniens."
+        ),
         "blueprint_lab_live_enabled": "Live aktivert",
         "blueprint_lab_credentials": "Trenger credentials",
         "blueprint_lab_target": "Blueprint-mål",

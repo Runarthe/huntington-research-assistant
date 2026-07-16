@@ -1509,6 +1509,17 @@ def run_protein_lab(
     _render_blueprint_lab_preview(language, explanation_mode)
 
 
+def _blueprint_provider_status_key(metadata: dict[str, object]) -> str:
+    provider_type = metadata["provider_type"]
+    if metadata["live_enabled"]:
+        return "blueprint_lab_provider_live_ready"
+    if provider_type == "mock":
+        return "blueprint_lab_provider_mock_fixture"
+    if provider_type == "uniprot":
+        return "blueprint_lab_provider_public_data_gated"
+    return "blueprint_lab_provider_planned_only"
+
+
 def _render_blueprint_lab_preview(language: str, explanation_mode: str) -> None:
     st.subheader(translate(language, "blueprint_lab_title"))
     st.info(translate(language, "blueprint_lab_intro"))
@@ -1553,14 +1564,10 @@ def _render_blueprint_lab_preview(language: str, explanation_mode: str) -> None:
 
     if selected_metadata is not None:
         metadata_col, live_col, implemented_col = st.columns(3)
+        status_key = _blueprint_provider_status_key(selected_metadata)
         metadata_col.metric(
             translate(language, "blueprint_lab_provider_status"),
-            translate(
-                language,
-                "blueprint_lab_provider_mock_ready"
-                if selected_metadata["implemented"]
-                else "blueprint_lab_provider_planned_only",
-            ),
+            translate(language, status_key),
         )
         live_col.metric(
             translate(language, "blueprint_lab_live_enabled"),
@@ -1576,6 +1583,7 @@ def _render_blueprint_lab_preview(language: str, explanation_mode: str) -> None:
                 "yes" if selected_metadata["requires_credentials"] else "no",
             ),
         )
+        st.info(translate(language, f"{status_key}_detail"))
         st.caption(selected_metadata["claim_boundary"])
 
     registry = blueprint_registry_payload(
