@@ -118,7 +118,7 @@ Paper
   -> provenance-linked exploration
 ```
 
-## v0.8: Blueprint Experiment (In Progress)
+## v0.8: Blueprint Experiment (Released)
 
 - Study and reproduce a bounded NVIDIA digital-biology or virtual-screening Blueprint tutorial.
 - Document container deployment, API contracts, GPU requirements, observability, evaluation, and licensing.
@@ -128,6 +128,16 @@ Paper
 - Start with an offline scaffold that records planned provider families, mock output, provenance, and safety boundaries before any live provider is connected.
 
 See [V0_8_BLUEPRINT_PLAN.md](V0_8_BLUEPRINT_PLAN.md) for the initial experiment plan.
+
+## v0.9: Provider Adapter Foundations (Released)
+
+- Add a non-secret provider configuration model for Blueprint-style lab providers.
+- Make execution mode explicit: offline fixtures, planned manifests, or future reviewed live adapters.
+- Expose provider readiness, credential requirements, and claim boundaries in both CLI and UI.
+- Keep NVIDIA NIM, BioNeMo, AlphaFold, and Blueprint providers gated until an explicit adapter, provenance checks, licensing notes, and tests exist.
+- Start with a safe public UniProt adapter for sequence-provenance metadata before introducing credentialed or GPU-backed workflows.
+
+See [V0_9_PROVIDER_ADAPTERS.md](V0_9_PROVIDER_ADAPTERS.md) for the adapter boundary.
 
 ## Toward v1.0
 

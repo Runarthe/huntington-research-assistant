@@ -368,6 +368,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Choose a provider family to plan for. Only the mock provider can generate an offline fixture today."
         ),
         "blueprint_lab_provider_help_simple": "Choose a provider family. Only mock runs execute offline.",
+        "blueprint_lab_execution_mode": "Execution mode",
+        "blueprint_lab_execution_mode_help": (
+            "Offline means local fixture data, planned means manifest-only design, and live is blocked until a reviewed adapter exists."
+        ),
+        "blueprint_lab_execution_mode_help_simple": "Choose offline fixture mode or planned manifest mode. Live remains blocked.",
+        "blueprint_mode_offline": "Offline fixture",
+        "blueprint_mode_planned": "Planned only",
+        "blueprint_mode_live": "Live provider",
+        "blueprint_lab_provider_status": "Provider status",
+        "blueprint_lab_provider_mock_ready": "Mock ready",
+        "blueprint_lab_provider_planned_only": "Planned only",
+        "blueprint_lab_live_enabled": "Live enabled",
+        "blueprint_lab_credentials": "Needs credentials",
         "blueprint_lab_target": "Blueprint target",
         "blueprint_lab_target_help": "Choose one curated protein target for the planned or mock artifact.",
         "blueprint_lab_target_help_simple": "Choose one curated protein target.",
@@ -393,6 +406,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "blueprint_provider_nvidia_blueprint": "NVIDIA Blueprint",
         "blueprint_provider_nvidia_nim": "NVIDIA NIM",
         "blueprint_provider_other": "Other provider",
+        "blueprint_provider_uniprot": "UniProt public data",
     },
     "no": {
         "summary_style": "Oppsummeringsstil",
@@ -760,6 +774,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Velg en leverandørfamilie å planlegge for. Bare mock-leverandøren kan lage en offline testpost nå."
         ),
         "blueprint_lab_provider_help_simple": "Velg leverandørfamilie. Bare mock-kjøringer utføres offline.",
+        "blueprint_lab_execution_mode": "Kjøremodus",
+        "blueprint_lab_execution_mode_help": (
+            "Offline betyr lokale testdata, planlagt betyr bare manifestdesign, og live er sperret til en adapter er gjennomgått."
+        ),
+        "blueprint_lab_execution_mode_help_simple": "Velg offline testdata eller planlagt manifest. Live er fortsatt sperret.",
+        "blueprint_mode_offline": "Offline testdata",
+        "blueprint_mode_planned": "Bare planlagt",
+        "blueprint_mode_live": "Live-leverandør",
+        "blueprint_lab_provider_status": "Leverandørstatus",
+        "blueprint_lab_provider_mock_ready": "Mock klar",
+        "blueprint_lab_provider_planned_only": "Bare planlagt",
+        "blueprint_lab_live_enabled": "Live aktivert",
+        "blueprint_lab_credentials": "Trenger credentials",
         "blueprint_lab_target": "Blueprint-mål",
         "blueprint_lab_target_help": "Velg ett kuratert proteinmål for planlagt eller mock-basert artefakt.",
         "blueprint_lab_target_help_simple": "Velg ett kuratert proteinmål.",
@@ -785,6 +812,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "blueprint_provider_nvidia_blueprint": "NVIDIA Blueprint",
         "blueprint_provider_nvidia_nim": "NVIDIA NIM",
         "blueprint_provider_other": "Annen leverandør",
+        "blueprint_provider_uniprot": "UniProt offentlige data",
     },
 }
 

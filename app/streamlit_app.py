@@ -88,6 +88,11 @@ from labs.blueprint_experiments.manifests import (
     mock_blueprint_manifest,
     planned_blueprint_manifest,
 )
+from labs.blueprint_experiments.providers import (
+    VALID_EXECUTION_MODES,
+    BlueprintProviderConfig,
+    provider_for_config,
+)
 from labs.blueprint_experiments.registry import (
     build_blueprint_registry,
     registry_payload as blueprint_registry_payload,
@@ -1518,12 +1523,60 @@ def _render_blueprint_lab_preview(language: str, explanation_mode: str) -> None:
         help=explanation(language, "blueprint_lab_provider_help", explanation_mode),
         key=f"blueprint-lab-provider-{language}",
     )
+    mode_options = sorted(VALID_EXECUTION_MODES)
+    default_mode = "offline" if selected_provider == "mock" else "planned"
+    selected_mode = st.selectbox(
+        translate(language, "blueprint_lab_execution_mode"),
+        options=mode_options,
+        index=mode_options.index(default_mode),
+        format_func=lambda value: translate(language, f"blueprint_mode_{value}"),
+        help=explanation(language, "blueprint_lab_execution_mode_help", explanation_mode),
+        key=f"blueprint-lab-mode-{language}-{selected_provider}",
+    )
     selected_symbol = st.selectbox(
         translate(language, "blueprint_lab_target"),
         options=[target.symbol for target in PROTEIN_TARGETS],
         help=explanation(language, "blueprint_lab_target_help", explanation_mode),
         key=f"blueprint-lab-target-{language}",
     )
+
+    try:
+        selected_config = BlueprintProviderConfig(
+            provider_type=selected_provider,
+            execution_mode=selected_mode,
+        )
+        selected_metadata = provider_for_config(selected_config).describe().as_dict()
+    except ValueError as exc:
+        selected_config = None
+        selected_metadata = None
+        st.warning(str(exc))
+
+    if selected_metadata is not None:
+        metadata_col, live_col, implemented_col = st.columns(3)
+        metadata_col.metric(
+            translate(language, "blueprint_lab_provider_status"),
+            translate(
+                language,
+                "blueprint_lab_provider_mock_ready"
+                if selected_metadata["implemented"]
+                else "blueprint_lab_provider_planned_only",
+            ),
+        )
+        live_col.metric(
+            translate(language, "blueprint_lab_live_enabled"),
+            translate(
+                language,
+                "yes" if selected_metadata["live_enabled"] else "no",
+            ),
+        )
+        implemented_col.metric(
+            translate(language, "blueprint_lab_credentials"),
+            translate(
+                language,
+                "yes" if selected_metadata["requires_credentials"] else "no",
+            ),
+        )
+        st.caption(selected_metadata["claim_boundary"])
 
     registry = blueprint_registry_payload(
         build_blueprint_registry((BLUEPRINT_EXAMPLES_DIR,))
@@ -1612,6 +1665,14 @@ def _render_blueprint_lab_preview(language: str, explanation_mode: str) -> None:
         "\n".join(
             [
                 "python -m labs.blueprint_experiments list-providers",
+                (
+                    "python -m labs.blueprint_experiments "
+                    f"describe-provider {selected_provider}"
+                ),
+                (
+                    "python -m labs.blueprint_experiments "
+                    f"provider-config {selected_provider} --execution-mode {selected_mode}"
+                ),
                 (
                     "python -m labs.blueprint_experiments "
                     f"plan {selected_symbol} --provider-type {selected_provider}"

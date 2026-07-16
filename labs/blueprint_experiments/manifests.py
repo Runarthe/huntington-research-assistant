@@ -12,6 +12,7 @@ ProviderType = Literal[
     "nvidia_nim",
     "bionemo",
     "alphafold",
+    "uniprot",
     "nvidia_blueprint",
     "other",
 ]
@@ -21,6 +22,7 @@ VALID_PROVIDER_TYPES = {
     "nvidia_nim",
     "bionemo",
     "alphafold",
+    "uniprot",
     "nvidia_blueprint",
     "other",
 }
@@ -156,6 +158,62 @@ def mock_blueprint_manifest(
     }
 
 
+def uniprot_sequence_blueprint_manifest(
+    target_name: str,
+    *,
+    sequence_length: int,
+    checksum: str,
+    generated_at: date | None = None,
+) -> dict[str, object]:
+    """Create a Blueprint-compatible manifest for public UniProt retrieval."""
+
+    if sequence_length <= 0:
+        raise ValueError("Sequence length must be positive.")
+    target = get_protein_target(target_name)
+    run_date = generated_at or date.today()
+    return {
+        "schema_version": "blueprint-experiment-manifest.v1",
+        "experiment_id": f"blueprint-uniprot-{target.symbol.lower()}",
+        "status": "generated",
+        "provider_type": "uniprot",
+        "purpose": (
+            "Record public UniProt sequence retrieval as input provenance for "
+            "future scientific-AI lab workflows."
+        ),
+        "model": {
+            "provider": "uniprot",
+            "name": "UniProtKB FASTA record",
+            "version": "public database record",
+            "licence": "review UniProt terms before downstream reuse",
+        },
+        "inputs": [_target_input_payload(target, run_date)],
+        "runtime": {
+            "interface": "public-http-fasta",
+            "container": "not-applicable",
+            "hardware": "cpu",
+            "parameters": {
+                "sequence_length": sequence_length,
+                "checksum": checksum,
+            },
+            "requires_live_provider": True,
+        },
+        "outputs": {
+            "path": f"outputs/blueprint-experiments/uniprot/{target.symbol.lower()}/sequence-manifest.json",
+            "artifact_type": "public_sequence_metadata",
+            "generated_at": run_date.isoformat(),
+            "confidence_measures": [],
+        },
+        "evaluation": {
+            "method": "identifier, sequence length, and checksum provenance review",
+            "limitations": [
+                "UniProt retrieval records source provenance only.",
+                "No embedding, structure prediction, function prediction, or clinical claim is produced.",
+            ],
+        },
+        "safety": safety_boundary("uniprot"),
+    }
+
+
 def manifest_summary(manifest: Mapping[str, object]) -> dict[str, object]:
     """Return a compact summary after validating a Blueprint manifest."""
 
@@ -222,6 +280,13 @@ def _model_payload(provider_type: str) -> dict[str, object]:
             "name": "planned-offline-fixture",
             "version": "not-run",
             "licence": "fixture-only",
+        }
+    if provider_type == "uniprot":
+        return {
+            "provider": "uniprot",
+            "name": "UniProtKB FASTA record",
+            "version": "public database record",
+            "licence": "review UniProt terms before downstream reuse",
         }
     return {
         "provider": provider_type,
