@@ -143,7 +143,18 @@ See [V0_9_PROVIDER_ADAPTERS.md](V0_9_PROVIDER_ADAPTERS.md) for the adapter bound
 
 - Make provider execution boundaries easier to inspect in the UI.
 - Distinguish mock fixtures, public-data providers, planned-only adapters, and live-reviewed adapters.
-- Keep the change limited to explanatory UI and tests; no live providers or model execution are added.
+- Show a short target-to-provenance workflow and adapter availability.
+- Keep mock artifacts and mock commands exclusive to the mock provider.
+- Keep the change limited to explanatory UI, artifact controls, documentation, and tests; no live providers or model execution are added.
+
+## v0.10: First Foundation-Model Experiment (Planned)
+
+- Complete an explicit, cached authoritative-sequence retrieval path with checksums.
+- Add an optional small local ESM-2 adapter without making model dependencies part of the core application install.
+- Generate a versioned embedding artifact with input handling, tensor shape, pooling method, runtime, hardware, and provenance.
+- Define and test the handling of sequences longer than the model input limit instead of silently truncating them.
+- Verify deterministic preprocessing and reproducible output metadata before comparing local and future BioNeMo execution.
+- Keep embeddings and other model outputs in the experimental lab and make no claims about function, causality, treatment relevance, or clinical meaning.
 
 ## Toward v1.0
 

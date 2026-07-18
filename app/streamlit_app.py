@@ -89,7 +89,6 @@ from labs.blueprint_experiments.manifests import (
     planned_blueprint_manifest,
 )
 from labs.blueprint_experiments.providers import (
-    VALID_EXECUTION_MODES,
     BlueprintProviderConfig,
     provider_for_config,
 )
@@ -1520,71 +1519,49 @@ def _blueprint_provider_status_key(metadata: dict[str, object]) -> str:
     return "blueprint_lab_provider_planned_only"
 
 
-def _render_blueprint_lab_preview(language: str, explanation_mode: str) -> None:
-    st.subheader(translate(language, "blueprint_lab_title"))
-    st.info(translate(language, "blueprint_lab_intro"))
-    st.caption(translate(language, "blueprint_lab_scope"))
+def _blueprint_available_execution_modes(provider_type: str) -> tuple[str, ...]:
+    """Return only the execution modes that this UI can safely perform."""
 
-    provider_options = sorted(VALID_PROVIDER_TYPES)
-    selected_provider = st.selectbox(
-        translate(language, "blueprint_lab_provider"),
-        options=provider_options,
-        index=provider_options.index("mock"),
-        format_func=lambda value: translate(language, f"blueprint_provider_{value}"),
-        help=explanation(language, "blueprint_lab_provider_help", explanation_mode),
-        key=f"blueprint-lab-provider-{language}",
-    )
-    mode_options = sorted(VALID_EXECUTION_MODES)
-    default_mode = "offline" if selected_provider == "mock" else "planned"
-    selected_mode = st.selectbox(
-        translate(language, "blueprint_lab_execution_mode"),
-        options=mode_options,
-        index=mode_options.index(default_mode),
-        format_func=lambda value: translate(language, f"blueprint_mode_{value}"),
-        help=explanation(language, "blueprint_lab_execution_mode_help", explanation_mode),
-        key=f"blueprint-lab-mode-{language}-{selected_provider}",
-    )
-    selected_symbol = st.selectbox(
-        translate(language, "blueprint_lab_target"),
-        options=[target.symbol for target in PROTEIN_TARGETS],
-        help=explanation(language, "blueprint_lab_target_help", explanation_mode),
-        key=f"blueprint-lab-target-{language}",
-    )
+    if provider_type == "mock":
+        return ("offline",)
+    return ("planned",)
 
-    try:
-        selected_config = BlueprintProviderConfig(
-            provider_type=selected_provider,
-            execution_mode=selected_mode,
-        )
-        selected_metadata = provider_for_config(selected_config).describe().as_dict()
-    except ValueError as exc:
-        selected_config = None
-        selected_metadata = None
-        st.warning(str(exc))
 
-    if selected_metadata is not None:
-        metadata_col, live_col, implemented_col = st.columns(3)
-        status_key = _blueprint_provider_status_key(selected_metadata)
-        metadata_col.metric(
-            translate(language, "blueprint_lab_provider_status"),
-            translate(language, status_key),
+def _blueprint_cli_commands(
+    provider_type: str,
+    execution_mode: str,
+    target_symbol: str,
+) -> tuple[str, ...]:
+    commands = [
+        "python -m labs.blueprint_experiments list-providers",
+        (
+            "python -m labs.blueprint_experiments "
+            f"describe-provider {provider_type}"
+        ),
+        (
+            "python -m labs.blueprint_experiments "
+            f"provider-config {provider_type} --execution-mode {execution_mode}"
+        ),
+        (
+            "python -m labs.blueprint_experiments "
+            f"plan {target_symbol} --provider-type {provider_type}"
+        ),
+    ]
+    if provider_type == "mock":
+        commands.append(
+            "python -m labs.blueprint_experiments "
+            f"run-mock {target_symbol} --points 8"
         )
-        live_col.metric(
-            translate(language, "blueprint_lab_live_enabled"),
-            translate(
-                language,
-                "yes" if selected_metadata["live_enabled"] else "no",
-            ),
-        )
-        implemented_col.metric(
-            translate(language, "blueprint_lab_credentials"),
-            translate(
-                language,
-                "yes" if selected_metadata["requires_credentials"] else "no",
-            ),
-        )
-        st.info(translate(language, f"{status_key}_detail"))
-        st.caption(selected_metadata["claim_boundary"])
+    commands.append(
+        "python -m labs.blueprint_experiments "
+        "index-manifests labs/blueprint_experiments/examples"
+    )
+    return tuple(commands)
+
+
+def _render_blueprint_registry(language: str) -> dict[str, object]:
+    st.subheader(translate(language, "blueprint_lab_registry_title"))
+    st.caption(translate(language, "blueprint_lab_registry_help"))
 
     registry = blueprint_registry_payload(
         build_blueprint_registry((BLUEPRINT_EXAMPLES_DIR,))
@@ -1638,28 +1615,122 @@ def _render_blueprint_lab_preview(language: str, explanation_mode: str) -> None:
         )
     else:
         st.info(translate(language, "blueprint_lab_no_registry_records"))
+    return registry
+
+
+def _render_blueprint_lab_preview(language: str, explanation_mode: str) -> None:
+    st.subheader(translate(language, "blueprint_lab_title"))
+    st.info(translate(language, "blueprint_lab_intro"))
+    st.caption(translate(language, "blueprint_lab_scope"))
+
+    st.markdown(f"**{translate(language, 'blueprint_lab_workflow_title')}**")
+    workflow_columns = st.columns(4)
+    for column, key in zip(
+        workflow_columns,
+        (
+            "blueprint_lab_workflow_target",
+            "blueprint_lab_workflow_provider",
+            "blueprint_lab_workflow_manifest",
+            "blueprint_lab_workflow_provenance",
+        ),
+        strict=True,
+    ):
+        column.caption(translate(language, key))
+
+    provider_options = sorted(VALID_PROVIDER_TYPES)
+    selected_provider = st.selectbox(
+        translate(language, "blueprint_lab_provider"),
+        options=provider_options,
+        index=provider_options.index("mock"),
+        format_func=lambda value: translate(language, f"blueprint_provider_{value}"),
+        help=explanation(language, "blueprint_lab_provider_help", explanation_mode),
+        key=f"blueprint-lab-provider-{language}",
+    )
+    mode_options = _blueprint_available_execution_modes(selected_provider)
+    selected_mode = st.selectbox(
+        translate(language, "blueprint_lab_execution_mode"),
+        options=mode_options,
+        index=0,
+        format_func=lambda value: translate(language, f"blueprint_mode_{value}"),
+        help=explanation(language, "blueprint_lab_execution_mode_help", explanation_mode),
+        key=f"blueprint-lab-mode-{language}-{selected_provider}",
+    )
+    selected_symbol = st.selectbox(
+        translate(language, "blueprint_lab_target"),
+        options=[target.symbol for target in PROTEIN_TARGETS],
+        help=explanation(language, "blueprint_lab_target_help", explanation_mode),
+        key=f"blueprint-lab-target-{language}",
+    )
+
+    try:
+        selected_config = BlueprintProviderConfig(
+            provider_type=selected_provider,
+            execution_mode=selected_mode,
+        )
+        selected_metadata = provider_for_config(selected_config).describe().as_dict()
+    except ValueError as exc:
+        selected_metadata = None
+        st.warning(str(exc))
+
+    if selected_metadata is not None:
+        metadata_col, implemented_col, live_col = st.columns(3)
+        status_key = _blueprint_provider_status_key(selected_metadata)
+        metadata_col.metric(
+            translate(language, "blueprint_lab_provider_status"),
+            translate(language, status_key),
+        )
+        implemented_col.metric(
+            translate(language, "blueprint_lab_implemented"),
+            translate(
+                language,
+                "yes" if selected_metadata["implemented"] else "no",
+            ),
+        )
+        live_col.metric(
+            translate(language, "blueprint_lab_live_enabled"),
+            translate(
+                language,
+                "yes" if selected_metadata["live_enabled"] else "no",
+            ),
+        )
+        st.info(translate(language, f"{status_key}_detail"))
+        st.caption(selected_metadata["claim_boundary"])
 
     planned_manifest = planned_blueprint_manifest(
         selected_symbol,
         provider_type=selected_provider,
     )
-    mock_manifest = mock_blueprint_manifest(selected_symbol)
 
     with st.expander(translate(language, "blueprint_lab_planned_manifest")):
+        st.caption(translate(language, "blueprint_lab_planned_manifest_help"))
         st.json(planned_manifest, expanded=False)
 
-    with st.expander(translate(language, "blueprint_lab_mock_manifest")):
-        st.json(mock_manifest, expanded=False)
-
-    download_col, registry_col = st.columns(2)
-    download_col.download_button(
-        translate(language, "blueprint_lab_download_mock"),
-        data=json.dumps(mock_manifest, indent=2, sort_keys=True).encode("utf-8"),
-        file_name=f"hra-blueprint-mock-{selected_symbol.lower()}.json",
+    artifact_columns = st.columns(2 if selected_provider == "mock" else 1)
+    artifact_columns[0].download_button(
+        translate(language, "blueprint_lab_download_plan"),
+        data=json.dumps(planned_manifest, indent=2, sort_keys=True).encode("utf-8"),
+        file_name=(
+            f"hra-blueprint-plan-{selected_provider}-{selected_symbol.lower()}.json"
+        ),
         mime="application/json",
-        key=f"blueprint-lab-mock-download-{selected_symbol}",
+        key=f"blueprint-lab-plan-download-{selected_provider}-{selected_symbol}",
     )
-    registry_col.download_button(
+
+    if selected_provider == "mock":
+        mock_manifest = mock_blueprint_manifest(selected_symbol)
+        with st.expander(translate(language, "blueprint_lab_mock_manifest")):
+            st.caption(translate(language, "blueprint_lab_mock_manifest_help"))
+            st.json(mock_manifest, expanded=False)
+        artifact_columns[1].download_button(
+            translate(language, "blueprint_lab_download_mock"),
+            data=json.dumps(mock_manifest, indent=2, sort_keys=True).encode("utf-8"),
+            file_name=f"hra-blueprint-mock-{selected_symbol.lower()}.json",
+            mime="application/json",
+            key=f"blueprint-lab-mock-download-{selected_symbol}",
+        )
+
+    registry = _render_blueprint_registry(language)
+    st.download_button(
         translate(language, "blueprint_lab_download_registry"),
         data=json.dumps(registry, indent=2, sort_keys=True).encode("utf-8"),
         file_name="hra-blueprint-registry.json",
@@ -1671,29 +1742,11 @@ def _render_blueprint_lab_preview(language: str, explanation_mode: str) -> None:
     st.caption(translate(language, "blueprint_lab_cli_help"))
     st.code(
         "\n".join(
-            [
-                "python -m labs.blueprint_experiments list-providers",
-                (
-                    "python -m labs.blueprint_experiments "
-                    f"describe-provider {selected_provider}"
-                ),
-                (
-                    "python -m labs.blueprint_experiments "
-                    f"provider-config {selected_provider} --execution-mode {selected_mode}"
-                ),
-                (
-                    "python -m labs.blueprint_experiments "
-                    f"plan {selected_symbol} --provider-type {selected_provider}"
-                ),
-                (
-                    "python -m labs.blueprint_experiments "
-                    f"run-mock {selected_symbol} --points 8"
-                ),
-                (
-                    "python -m labs.blueprint_experiments "
-                    "index-manifests labs/blueprint_experiments/examples"
-                ),
-            ]
+            _blueprint_cli_commands(
+                selected_provider,
+                selected_mode,
+                selected_symbol,
+            )
         ),
         language="powershell",
     )

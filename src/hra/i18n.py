@@ -356,13 +356,18 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "protein_lab_cli_help": "Equivalent offline commands for reviewing this target outside the app.",
         "blueprint_lab_title": "Blueprint Lab preview",
         "blueprint_lab_intro": (
-            "This preview shows the v0.8 Blueprint experiment scaffold in the app. "
-            "It can plan provider families and inspect local mock manifests without live provider calls."
+            "This preview shows how a curated target, provider boundary, experiment manifest, "
+            "and provenance record fit together before live scientific-AI execution is enabled."
         ),
         "blueprint_lab_scope": (
             "Blueprint artifacts are engineering provenance records only. They are not model-validated findings, "
             "clinical evidence, treatment guidance, or medical advice."
         ),
+        "blueprint_lab_workflow_title": "Workflow",
+        "blueprint_lab_workflow_target": "Step 1: Select a curated target",
+        "blueprint_lab_workflow_provider": "Step 2: Inspect a provider boundary",
+        "blueprint_lab_workflow_manifest": "Step 3: Review the planned artifact",
+        "blueprint_lab_workflow_provenance": "Step 4: Check recorded provenance",
         "blueprint_lab_provider": "Provider family",
         "blueprint_lab_provider_help": (
             "Choose a provider family to plan for. Only the mock provider can generate an offline fixture today."
@@ -370,9 +375,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "blueprint_lab_provider_help_simple": "Choose a provider family. Only mock runs execute offline.",
         "blueprint_lab_execution_mode": "Execution mode",
         "blueprint_lab_execution_mode_help": (
-            "Offline means local fixture data, planned means manifest-only design, and live is blocked until a reviewed adapter exists."
+            "The preview exposes only modes it can safely perform: offline fixture generation for mock data, "
+            "or plan-only manifests for providers without an enabled live adapter."
         ),
-        "blueprint_lab_execution_mode_help_simple": "Choose offline fixture mode or planned manifest mode. Live remains blocked.",
+        "blueprint_lab_execution_mode_help_simple": "Mock uses offline test data; other providers remain plan-only.",
         "blueprint_mode_offline": "Offline fixture",
         "blueprint_mode_planned": "Planned only",
         "blueprint_mode_live": "Live provider",
@@ -394,6 +400,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "This provider has an explicit reviewed live configuration. Use only for bounded lab runs with recorded provenance."
         ),
         "blueprint_lab_live_enabled": "Live enabled",
+        "blueprint_lab_implemented": "Adapter available",
         "blueprint_lab_credentials": "Needs credentials",
         "blueprint_lab_target": "Blueprint target",
         "blueprint_lab_target_help": "Choose one curated protein target for the planned or mock artifact.",
@@ -408,8 +415,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "blueprint_lab_valid": "Valid",
         "blueprint_lab_checksum": "Checksum",
         "blueprint_lab_no_registry_records": "No local Blueprint manifests were found.",
+        "blueprint_lab_registry_title": "Local artifact registry",
+        "blueprint_lab_registry_help": (
+            "The registry indexes saved manifest files and their checksums. It does not execute providers or interpret results."
+        ),
         "blueprint_lab_planned_manifest": "Planned Blueprint manifest",
+        "blueprint_lab_planned_manifest_help": (
+            "This records the selected target and provider boundary without calling that provider."
+        ),
         "blueprint_lab_mock_manifest": "Mock Blueprint manifest",
+        "blueprint_lab_mock_manifest_help": (
+            "This deterministic fixture is available only for the mock provider and is not model output."
+        ),
+        "blueprint_lab_download_plan": "Download planned manifest JSON",
         "blueprint_lab_download_mock": "Download mock manifest JSON",
         "blueprint_lab_download_registry": "Download registry JSON",
         "blueprint_lab_cli_title": "Blueprint CLI checks",
@@ -776,13 +794,18 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "protein_lab_cli_help": "Tilsvarende offline-kommandoer for gjennomgang utenfor appen.",
         "blueprint_lab_title": "Blueprint-labforhåndsvisning",
         "blueprint_lab_intro": (
-            "Denne visningen viser v0.8-strukturen for Blueprint-eksperimenter i appen. "
-            "Den kan planlegge leverandørfamilier og vise lokale mock-manifester uten levende leverandørkall."
+            "Denne visningen viser hvordan et kuratert mål, en leverandørgrense, et eksperimentmanifest "
+            "og en provenienspost henger sammen før live-kjøring av vitenskapelig KI aktiveres."
         ),
         "blueprint_lab_scope": (
             "Blueprint-artefakter er bare tekniske proveniensposter. De er ikke modellvaliderte funn, "
             "klinisk evidens, behandlingsveiledning eller medisinske råd."
         ),
+        "blueprint_lab_workflow_title": "Arbeidsflyt",
+        "blueprint_lab_workflow_target": "Trinn 1: Velg et kuratert mål",
+        "blueprint_lab_workflow_provider": "Trinn 2: Se leverandørgrensen",
+        "blueprint_lab_workflow_manifest": "Trinn 3: Gå gjennom planlagt artefakt",
+        "blueprint_lab_workflow_provenance": "Trinn 4: Kontroller registrert proveniens",
         "blueprint_lab_provider": "Leverandørfamilie",
         "blueprint_lab_provider_help": (
             "Velg en leverandørfamilie å planlegge for. Bare mock-leverandøren kan lage en offline testpost nå."
@@ -790,9 +813,10 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "blueprint_lab_provider_help_simple": "Velg leverandørfamilie. Bare mock-kjøringer utføres offline.",
         "blueprint_lab_execution_mode": "Kjøremodus",
         "blueprint_lab_execution_mode_help": (
-            "Offline betyr lokale testdata, planlagt betyr bare manifestdesign, og live er sperret til en adapter er gjennomgått."
+            "Forhåndsvisningen viser bare moduser den trygt kan utføre: offline testdata for mock, "
+            "eller planlagte manifester for leverandører uten en aktivert live-adapter."
         ),
-        "blueprint_lab_execution_mode_help_simple": "Velg offline testdata eller planlagt manifest. Live er fortsatt sperret.",
+        "blueprint_lab_execution_mode_help_simple": "Mock bruker offline testdata; andre leverandører er bare planlagt.",
         "blueprint_mode_offline": "Offline testdata",
         "blueprint_mode_planned": "Bare planlagt",
         "blueprint_mode_live": "Live-leverandør",
@@ -814,6 +838,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Denne leverandøren har en eksplisitt gjennomgått live-konfigurasjon. Brukes bare til avgrensede labkjøringer med registrert proveniens."
         ),
         "blueprint_lab_live_enabled": "Live aktivert",
+        "blueprint_lab_implemented": "Adapter tilgjengelig",
         "blueprint_lab_credentials": "Trenger credentials",
         "blueprint_lab_target": "Blueprint-mål",
         "blueprint_lab_target_help": "Velg ett kuratert proteinmål for planlagt eller mock-basert artefakt.",
@@ -828,8 +853,19 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "blueprint_lab_valid": "Gyldig",
         "blueprint_lab_checksum": "Sjekksum",
         "blueprint_lab_no_registry_records": "Ingen lokale Blueprint-manifester ble funnet.",
+        "blueprint_lab_registry_title": "Lokalt artefaktregister",
+        "blueprint_lab_registry_help": (
+            "Registeret indekserer lagrede manifestfiler og sjekksummene deres. Det kjører ikke leverandører eller tolker resultater."
+        ),
         "blueprint_lab_planned_manifest": "Planlagt Blueprint-manifest",
+        "blueprint_lab_planned_manifest_help": (
+            "Dette registrerer valgt mål og leverandørgrense uten å kalle leverandøren."
+        ),
         "blueprint_lab_mock_manifest": "Mock-basert Blueprint-manifest",
+        "blueprint_lab_mock_manifest_help": (
+            "Disse deterministiske testdataene er bare tilgjengelige for mock-leverandøren og er ikke modellresultater."
+        ),
+        "blueprint_lab_download_plan": "Last ned planlagt manifest som JSON",
         "blueprint_lab_download_mock": "Last ned mock-manifest som JSON",
         "blueprint_lab_download_registry": "Last ned register som JSON",
         "blueprint_lab_cli_title": "Blueprint CLI-sjekker",
