@@ -147,7 +147,7 @@ See [V0_9_PROVIDER_ADAPTERS.md](V0_9_PROVIDER_ADAPTERS.md) for the adapter bound
 - Keep mock artifacts and mock commands exclusive to the mock provider.
 - Keep the change limited to explanatory UI, artifact controls, documentation, and tests; no live providers or model execution are added.
 
-## v0.10: First Foundation-Model Experiment (In Progress)
+## v0.10: First Foundation-Model Experiment (Released)
 
 - Complete an explicit, cached authoritative-sequence retrieval path with checksums.
 - Add an optional small local ESM-2 adapter without making model dependencies part of the core application install.
@@ -155,6 +155,13 @@ See [V0_9_PROVIDER_ADAPTERS.md](V0_9_PROVIDER_ADAPTERS.md) for the adapter bound
 - Define and test the handling of sequences longer than the model input limit instead of silently truncating them.
 - Verify deterministic preprocessing and reproducible output metadata before comparing local and future BioNeMo execution.
 - Keep embeddings and other model outputs in the experimental lab and make no claims about function, causality, treatment relevance, or clinical meaning.
+
+## v0.11: Provider-Parity Experiment (Planned)
+
+- Define one provider-neutral embedding artifact contract shared by local ESM-2 and future BioNeMo or NIM execution.
+- Add a deterministic comparison report for preprocessing, model identity, tensor shape, pooling, runtime, and vector checksum provenance.
+- Keep NVIDIA providers planned or explicitly gated until their runtime, licence, credentials, and failure paths are reviewed.
+- Do not compare embeddings as scientific evidence or infer function, similarity, efficacy, or clinical meaning.
 
 ## Toward v1.0
 

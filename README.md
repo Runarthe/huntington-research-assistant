@@ -2,7 +2,7 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The current released version is **v0.9.1**. The current development milestone is **v0.10.0**. See [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for a concise current-state overview and [CHANGELOG.md](CHANGELOG.md) for release details.
+The current released version is **v0.10.0**. The next planned milestone is **v0.11.0**. See [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for a concise current-state overview and [CHANGELOG.md](CHANGELOG.md) for release details.
 
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
@@ -182,7 +182,7 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-The current development milestone evaluates one small local ESM-2 workflow with strict provenance and no biological interpretation. Later work can compare this local contract with BioNeMo or NIM execution, while reviewed entity extraction, Norwegian refinement, accessibility, and summary evaluation remain public-app priorities. Scientific-AI labs are optional and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
+The next experimental milestone compares the local ESM-2 artifact contract with a gated BioNeMo or NIM execution plan, while reviewed entity extraction, Norwegian refinement, accessibility, and summary evaluation remain public-app priorities. Scientific-AI labs are optional and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
 
