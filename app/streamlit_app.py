@@ -92,11 +92,13 @@ from labs.protein_intelligence import (
     BIONEMO_MODEL_URL,
     BIONEMO_PREREQUISITES_URL,
     BioNeMoExecutionError,
+    BioNeMoPreflightReport,
     build_bionemo_execution_bundle,
     build_provider_parity_report,
     compare_embedding_manifests,
     fixture_sequence_record,
     fixture_bionemo_result_manifest,
+    inspect_bionemo_environment,
     local_esm2_manifest,
     local_esm2_status,
     load_bionemo_result_manifest,
@@ -1403,6 +1405,84 @@ def _render_provider_parity_experiment(
         f"[{translate(language, 'parity_prerequisites_docs')}]"
         f"({BIONEMO_PREREQUISITES_URL})"
     )
+
+    st.markdown(f"**{translate(language, 'bionemo_preflight_title')}**")
+    st.caption(translate(language, "bionemo_preflight_help"))
+    preflight_key = f"bionemo-preflight-{bionemo_plan['experiment_id']}"
+    if st.button(
+        translate(language, "bionemo_preflight_run"),
+        key=f"{preflight_key}-run",
+    ):
+        with st.spinner(translate(language, "bionemo_preflight_running")):
+            st.session_state[preflight_key] = inspect_bionemo_environment().model_dump(
+                mode="json"
+            )
+
+    preflight_payload = st.session_state.get(preflight_key)
+    if isinstance(preflight_payload, dict):
+        preflight = BioNeMoPreflightReport.model_validate(preflight_payload)
+        status_label = translate(
+            language,
+            f"bionemo_preflight_status_{preflight.overall_status.replace('-', '_')}",
+        )
+        if preflight.overall_status == "blocked":
+            st.error(
+                translate(
+                    language,
+                    "bionemo_preflight_blocked",
+                    status=status_label,
+                )
+            )
+        elif preflight.overall_status == "review-required":
+            st.warning(
+                translate(
+                    language,
+                    "bionemo_preflight_review",
+                    status=status_label,
+                )
+            )
+        else:
+            st.success(
+                translate(
+                    language,
+                    "bionemo_preflight_ready",
+                    status=status_label,
+                )
+            )
+
+        preflight_rows = []
+        for check in preflight.checks:
+            detected = ", ".join(
+                f"{name.replace('_', ' ')}: {value}"
+                for name, value in check.evidence.items()
+                if value not in (None, "")
+            )
+            preflight_rows.append(
+                {
+                    translate(language, "bionemo_preflight_check"): translate(
+                        language,
+                        f"bionemo_preflight_check_{check.check_id}",
+                    ),
+                    translate(language, "bionemo_preflight_result"): translate(
+                        language,
+                        f"bionemo_preflight_check_status_{check.status.replace('-', '_')}",
+                    ),
+                    translate(language, "bionemo_preflight_detected"): detected
+                    or translate(language, "parity_not_recorded"),
+                }
+            )
+        st.dataframe(preflight_rows, hide_index=True, use_container_width=True)
+        st.caption(translate(language, "bionemo_preflight_boundary"))
+        st.download_button(
+            translate(language, "bionemo_preflight_download"),
+            data=json.dumps(
+                preflight.model_dump(mode="json"), indent=2, sort_keys=True
+            ).encode("utf-8"),
+            file_name="hra-bionemo-preflight.json",
+            mime="application/json",
+            key=f"{preflight_key}-download",
+        )
+
     st.download_button(
         translate(language, "parity_download_execution_bundle"),
         data=execution_bundle,
@@ -1882,6 +1962,7 @@ def run_protein_lab(
             [
                 "python -m labs.protein_intelligence list-targets",
                 f"python -m labs.protein_intelligence plan {selected_target.symbol}",
+                "python -m labs.protein_intelligence bionemo-preflight",
                 (
                     "python -m labs.protein_intelligence.report_cli "
                     f"target-report {selected_target.symbol} "

@@ -73,6 +73,13 @@ from labs.protein_intelligence.bionemo_execution import (
     validate_bionemo_execution_bundle,
     validate_bionemo_result_manifest,
 )
+from labs.protein_intelligence.bionemo_preflight import (
+    BIONEMO_PREFLIGHT_VERSION,
+    BioNeMoPreflightCheck,
+    BioNeMoPreflightReport,
+    CommandResult,
+    inspect_bionemo_environment,
+)
 
 __all__ = [
     "PROTEIN_TARGETS",
@@ -135,4 +142,9 @@ __all__ = [
     "load_bionemo_result_manifest",
     "validate_bionemo_execution_bundle",
     "validate_bionemo_result_manifest",
+    "BIONEMO_PREFLIGHT_VERSION",
+    "BioNeMoPreflightCheck",
+    "BioNeMoPreflightReport",
+    "CommandResult",
+    "inspect_bionemo_environment",
 ]

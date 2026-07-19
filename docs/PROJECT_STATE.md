@@ -82,6 +82,14 @@ The project has already exercised:
 
 It has not yet exercised GPU inference, NIM deployment, BioNeMo runtime execution, task-specific model-output evaluation, or structure-prediction interpretation.
 
+## Current v0.12 Development
+
+v0.12 begins with a non-networking BioNeMo environment preflight. It records the host OS and architecture, NVIDIA GPU and driver, bfloat16 compute capability, Docker Linux engine, declared NVIDIA runtime, and immutable-image readiness. It does not inspect NGC credentials, pull an image, or start a container.
+
+On the current development machine, the preflight detects an RTX 5070 Ti with 16 GB VRAM, compute capability 12.0, and driver 591.86. Docker Desktop is installed, but its Linux engine was stopped during the initial review. The exact GPU model is also absent from the reviewed NVIDIA support matrix, so compatibility remains unverified even though the documented compute-capability and driver thresholds are met.
+
+See [V0_12_BIONEMO_RUNTIME.md](V0_12_BIONEMO_RUNTIME.md) for the execution boundary and next verification step.
+
 ## Released v0.11 Milestone
 
 v0.11 normalizes local and future provider artifacts into a small shared descriptor, then compares each provenance field explicitly. Identical input checksum, window, length, and truncation policy can be verified before a second provider runs. Checkpoint weights, pooling implementation, tensor output, vector checksum, hardware, and precision remain different, unavailable, or not comparable until supporting runtime records exist.

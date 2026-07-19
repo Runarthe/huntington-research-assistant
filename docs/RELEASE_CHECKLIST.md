@@ -36,6 +36,9 @@ Use this checklist before publishing a tagged release.
 - [ ] Download the BioNeMo execution ZIP, inspect its checksummed file list, and confirm it contains no credential.
 - [ ] Enable the offline BioNeMo result fixture and confirm the UI does not label it as provider execution.
 - [ ] Confirm a result with a changed experiment, model, sequence checksum, full vector, or oversized JSON payload is rejected.
+- [ ] Run the BioNeMo environment preflight and confirm that it makes no network call, inspects no credential, and starts no container.
+- [ ] Confirm a stopped Docker engine or unsupported architecture is reported as blocked rather than ready.
+- [ ] Confirm an unlisted GPU model is visibly marked for review even when its compute capability passes.
 
 ## Safety and Privacy
 

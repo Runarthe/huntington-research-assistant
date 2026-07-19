@@ -2,6 +2,20 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.12.0] - Unreleased
+
+### Added
+
+- Added a non-networking BioNeMo environment preflight for the CLI and Protein Lab.
+- Added typed checks for host OS, CPU architecture, NVIDIA GPU and driver, bfloat16 compute capability, Docker Linux engine, declared NVIDIA runtime, and immutable image provenance.
+- Added a downloadable preflight report that explicitly records that no credential was inspected, no network call was made, and no container was started.
+
+### Safety
+
+- The preflight uses only fixed diagnostic commands and never runs `docker login`, `docker pull`, or `docker run`.
+- A detected GPU or Docker installation is not reported as proof that BioNeMo can execute.
+- GPUs absent from the reviewed NVIDIA support matrix remain flagged for review even when they meet the documented compute-capability threshold.
+
 ## [0.11.0] - 2026-07-19
 
 ### Added

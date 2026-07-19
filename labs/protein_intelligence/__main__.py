@@ -10,6 +10,9 @@ from labs.protein_intelligence.embeddings import (
     MockEmbeddingProvider,
     embedding_manifest,
 )
+from labs.protein_intelligence.bionemo_preflight import (
+    inspect_bionemo_environment,
+)
 from labs.protein_intelligence.manifests import (
     ManifestValidationError,
     manifest_summary,
@@ -172,6 +175,20 @@ def main(argv: list[str] | None = None) -> int:
     )
     validate_parser.add_argument("path", help="Path to manifest JSON.")
 
+    preflight_parser = subparsers.add_parser(
+        "bionemo-preflight",
+        help="Inspect local BioNeMo prerequisites without network or containers.",
+    )
+    preflight_parser.add_argument(
+        "--image",
+        help="Optionally validate an immutable container image reference.",
+    )
+    preflight_parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Return exit code 3 unless every preflight check is complete.",
+    )
+
     args = parser.parse_args(argv)
 
     try:
@@ -204,6 +221,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "validate-manifest":
             _write_json(validate_manifest_file(args.path))
             return 0
+        if args.command == "bionemo-preflight":
+            report = inspect_bionemo_environment(image_reference=args.image)
+            _write_json(report.model_dump(mode="json"))
+            return 3 if args.strict and report.overall_status != "ready" else 0
     except (KeyError, ValueError, OSError, json.JSONDecodeError) as exc:
         parser.exit(2, f"{exc}\n")
 
