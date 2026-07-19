@@ -94,6 +94,9 @@ from labs.protein_intelligence import (
     BIONEMO_MODEL_URL,
     BIONEMO_PREREQUISITES_URL,
     BIONEMO_RECIPES_URL,
+    BIONEMO_RECIPES_ESM2_DOCS_URL,
+    BIONEMO_RECIPES_MODEL_URL,
+    BIONEMO_RECIPES_RELEASE_URL,
     BioNeMoExecutionError,
     BioNeMoGPUProbeReport,
     BioNeMoPreflightReport,
@@ -109,10 +112,12 @@ from labs.protein_intelligence import (
     load_bionemo_result_manifest,
     planned_local_esm2_manifest,
     planned_bionemo_esm2_manifest,
+    planned_bionemo_recipes_esm2_manifest,
     planned_sequence_manifest,
     read_cached_sequence,
     retrieve_and_cache_uniprot_sequence,
     reviewed_bionemo_container,
+    reviewed_bionemo_recipes_path,
     run_bionemo_gpu_probe,
 )
 from labs.protein_intelligence.entity_mapping import LiteratureEntity, map_entities_to_targets
@@ -1432,6 +1437,66 @@ def _render_bionemo_image_review(language: str, experiment_id: str) -> None:
     )
 
 
+def _render_bionemo_recipes_review(
+    language: str,
+    record: ProteinSequenceRecord,
+    config: LocalESM2Config,
+    experiment_id: str,
+) -> None:
+    review = reviewed_bionemo_recipes_path()
+    plan = planned_bionemo_recipes_esm2_manifest(record, config)
+    with st.expander(translate(language, "bionemo_recipes_review_title")):
+        st.info(translate(language, "bionemo_recipes_review_intro"))
+        st.caption(translate(language, "bionemo_recipes_review_scope"))
+        version_col, model_col, licence_col = st.columns(3)
+        version_col.metric(
+            translate(language, "bionemo_recipes_review_version"),
+            review.recipes_version,
+        )
+        model_col.metric(
+            translate(language, "bionemo_recipes_review_model"),
+            "ESM-2 8M",
+        )
+        licence_col.metric(
+            translate(language, "bionemo_recipes_review_license"),
+            review.model_license,
+        )
+        st.code(
+            f"{review.model_id}@{review.model_revision}",
+            language=None,
+        )
+        st.warning(translate(language, "bionemo_recipes_review_remote_code"))
+        st.markdown(
+            " | ".join(
+                (
+                    f"[{translate(language, 'bionemo_recipes_review_release')}]"
+                    f"({BIONEMO_RECIPES_RELEASE_URL})",
+                    f"[{translate(language, 'bionemo_recipes_review_docs')}]"
+                    f"({BIONEMO_RECIPES_ESM2_DOCS_URL})",
+                    f"[{translate(language, 'bionemo_recipes_review_model_card')}]"
+                    f"({BIONEMO_RECIPES_MODEL_URL})",
+                )
+            )
+        )
+        review_col, plan_col = st.columns(2)
+        review_col.download_button(
+            translate(language, "bionemo_recipes_review_download"),
+            data=json.dumps(
+                review.model_dump(mode="json"), indent=2, sort_keys=True
+            ).encode("utf-8"),
+            file_name="hra-bionemo-recipes-review.json",
+            mime="application/json",
+            key=f"bionemo-recipes-review-{experiment_id}",
+        )
+        plan_col.download_button(
+            translate(language, "bionemo_recipes_plan_download"),
+            data=json.dumps(plan, indent=2, sort_keys=True).encode("utf-8"),
+            file_name=f"hra-bionemo-recipes-plan-{record.target.symbol.lower()}.json",
+            mime="application/json",
+            key=f"bionemo-recipes-plan-{experiment_id}",
+        )
+
+
 def _render_bionemo_gpu_probe(language: str, experiment_id: str) -> None:
     review = reviewed_bionemo_container()
     probe_key = f"bionemo-gpu-probe-{experiment_id}"
@@ -1606,6 +1671,12 @@ def _render_provider_parity_experiment(
         )
 
     _render_bionemo_image_review(language, str(bionemo_plan["experiment_id"]))
+    _render_bionemo_recipes_review(
+        language,
+        record,
+        config,
+        str(bionemo_plan["experiment_id"]),
+    )
     _render_bionemo_gpu_probe(language, str(bionemo_plan["experiment_id"]))
 
     st.download_button(
@@ -2088,6 +2159,7 @@ def run_protein_lab(
                 "python -m labs.protein_intelligence list-targets",
                 f"python -m labs.protein_intelligence plan {selected_target.symbol}",
                 "python -m labs.protein_intelligence bionemo-image-review",
+                "python -m labs.protein_intelligence bionemo-recipes-review",
                 "python -m labs.protein_intelligence bionemo-preflight",
                 (
                     "python -m labs.protein_intelligence.report_cli "

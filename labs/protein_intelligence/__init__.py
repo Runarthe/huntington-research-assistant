@@ -98,6 +98,22 @@ from labs.protein_intelligence.bionemo_image_review import (
     BioNeMoContainerReview,
     reviewed_bionemo_container,
 )
+from labs.protein_intelligence.bionemo_recipes_review import (
+    BIONEMO_RECIPES_COMMIT,
+    BIONEMO_RECIPES_ESM2_DOCS_URL,
+    BIONEMO_RECIPES_INFERENCE_URL,
+    BIONEMO_RECIPES_MODEL_ID,
+    BIONEMO_RECIPES_MODEL_REVISION,
+    BIONEMO_RECIPES_MODEL_URL,
+    BIONEMO_RECIPES_RELEASE_URL,
+    BIONEMO_RECIPES_REVIEW_VERSION,
+    BIONEMO_RECIPES_VERSION,
+    BIONEMO_RECIPES_WEIGHTS_SHA256,
+    BioNeMoRecipesFileReview,
+    BioNeMoRecipesReview,
+    planned_bionemo_recipes_esm2_manifest,
+    reviewed_bionemo_recipes_path,
+)
 
 __all__ = [
     "PROTEIN_TARGETS",
@@ -179,4 +195,18 @@ __all__ = [
     "BIONEMO_RECIPES_URL",
     "BioNeMoContainerReview",
     "reviewed_bionemo_container",
+    "BIONEMO_RECIPES_COMMIT",
+    "BIONEMO_RECIPES_ESM2_DOCS_URL",
+    "BIONEMO_RECIPES_INFERENCE_URL",
+    "BIONEMO_RECIPES_MODEL_ID",
+    "BIONEMO_RECIPES_MODEL_REVISION",
+    "BIONEMO_RECIPES_MODEL_URL",
+    "BIONEMO_RECIPES_RELEASE_URL",
+    "BIONEMO_RECIPES_REVIEW_VERSION",
+    "BIONEMO_RECIPES_VERSION",
+    "BIONEMO_RECIPES_WEIGHTS_SHA256",
+    "BioNeMoRecipesFileReview",
+    "BioNeMoRecipesReview",
+    "planned_bionemo_recipes_esm2_manifest",
+    "reviewed_bionemo_recipes_path",
 ]

@@ -13,6 +13,8 @@ All notable project changes are documented here. The project follows semantic ve
 - Added a downloadable GPU-probe report with the exact command, local image identity, hardware evidence, and execution boundary.
 - Added a deterministic review record for the archived BioNeMo Framework 2.7.1 Linux/AMD64 image, pinned to its immutable registry digest with lifecycle, catalogue, scan, signature, licence, and review provenance.
 - Added a bilingual Protein Lab review panel and offline `bionemo-image-review` CLI export for the selected container candidate.
+- Added a separate maintained-path review for BioNeMo Recipes `v3.0.0` and NVIDIA's public 8M ESM-2 model, pinned to immutable source and model revisions.
+- Added a plan-only Recipes ESM-2 manifest that reuses the exact selected protein sequence while recording the remote-code, TransformerEngine, checkpoint-hash, and no-execution boundaries.
 
 ### Safety
 
@@ -22,6 +24,7 @@ All notable project changes are documented here. The project follows semantic ve
 - GPUs absent from the reviewed NVIDIA support matrix remain flagged for review even when they meet the documented compute-capability threshold.
 - HRA does not pull the reviewed image, accept NVIDIA terms, authenticate with NGC, verify the catalogue signature, or represent the archived container as a maintained production dependency.
 - The execution bundle accepts only the reviewed digest and uses `docker run --pull never` so a missing image cannot be fetched implicitly.
+- The maintained Recipes path does not enable `trust_remote_code`, download model weights, load TransformerEngine, or execute inference. Publisher-reported checkpoint equivalence remains explicitly unverified by HRA.
 
 ## [0.11.0] - 2026-07-19
 

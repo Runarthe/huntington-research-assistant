@@ -91,6 +91,8 @@ The next bounded layer is a separate, advanced GPU-container probe. It requires 
 
 The reviewed reproduction candidate is the archived BioNeMo Framework `2.7.1` Linux/AMD64 image at `sha256:7d15abfbd648915c367ec14a1eef93d4aa40f3e346bacfe63c05f9269dabd678`. Its tag, digest, reported catalogue signature/scan, lifecycle, licence boundary, and anonymous manifest resolution are recorded in a deterministic JSON artifact. HRA did not pull, execute, locally scan, or independently verify the signature, and it directs future development to maintained BioNeMo Recipes.
 
+The maintained path is now separately pinned to BioNeMo Recipes `v3.0.0` at commit `66c150f2920d6155697d4edfc87289f239b65022` and NVIDIA's public 8M ESM-2 model at revision `3674a6acb6c217bbeff709d182a11b196125dfc3`. The review records the model licence, custom-code blob, 30 MB safetensors identity, and exact sequence plan. It does not enable remote code, download model weights, load TransformerEngine, or execute inference.
+
 On the current development machine, the preflight detects an RTX 5070 Ti with 16 GB VRAM, compute capability 12.0, and driver 591.86. Docker Desktop 29.1.3 now exposes a running Linux engine and declares the NVIDIA runtime. The exact GPU model is absent from the reviewed NVIDIA support matrix, so compatibility remains unverified even though the documented compute-capability and driver thresholds are met. The selected image is not currently stored locally, so the GPU-container probe has not run.
 
 See [V0_12_BIONEMO_RUNTIME.md](V0_12_BIONEMO_RUNTIME.md) for the execution boundary and next verification step.

@@ -484,6 +484,24 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "bionemo_image_review_license": "NVIDIA licence terms",
         "bionemo_image_review_recipes": "Maintained BioNeMo Recipes",
         "bionemo_image_review_download": "Download container review JSON",
+        "bionemo_recipes_review_title": "Maintained BioNeMo Recipes path",
+        "bionemo_recipes_review_intro": (
+            "Review a smaller, public ESM-2 model from the maintained BioNeMo Recipes ecosystem as the preferred future runtime path."
+        ),
+        "bionemo_recipes_review_scope": (
+            "This is a pinned plan only. HRA has not downloaded the weights, executed model code, loaded TransformerEngine, or run inference."
+        ),
+        "bionemo_recipes_review_version": "Recipes release",
+        "bionemo_recipes_review_model": "Candidate model",
+        "bionemo_recipes_review_license": "Model licence",
+        "bionemo_recipes_review_remote_code": (
+            "The checkpoint requires executable remote model code and TransformerEngine. The exact revision and file identities are recorded, but the code has not received a complete security review and cannot run from this panel."
+        ),
+        "bionemo_recipes_review_release": "BioNeMo Recipes release",
+        "bionemo_recipes_review_docs": "Official ESM-2 documentation",
+        "bionemo_recipes_review_model_card": "Pinned model card",
+        "bionemo_recipes_review_download": "Download Recipes review JSON",
+        "bionemo_recipes_plan_download": "Download Recipes ESM-2 plan JSON",
         "bionemo_gpu_probe_title": "GPU container probe (advanced)",
         "bionemo_gpu_probe_help": (
             "Run only nvidia-smi inside a reviewed image that already exists locally. The probe cannot pull an image, access the network, inspect credentials, or execute BioNeMo."
@@ -1143,6 +1161,24 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "bionemo_image_review_license": "NVIDIAs lisensvilkår",
         "bionemo_image_review_recipes": "Vedlikeholdte BioNeMo Recipes",
         "bionemo_image_review_download": "Last ned containergjennomgang som JSON",
+        "bionemo_recipes_review_title": "Vedlikeholdt BioNeMo Recipes-spor",
+        "bionemo_recipes_review_intro": (
+            "Gjennomgå en mindre, offentlig ESM-2-modell fra det vedlikeholdte BioNeMo Recipes-økosystemet som foretrukket fremtidig kjørevei."
+        ),
+        "bionemo_recipes_review_scope": (
+            "Dette er kun en versjonslåst plan. HRA har ikke lastet ned modellvektene, kjørt modellkode, lastet TransformerEngine eller utført inferens."
+        ),
+        "bionemo_recipes_review_version": "Recipes-utgivelse",
+        "bionemo_recipes_review_model": "Kandidatmodell",
+        "bionemo_recipes_review_license": "Modelllisens",
+        "bionemo_recipes_review_remote_code": (
+            "Kontrollpunktet krever kjørbar ekstern modellkode og TransformerEngine. Nøyaktig revisjon og filidentiteter er registrert, men koden er ikke fullstendig sikkerhetsgjennomgått og kan ikke kjøres fra dette panelet."
+        ),
+        "bionemo_recipes_review_release": "BioNeMo Recipes-utgivelse",
+        "bionemo_recipes_review_docs": "Offisiell ESM-2-dokumentasjon",
+        "bionemo_recipes_review_model_card": "Versjonslåst modellkort",
+        "bionemo_recipes_review_download": "Last ned Recipes-gjennomgang som JSON",
+        "bionemo_recipes_plan_download": "Last ned Recipes ESM-2-plan som JSON",
         "bionemo_gpu_probe_title": "Test av GPU-container (avansert)",
         "bionemo_gpu_probe_help": (
             "Kjør bare nvidia-smi i et gjennomgått image som allerede finnes lokalt. Testen kan ikke laste ned et image, bruke nettverket, lese påloggingsopplysninger eller kjøre BioNeMo."
