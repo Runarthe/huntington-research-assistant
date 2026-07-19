@@ -96,6 +96,11 @@ def test_protein_lab_tab_renders_without_live_calls() -> None:
     assert "Download Linux/GPU execution bundle" in {
         button.label for button in app.get("download_button")
     }
+    assert "Check this machine" in {button.label for button in app.button}
+    assert any(
+        "python -m labs.protein_intelligence bionemo-preflight" in block.value
+        for block in app.code
+    )
     assert "Import BioNeMo result JSON" in {
         uploader.label for uploader in app.get("file_uploader")
     }

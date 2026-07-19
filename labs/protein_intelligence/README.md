@@ -30,10 +30,18 @@ The Streamlit Protein Lab exposes this workflow without making PyTorch or Transf
 
 `provider_parity.py` normalizes embedding provenance into `protein-embedding-artifact.v1`, builds a plan-only BioNeMo ESM-2 manifest from the same selected sequence, and reports each comparable or unresolved field. `bionemo_execution.py` creates a credential-free external execution bundle and validates bounded result JSON against the exact plan. Streamlit never calls BioNeMo or NVIDIA NIM and does not interpret embedding values. See [`docs/V0_11_PROVIDER_PARITY.md`](../../docs/V0_11_PROVIDER_PARITY.md).
 
+## v0.12 Runtime-Readiness Slice
+
+`bionemo_preflight.py` records passive host prerequisites without starting a container. `bionemo_image_review.py` pins the archived BioNeMo Framework 2.7.1 image only as a reproducibility candidate for the existing ESM-2 contract and records its lifecycle, licence, catalogue, and verification boundaries. `bionemo_gpu_probe.py` adds a separate opt-in GPU visibility check for that immutable image when it is already stored locally through a local Docker socket or named pipe. The probe cannot pull, use container networking, mount host paths, inspect credentials, execute BioNeMo, or load a model. See [`docs/V0_12_BIONEMO_RUNTIME.md`](../../docs/V0_12_BIONEMO_RUNTIME.md).
+
+`bionemo_recipes_review.py` keeps the preferred maintained path separate from the archived container. `bionemo_code_review.py` records a bounded static review of the exact model source. `bionemo_recipes_execution.py` creates and validates a fixture-only runtime handoff pinned to one Linux/AMD64 CUDA/TransformerEngine base and exact artifact hashes. The bundle contains no downloaded artifacts or credentials and Streamlit never launches it.
+
+`bionemo_recipes_readiness.py` checks whether that handoff is locally prepared without contacting a registry, pulling an image, starting a container, inspecting credentials, importing model code, or running inference. An optional extracted artifact directory must contain the exact 8 model files and 28 wheels; linked or mismatched files are rejected.
+
 ## Not Included Yet
 
 - AlphaFold or NIM calls;
-- BioNeMo integration;
+- a completed BioNeMo Recipes fixture run;
 - generated biological hypotheses;
 
 Those belong behind explicit adapters, fixtures, and provenance checks.
@@ -62,6 +70,12 @@ python -m labs.protein_intelligence retrieve HTT --date 2026-07-03
 python -m labs.protein_intelligence mock-embed BDNF --sequence ACDEFG --dimensions 8
 python -m labs.protein_intelligence mock-embed HTT --fasta-file labs/protein_intelligence/fixtures/htt.fragment.fasta
 python -m labs.protein_intelligence validate-manifest outputs/example-manifest.json
+python -m labs.protein_intelligence bionemo-image-review
+python -m labs.protein_intelligence bionemo-recipes-review
+python -m labs.protein_intelligence bionemo-code-review
+python -m labs.protein_intelligence bionemo-recipes-runtime-review
+python -m labs.protein_intelligence bionemo-recipes-bundle HTT --output hra-recipes-htt.zip --date 2026-07-19
+python -m labs.protein_intelligence bionemo-recipes-readiness --bundle hra-recipes-htt.zip --artifact-root EXTRACTED_RUNTIME_DIRECTORY --strict
 ```
 
 `mock-embed` uses a deterministic fixture vector. It does not call ESM-2, BioNeMo, NIM, AlphaFold, or any external service.

@@ -17,6 +17,11 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from labs.protein_intelligence.local_esm2 import LocalESM2Config, select_sequence_window
 from labs.protein_intelligence.manifests import validate_manifest
+from labs.protein_intelligence.bionemo_image_review import (
+    BIONEMO_FRAMEWORK_CONTRACT,
+    BioNeMoContainerReview,
+    reviewed_bionemo_container,
+)
 from labs.protein_intelligence.provider_parity import (
     BIONEMO_INFERENCE_URL,
     BIONEMO_MODEL_VERSION,
@@ -27,7 +32,6 @@ from labs.protein_intelligence.sequences import ProteinSequenceRecord
 
 BIONEMO_BUNDLE_VERSION = "hra-bionemo-execution-bundle.v1"
 BIONEMO_RESULT_VERSION = "hra-bionemo-result.v1"
-BIONEMO_FRAMEWORK_CONTRACT = "2.7"
 BIONEMO_PREREQUISITES_URL = (
     "https://docs.nvidia.com/bionemo-framework/latest/main/getting-started/"
     "pre-reqs/index.html"
@@ -69,7 +73,9 @@ def _sha256(data: bytes) -> str:
 def _is_sha256(value: object, *, image_reference: bool = False) -> bool:
     if not isinstance(value, str):
         return False
-    pattern = r".+@sha256:[0-9a-fA-F]{64}" if image_reference else r"sha256:[0-9a-fA-F]{64}"
+    pattern = (
+        r".+@sha256:[0-9a-fA-F]{64}" if image_reference else r"sha256:[0-9a-fA-F]{64}"
+    )
     return re.fullmatch(pattern, value) is not None
 
 
@@ -131,7 +137,9 @@ def build_bionemo_execution_bundle(
     plan = planned_bionemo_esm2_manifest(record, local_config, planned_at=planned_at)
     expected_checksum = plan["inputs"][0]["selected_sequence_checksum"]
     if _sha256(selected.encode("ascii")) != expected_checksum:
-        raise BioNeMoExecutionError("Selected sequence does not match the plan checksum.")
+        raise BioNeMoExecutionError(
+            "Selected sequence does not match the plan checksum."
+        )
 
     execution_payload = {
         "schema_version": BIONEMO_BUNDLE_VERSION,
@@ -139,10 +147,12 @@ def build_bionemo_execution_bundle(
         "official_inference_documentation": BIONEMO_INFERENCE_URL,
         "official_prerequisites": BIONEMO_PREREQUISITES_URL,
         "settings": execution.model_dump(mode="json"),
+        "container_review": reviewed_bionemo_container().model_dump(mode="json"),
         "security": {
             "contains_credentials": False,
-            "container_image": "supplied at run time via BIONEMO_IMAGE",
-            "image_requirement": "immutable image reference containing @sha256:",
+            "container_image_must_match_review": True,
+            "image_pull_policy": "never",
+            "registry_authentication_managed_by_hra": False,
         },
     }
     bundle_files: dict[str, bytes] = {
@@ -165,8 +175,9 @@ def build_bionemo_execution_bundle(
             name: _sha256(content) for name, content in sorted(bundle_files.items())
         },
         "limitations": [
-            "The bundle has not executed BioNeMo or verified a particular container image.",
+            "The bundle has not executed BioNeMo or pulled the reviewed container image.",
             "Execution requires a separately reviewed Linux, Docker, and NVIDIA GPU environment.",
+            "The pinned prebuilt container is archived and is retained only for this bounded legacy contract.",
             "Generated artifacts are computational provenance, not biomedical evidence.",
         ],
     }
@@ -192,7 +203,9 @@ def validate_bionemo_execution_bundle(archive: bytes) -> dict[str, object]:
                 *BIONEMO_RUNTIME_FILES,
             }
             if names != required:
-                raise BioNeMoExecutionError("Bundle file set does not match the contract.")
+                raise BioNeMoExecutionError(
+                    "Bundle file set does not match the contract."
+                )
             manifest = json.loads(bundle.read("bundle-manifest.json"))
             if manifest.get("schema_version") != BIONEMO_BUNDLE_VERSION:
                 raise BioNeMoExecutionError("Unknown BioNeMo bundle version.")
@@ -211,7 +224,9 @@ def validate_bionemo_execution_bundle(archive: bytes) -> dict[str, object]:
             plan = json.loads(bundle.read("plan.json"))
             validate_manifest(plan)
             if plan.get("model", {}).get("version") != BIONEMO_MODEL_VERSION:
-                raise BioNeMoExecutionError("Bundle checkpoint does not match the contract.")
+                raise BioNeMoExecutionError(
+                    "Bundle checkpoint does not match the contract."
+                )
             execution = json.loads(bundle.read("execution.json"))
             if execution.get("schema_version") != BIONEMO_BUNDLE_VERSION:
                 raise BioNeMoExecutionError("Execution settings version is invalid.")
@@ -221,22 +236,35 @@ def validate_bionemo_execution_bundle(archive: bytes) -> dict[str, object]:
             if not isinstance(settings, dict):
                 raise BioNeMoExecutionError("Execution settings are missing.")
             BioNeMoExecutionConfig.model_validate(settings)
+            review_payload = execution.get("container_review")
+            if not isinstance(review_payload, dict):
+                raise BioNeMoExecutionError("Container review provenance is missing.")
+            reviewed = BioNeMoContainerReview.model_validate(review_payload)
+            if reviewed != reviewed_bionemo_container():
+                raise BioNeMoExecutionError(
+                    "Container review does not match this HRA version."
+                )
+            security = execution.get("security")
+            expected_security = {
+                "contains_credentials": False,
+                "container_image_must_match_review": True,
+                "image_pull_policy": "never",
+                "registry_authentication_managed_by_hra": False,
+            }
+            if security != expected_security:
+                raise BioNeMoExecutionError("Bundle security policy is invalid.")
 
             input_rows = list(
-                csv.DictReader(
-                    io.StringIO(bundle.read("input.csv").decode("ascii"))
-                )
+                csv.DictReader(io.StringIO(bundle.read("input.csv").decode("ascii")))
             )
             if len(input_rows) != 1 or set(input_rows[0]) != {"sequences"}:
                 raise BioNeMoExecutionError("Bundle input CSV contract is invalid.")
             selected = input_rows[0]["sequences"]
             plan_inputs = plan.get("inputs")
             plan_input = plan_inputs[0] if isinstance(plan_inputs, list) else {}
-            if (
-                _sha256(selected.encode("ascii"))
-                != plan_input.get("selected_sequence_checksum")
-                or len(selected) != plan_input.get("selected_sequence_length")
-            ):
+            if _sha256(selected.encode("ascii")) != plan_input.get(
+                "selected_sequence_checksum"
+            ) or len(selected) != plan_input.get("selected_sequence_length"):
                 raise BioNeMoExecutionError("Bundle input does not match its plan.")
             return manifest
     except (
@@ -265,15 +293,21 @@ def validate_bionemo_result_manifest(
     if result.get("model") != expected_plan.get("model"):
         raise BioNeMoExecutionError("Result model identity does not match the plan.")
     if result.get("inputs") != expected_plan.get("inputs"):
-        raise BioNeMoExecutionError("Result sequence provenance does not match the plan.")
+        raise BioNeMoExecutionError(
+            "Result sequence provenance does not match the plan."
+        )
 
     runtime = result.get("runtime")
     if not isinstance(runtime, dict):
         raise BioNeMoExecutionError("Result runtime metadata is missing.")
     interface = runtime.get("interface")
-    if interface not in {"bionemo-framework-container", "fixture-validation"}:
+    if interface not in {
+        "bionemo-framework-container",
+        "bionemo-recipes-container",
+        "fixture-validation",
+    }:
         raise BioNeMoExecutionError("Result runtime interface is not accepted.")
-    if interface == "bionemo-framework-container":
+    if interface in {"bionemo-framework-container", "bionemo-recipes-container"}:
         container = runtime.get("container")
         if not _is_sha256(container, image_reference=True):
             raise BioNeMoExecutionError(
@@ -285,7 +319,9 @@ def validate_bionemo_result_manifest(
     if not isinstance(embedding, dict):
         raise BioNeMoExecutionError("Result embedding metadata is missing.")
     if "vector" in embedding:
-        raise BioNeMoExecutionError("Import checksum metadata, not the full embedding vector.")
+        raise BioNeMoExecutionError(
+            "Import checksum metadata, not the full embedding vector."
+        )
     dimensions = embedding.get("dimensions")
     if not isinstance(dimensions, int) or dimensions <= 0:
         raise BioNeMoExecutionError("Embedding dimensions must be positive.")

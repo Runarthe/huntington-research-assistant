@@ -36,6 +36,26 @@ Use this checklist before publishing a tagged release.
 - [ ] Download the BioNeMo execution ZIP, inspect its checksummed file list, and confirm it contains no credential.
 - [ ] Enable the offline BioNeMo result fixture and confirm the UI does not label it as provider execution.
 - [ ] Confirm a result with a changed experiment, model, sequence checksum, full vector, or oversized JSON payload is rejected.
+- [ ] Run the BioNeMo environment preflight and confirm that it makes no network call, inspects no credential, and starts no container.
+- [ ] Confirm a stopped Docker engine or unsupported architecture is reported as blocked rather than ready.
+- [ ] Confirm an unlisted GPU model is visibly marked for review even when its compute capability passes.
+- [ ] Confirm the GPU probe rejects moving image tags and remains disabled until its explicit container confirmation is selected.
+- [ ] Confirm a missing immutable image is reported without a registry login or image pull.
+- [ ] Confirm a remote Docker endpoint is blocked before image inspection or container execution.
+- [ ] If a reviewed local image is available, verify the probe command uses `--pull never`, `--network none`, no host mount, and only the fixed `nvidia-smi` entrypoint.
+- [ ] Confirm a passed GPU probe is not labelled as BioNeMo inference or model execution.
+- [ ] Export the reviewed container JSON and confirm its tag, full digest, Linux/AMD64 platform, archived lifecycle, catalogue-reported scan/signature, and local-verification limitations are present.
+- [ ] Confirm the Protein Lab requires licence review and local-container confirmation before enabling the reviewed-image GPU probe.
+- [ ] Confirm the execution bundle rejects a different image reference and its runner includes `--pull never`.
+- [ ] Export the maintained Recipes review and confirm the release commit, model revision, custom-code blob, conflicting licence signals, and safetensors SHA-256 are present.
+- [ ] Download the Recipes ESM-2 plan and confirm it records the exact selected sequence window while reporting no model execution or embedding.
+- [ ] Download and validate the Recipes runtime ZIP; confirm it contains no weights, wheels, credentials, or embedding values.
+- [ ] Confirm the Recipes runtime requires an explicit window of at most 64 residues and does not start Docker from Streamlit.
+- [ ] Confirm the code review retains the low assert finding, incomplete native-dependency audit, and licence-review requirement.
+- [ ] Confirm the runtime pins the exact Linux/AMD64 base digest and reports the image, derived build, and fixture inference as not executed until manually proven.
+- [ ] Run the Recipes readiness check and confirm it does not call a registry, pull an image, start a container, inspect credentials, or import the model.
+- [ ] Confirm a remote Docker endpoint, tampered bundle, linked artifact, or checksum mismatch is blocked.
+- [ ] Confirm missing terms declaration, exact base image, or artifact directory is reported as review required rather than as a successful build.
 
 ## Safety and Privacy
 

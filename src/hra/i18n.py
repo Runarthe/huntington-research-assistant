@@ -436,6 +436,158 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Download a credential-free bundle for a separately reviewed x86 Linux, Docker, and NVIDIA GPU environment. Inspect every included file before running it."
         ),
         "parity_prerequisites_docs": "Official BioNeMo hardware and software prerequisites",
+        "bionemo_preflight_title": "Environment preflight",
+        "bionemo_preflight_help": (
+            "Inspect this machine without network calls, registry login, image pulls, or container execution. The report records prerequisites; it does not prove BioNeMo can run."
+        ),
+        "bionemo_preflight_run": "Check this machine",
+        "bionemo_preflight_running": "Checking local BioNeMo prerequisites...",
+        "bionemo_preflight_status_ready": "Ready",
+        "bionemo_preflight_status_review_required": "Review required",
+        "bionemo_preflight_status_blocked": "Blocked",
+        "bionemo_preflight_blocked": "Preflight status: {status}. Resolve the blocked requirements before any container run.",
+        "bionemo_preflight_review": "Preflight status: {status}. Detected requirements still need an explicit GPU-container test.",
+        "bionemo_preflight_ready": "Preflight status: {status}. Review the report before execution.",
+        "bionemo_preflight_check": "Requirement",
+        "bionemo_preflight_result": "Status",
+        "bionemo_preflight_detected": "Detected evidence",
+        "bionemo_preflight_check_status_passed": "Passed",
+        "bionemo_preflight_check_status_warning": "Review",
+        "bionemo_preflight_check_status_blocked": "Blocked",
+        "bionemo_preflight_check_status_not_checked": "Not checked",
+        "bionemo_preflight_check_host_os": "Host operating system",
+        "bionemo_preflight_check_architecture": "CPU architecture",
+        "bionemo_preflight_check_nvidia_gpu": "NVIDIA GPU",
+        "bionemo_preflight_check_driver": "NVIDIA driver",
+        "bionemo_preflight_check_bf16_capability": "bfloat16 compute capability",
+        "bionemo_preflight_check_documented_gpu_model": "Documented GPU model",
+        "bionemo_preflight_check_docker_engine": "Docker Linux engine",
+        "bionemo_preflight_check_container_toolkit": "NVIDIA Container Toolkit",
+        "bionemo_preflight_check_gpu_container_probe": "GPU container probe",
+        "bionemo_preflight_check_immutable_image": "Immutable container image",
+        "bionemo_preflight_boundary": (
+            "No credentials are inspected, no network call is made, and no container is started by this check."
+        ),
+        "bionemo_preflight_download": "Download preflight report JSON",
+        "bionemo_image_review_title": "Reviewed container candidate",
+        "bionemo_image_review_warning": (
+            "BioNeMo Framework 2.7.1 is pinned only for HRA's bounded legacy ESM-2 contract. "
+            "NVIDIA has archived this prebuilt container and no longer maintains it; use BioNeMo Recipes for future development."
+        ),
+        "bionemo_image_review_tag": "Catalog tag",
+        "bionemo_image_review_platform": "Platform",
+        "bionemo_image_review_size": "Compressed size",
+        "bionemo_image_review_boundary": (
+            "The catalog reports this digest as signed and scanned with no malware found. HRA resolved the manifest digest through an anonymous registry request, but did not pull, execute, locally scan, or verify the signature. NVIDIA licence review and NGC access remain the user's responsibility."
+        ),
+        "bionemo_image_review_catalog": "NGC catalog record",
+        "bionemo_image_review_license": "NVIDIA licence terms",
+        "bionemo_image_review_recipes": "Maintained BioNeMo Recipes",
+        "bionemo_image_review_download": "Download container review JSON",
+        "bionemo_recipes_review_title": "Maintained BioNeMo Recipes path",
+        "bionemo_recipes_review_intro": (
+            "Review a smaller, public ESM-2 model from the maintained BioNeMo Recipes ecosystem as the preferred future runtime path."
+        ),
+        "bionemo_recipes_review_scope": (
+            "The exact model source has received a bounded static review and the runtime is pinned. HRA has not pulled the image, built it, or run model inference."
+        ),
+        "bionemo_recipes_review_version": "Recipes release",
+        "bionemo_recipes_review_model": "Candidate model",
+        "bionemo_recipes_review_license": "Model licence",
+        "bionemo_recipes_license_review_required": "Review required",
+        "bionemo_recipes_review_license_warning": (
+            "Licence signals conflict: the model card says MIT, while the repository LICENSE and source header identify Apache 2.0. Review the terms before downloading or running artifacts."
+        ),
+        "bionemo_recipes_code_review_complete": (
+            "The exact pinned model source passed the bounded static review: no network, file, subprocess, dynamic-import, eval, pickle, or torch.load calls were found. Native dependencies remain outside that audit."
+        ),
+        "bionemo_recipes_review_remote_code": (
+            "One low-severity assert finding is mitigated by rejecting optimized Python and independently checking the exact configuration before import."
+        ),
+        "bionemo_recipes_runtime_scope": (
+            "Pinned Linux/AMD64 base: NVIDIA PyTorch 26.04 with CUDA 13.2, PyTorch 2.12 and TransformerEngine 2.14. The base is about {size} GB compressed and is not pulled automatically."
+        ),
+        "bionemo_recipes_review_release": "BioNeMo Recipes release",
+        "bionemo_recipes_review_docs": "Official ESM-2 documentation",
+        "bionemo_recipes_review_model_card": "Pinned model card",
+        "bionemo_recipes_review_download": "Download Recipes review JSON",
+        "bionemo_recipes_code_review_download": "Download code review JSON",
+        "bionemo_recipes_runtime_review_download": "Download runtime review JSON",
+        "bionemo_recipes_plan_download": "Download Recipes ESM-2 plan JSON",
+        "bionemo_recipes_bundle_download": "Download bounded Recipes runtime bundle",
+        "bionemo_recipes_bundle_unavailable": (
+            "The runtime bundle requires one explicit sequence window of at most 64 residues: {error}"
+        ),
+        "bionemo_recipes_bundle_boundary": (
+            "The ZIP contains reviewed scripts, one fixture, hashes, and lock files only. It contains no weights, wheels, credentials, or embedding values and does not run Docker from Streamlit."
+        ),
+        "bionemo_recipes_readiness_title": "Recipes build readiness",
+        "bionemo_recipes_readiness_help": (
+            "Check the host, exact bundle, local Docker endpoint, and reviewed base-image presence without network calls, image pulls, containers, credentials, or model imports."
+        ),
+        "bionemo_recipes_terms_declaration": (
+            "I have reviewed the applicable NVIDIA and model terms"
+        ),
+        "bionemo_recipes_terms_declaration_help": (
+            "This records only your declaration. HRA does not accept terms for you and cannot provide legal advice."
+        ),
+        "bionemo_recipes_readiness_run": "Check Recipes build readiness",
+        "bionemo_recipes_readiness_running": "Checking local build inputs...",
+        "bionemo_recipes_readiness_status_ready_to_build": (
+            "All required local inputs are ready for the separately gated offline build. No image was built and no model ran."
+        ),
+        "bionemo_recipes_readiness_status_review_required": (
+            "More review or local preparation is required before the offline build. Nothing was pulled or executed."
+        ),
+        "bionemo_recipes_readiness_status_blocked": (
+            "A required local input is invalid or unsafe. The build must not proceed."
+        ),
+        "bionemo_recipes_readiness_check": "Check",
+        "bionemo_recipes_readiness_result": "Result",
+        "bionemo_recipes_readiness_evidence": "Local evidence",
+        "bionemo_recipes_readiness_check_host_runtime": "Host prerequisites",
+        "bionemo_recipes_readiness_check_fixture_bundle": "Fixture bundle",
+        "bionemo_recipes_readiness_check_terms_review": "Terms review declaration",
+        "bionemo_recipes_readiness_check_local_docker_endpoint": "Local Docker endpoint",
+        "bionemo_recipes_readiness_check_exact_base_image": "Exact base image",
+        "bionemo_recipes_readiness_check_locked_artifacts": "Locked model and wheel files",
+        "bionemo_recipes_readiness_check_status_passed": "Passed",
+        "bionemo_recipes_readiness_check_status_warning": "Review warning",
+        "bionemo_recipes_readiness_check_status_review_required": "Review required",
+        "bionemo_recipes_readiness_check_status_blocked": "Blocked",
+        "bionemo_recipes_readiness_check_status_not_checked": "Not checked",
+        "bionemo_recipes_readiness_boundary": (
+            "The app validates its in-memory fixture bundle and local host only. Use the CLI inside the extracted bundle directory to verify downloaded model files and wheels."
+        ),
+        "bionemo_recipes_readiness_download": "Download readiness report JSON",
+        "bionemo_gpu_probe_title": "GPU container probe (advanced)",
+        "bionemo_gpu_probe_help": (
+            "Run only nvidia-smi inside a reviewed image that already exists locally. The probe cannot pull an image, access the network, inspect credentials, or execute BioNeMo."
+        ),
+        "bionemo_gpu_probe_image": "Local immutable image reference",
+        "bionemo_gpu_probe_image_help": (
+            "Enter an exact local Docker reference ending in @sha256 followed by 64 hexadecimal characters. Moving tags such as latest are rejected."
+        ),
+        "bionemo_gpu_probe_invalid_image": "Enter a complete immutable image digest before continuing.",
+        "bionemo_gpu_probe_unreviewed_image": "This reference is immutable but does not match the reviewed v0.12 container candidate.",
+        "bionemo_gpu_probe_license_confirm": "I have reviewed the selected image and applicable NVIDIA licence terms.",
+        "bionemo_gpu_probe_license_confirm_help": (
+            "HRA does not accept NVIDIA terms, authenticate with NGC, or download the container on your behalf."
+        ),
+        "bionemo_gpu_probe_confirm": "I understand that this starts one local diagnostic container.",
+        "bionemo_gpu_probe_confirm_help": (
+            "The fixed container is read-only, has no network or host mounts, uses --pull never, and runs nvidia-smi instead of the image entrypoint."
+        ),
+        "bionemo_gpu_probe_run": "Run local GPU probe",
+        "bionemo_gpu_probe_running": "Running the bounded local GPU probe...",
+        "bionemo_gpu_probe_passed": "GPU visibility passed. This does not mean BioNeMo or a model has run.",
+        "bionemo_gpu_probe_blocked": "The GPU probe did not pass. HRA did not pull an image; inspect the report for the local failure.",
+        "bionemo_gpu_probe_not_run": "The GPU probe was not run.",
+        "bionemo_gpu_probe_command": "Fixed container command recorded in this report",
+        "bionemo_gpu_probe_boundary": (
+            "This is an opt-in infrastructure diagnostic, not BioNeMo inference or biomedical evidence. HRA supplies no container image or registry credential."
+        ),
+        "bionemo_gpu_probe_download": "Download GPU probe report JSON",
         "parity_download_execution_bundle": "Download Linux/GPU execution bundle",
         "parity_use_fixture": "Use offline result fixture",
         "parity_use_fixture_help": (
@@ -1019,6 +1171,158 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Last ned en pakke uten påloggingsopplysninger for et separat gjennomgått miljø med x86 Linux, Docker og NVIDIA GPU. Kontroller alle filene før kjøring."
         ),
         "parity_prerequisites_docs": "Offisielle maskin- og programvarekrav for BioNeMo",
+        "bionemo_preflight_title": "Miljøkontroll før kjøring",
+        "bionemo_preflight_help": (
+            "Kontroller denne maskinen uten nettverkskall, registerinnlogging, nedlasting av avbildning eller containerkjøring. Rapporten registrerer forutsetninger, men beviser ikke at BioNeMo kan kjøre."
+        ),
+        "bionemo_preflight_run": "Kontroller denne maskinen",
+        "bionemo_preflight_running": "Kontrollerer lokale BioNeMo-forutsetninger...",
+        "bionemo_preflight_status_ready": "Klar",
+        "bionemo_preflight_status_review_required": "Må gjennomgås",
+        "bionemo_preflight_status_blocked": "Blokkert",
+        "bionemo_preflight_blocked": "Status for miljøkontroll: {status}. Løs blokkerte krav før en container kjøres.",
+        "bionemo_preflight_review": "Status for miljøkontroll: {status}. Påviste krav må fortsatt testes uttrykkelig i en GPU-container.",
+        "bionemo_preflight_ready": "Status for miljøkontroll: {status}. Gå gjennom rapporten før kjøring.",
+        "bionemo_preflight_check": "Krav",
+        "bionemo_preflight_result": "Status",
+        "bionemo_preflight_detected": "Påvist grunnlag",
+        "bionemo_preflight_check_status_passed": "Bestått",
+        "bionemo_preflight_check_status_warning": "Må gjennomgås",
+        "bionemo_preflight_check_status_blocked": "Blokkert",
+        "bionemo_preflight_check_status_not_checked": "Ikke kontrollert",
+        "bionemo_preflight_check_host_os": "Operativsystem på verten",
+        "bionemo_preflight_check_architecture": "Prosessorarkitektur",
+        "bionemo_preflight_check_nvidia_gpu": "NVIDIA GPU",
+        "bionemo_preflight_check_driver": "NVIDIA-driver",
+        "bionemo_preflight_check_bf16_capability": "Beregningsevne for bfloat16",
+        "bionemo_preflight_check_documented_gpu_model": "Dokumentert GPU-modell",
+        "bionemo_preflight_check_docker_engine": "Docker-motor for Linux",
+        "bionemo_preflight_check_container_toolkit": "NVIDIA Container Toolkit",
+        "bionemo_preflight_check_gpu_container_probe": "Test av GPU-container",
+        "bionemo_preflight_check_immutable_image": "Uforanderlig containeravbildning",
+        "bionemo_preflight_boundary": (
+            "Kontrollen leser ingen påloggingsopplysninger, gjør ingen nettverkskall og starter ingen container."
+        ),
+        "bionemo_preflight_download": "Last ned miljørapport som JSON",
+        "bionemo_image_review_title": "Gjennomgått containerkandidat",
+        "bionemo_image_review_warning": (
+            "BioNeMo Framework 2.7.1 er kun valgt for HRAs avgrensede, eldre ESM-2-kontrakt. "
+            "NVIDIA har arkivert denne ferdigbygde containeren og vedlikeholder den ikke lenger; bruk BioNeMo Recipes for videre utvikling."
+        ),
+        "bionemo_image_review_tag": "Katalogtagg",
+        "bionemo_image_review_platform": "Plattform",
+        "bionemo_image_review_size": "Komprimert størrelse",
+        "bionemo_image_review_boundary": (
+            "Katalogen oppgir at denne digesten er signert og skannet uten funn av skadevare. HRA slo opp manifestdigesten gjennom en anonym registerforespørsel, men lastet ikke ned, kjørte, skannet lokalt eller verifiserte signaturen. Brukeren må selv gjennomgå NVIDIA-lisensen og NGC-tilgangen."
+        ),
+        "bionemo_image_review_catalog": "Katalogpost i NGC",
+        "bionemo_image_review_license": "NVIDIAs lisensvilkår",
+        "bionemo_image_review_recipes": "Vedlikeholdte BioNeMo Recipes",
+        "bionemo_image_review_download": "Last ned containergjennomgang som JSON",
+        "bionemo_recipes_review_title": "Vedlikeholdt BioNeMo Recipes-spor",
+        "bionemo_recipes_review_intro": (
+            "Gjennomgå en mindre, offentlig ESM-2-modell fra det vedlikeholdte BioNeMo Recipes-økosystemet som foretrukket fremtidig kjørevei."
+        ),
+        "bionemo_recipes_review_scope": (
+            "Den eksakte modellkilden har fått en avgrenset statisk gjennomgang, og kjøreoppsettet er versjonslåst. HRA har ikke hentet eller bygget imaget og har ikke kjørt modellinferens."
+        ),
+        "bionemo_recipes_review_version": "Recipes-utgivelse",
+        "bionemo_recipes_review_model": "Kandidatmodell",
+        "bionemo_recipes_review_license": "Modelllisens",
+        "bionemo_recipes_license_review_required": "Må gjennomgås",
+        "bionemo_recipes_review_license_warning": (
+            "Lisensopplysningene spriker: modellkortet sier MIT, mens repositoryets LICENSE og kildekodehodet viser Apache 2.0. Gjennomgå vilkårene før artefakter lastes ned eller kjøres."
+        ),
+        "bionemo_recipes_code_review_complete": (
+            "Den eksakte versjonslåste modellkilden besto den avgrensede statiske gjennomgangen: ingen kall til nettverk, filer, underprosesser, dynamisk import, eval, pickle eller torch.load ble funnet. Native avhengigheter er ikke del av denne revisjonen."
+        ),
+        "bionemo_recipes_review_remote_code": (
+            "Ett funn med lav alvorlighetsgrad gjelder assert. Det håndteres ved å avvise optimalisert Python og kontrollere den eksakte konfigurasjonen uavhengig før import."
+        ),
+        "bionemo_recipes_runtime_scope": (
+            "Versjonslåst Linux/AMD64-base: NVIDIA PyTorch 26.04 med CUDA 13.2, PyTorch 2.12 og TransformerEngine 2.14. Basen er omtrent {size} GB komprimert og hentes ikke automatisk."
+        ),
+        "bionemo_recipes_review_release": "BioNeMo Recipes-utgivelse",
+        "bionemo_recipes_review_docs": "Offisiell ESM-2-dokumentasjon",
+        "bionemo_recipes_review_model_card": "Versjonslåst modellkort",
+        "bionemo_recipes_review_download": "Last ned Recipes-gjennomgang som JSON",
+        "bionemo_recipes_code_review_download": "Last ned kodegjennomgang som JSON",
+        "bionemo_recipes_runtime_review_download": "Last ned runtimegjennomgang som JSON",
+        "bionemo_recipes_plan_download": "Last ned Recipes ESM-2-plan som JSON",
+        "bionemo_recipes_bundle_download": "Last ned avgrenset Recipes-runtimebundle",
+        "bionemo_recipes_bundle_unavailable": (
+            "Runtimebundlen krever ett eksplisitt sekvensvindu på høyst 64 rester: {error}"
+        ),
+        "bionemo_recipes_bundle_boundary": (
+            "ZIP-filen inneholder bare gjennomgåtte skript, én testsekvens, hasher og låsefiler. Den inneholder ikke vekter, wheels, nøkler eller embeddingverdier, og Streamlit kjører ikke Docker."
+        ),
+        "bionemo_recipes_readiness_title": "Klargjøring for Recipes-bygg",
+        "bionemo_recipes_readiness_help": (
+            "Kontroller vertsmaskinen, den eksakte bundlen, lokalt Docker-endepunkt og om det gjennomgåtte baseimaget finnes, uten nettverk, imagehenting, containere, nøkler eller modellimport."
+        ),
+        "bionemo_recipes_terms_declaration": (
+            "Jeg har gjennomgått de relevante vilkårene for NVIDIA og modellen"
+        ),
+        "bionemo_recipes_terms_declaration_help": (
+            "Dette registrerer bare erklæringen din. HRA godtar ikke vilkår for deg og kan ikke gi juridiske råd."
+        ),
+        "bionemo_recipes_readiness_run": "Kontroller klargjøring for Recipes-bygg",
+        "bionemo_recipes_readiness_running": "Kontrollerer lokale bygginndata...",
+        "bionemo_recipes_readiness_status_ready_to_build": (
+            "Alle nødvendige lokale inndata er klare for det separat godkjente frakoblede bygget. Ingen image ble bygget, og ingen modell ble kjørt."
+        ),
+        "bionemo_recipes_readiness_status_review_required": (
+            "Mer gjennomgang eller lokal klargjøring kreves før det frakoblede bygget. Ingenting ble hentet eller kjørt."
+        ),
+        "bionemo_recipes_readiness_status_blocked": (
+            "Nødvendige lokale inndata er ugyldige eller usikre. Bygget må ikke fortsette."
+        ),
+        "bionemo_recipes_readiness_check": "Kontroll",
+        "bionemo_recipes_readiness_result": "Resultat",
+        "bionemo_recipes_readiness_evidence": "Lokalt grunnlag",
+        "bionemo_recipes_readiness_check_host_runtime": "Forutsetninger på vertsmaskinen",
+        "bionemo_recipes_readiness_check_fixture_bundle": "Testbundle",
+        "bionemo_recipes_readiness_check_terms_review": "Erklæring om gjennomgåtte vilkår",
+        "bionemo_recipes_readiness_check_local_docker_endpoint": "Lokalt Docker-endepunkt",
+        "bionemo_recipes_readiness_check_exact_base_image": "Eksakt baseimage",
+        "bionemo_recipes_readiness_check_locked_artifacts": "Låste modell- og wheel-filer",
+        "bionemo_recipes_readiness_check_status_passed": "Bestått",
+        "bionemo_recipes_readiness_check_status_warning": "Må vurderes",
+        "bionemo_recipes_readiness_check_status_review_required": "Krever gjennomgang",
+        "bionemo_recipes_readiness_check_status_blocked": "Blokkert",
+        "bionemo_recipes_readiness_check_status_not_checked": "Ikke kontrollert",
+        "bionemo_recipes_readiness_boundary": (
+            "Appen validerer testbundlen i minnet og den lokale vertsmaskinen. Bruk CLI-en i den utpakkede bundle-mappen for å kontrollere nedlastede modellfiler og wheels."
+        ),
+        "bionemo_recipes_readiness_download": "Last ned klargjøringsrapport som JSON",
+        "bionemo_gpu_probe_title": "Test av GPU-container (avansert)",
+        "bionemo_gpu_probe_help": (
+            "Kjør bare nvidia-smi i et gjennomgått image som allerede finnes lokalt. Testen kan ikke laste ned et image, bruke nettverket, lese påloggingsopplysninger eller kjøre BioNeMo."
+        ),
+        "bionemo_gpu_probe_image": "Lokalt image med uforanderlig referanse",
+        "bionemo_gpu_probe_image_help": (
+            "Oppgi en nøyaktig lokal Docker-referanse som slutter med @sha256 og 64 heksadesimale tegn. Bevegelige tagger som latest avvises."
+        ),
+        "bionemo_gpu_probe_invalid_image": "Oppgi en fullstendig uforanderlig image-digest før du fortsetter.",
+        "bionemo_gpu_probe_unreviewed_image": "Referansen er uforanderlig, men samsvarer ikke med den gjennomgåtte containerkandidaten for v0.12.",
+        "bionemo_gpu_probe_license_confirm": "Jeg har gjennomgått det valgte imaget og gjeldende NVIDIA-lisensvilkår.",
+        "bionemo_gpu_probe_license_confirm_help": (
+            "HRA godtar ikke NVIDIA-vilkår, logger ikke inn på NGC og laster ikke ned containeren på dine vegne."
+        ),
+        "bionemo_gpu_probe_confirm": "Jeg forstår at dette starter én lokal diagnosecontainer.",
+        "bionemo_gpu_probe_confirm_help": (
+            "Den faste containeren er skrivebeskyttet, har verken nettverk eller mapper fra verten, bruker --pull never og kjører nvidia-smi i stedet for imagets startkommando."
+        ),
+        "bionemo_gpu_probe_run": "Kjør lokal GPU-test",
+        "bionemo_gpu_probe_running": "Kjører den avgrensede lokale GPU-testen...",
+        "bionemo_gpu_probe_passed": "GPU-en var synlig. Dette betyr ikke at BioNeMo eller en modell er kjørt.",
+        "bionemo_gpu_probe_blocked": "GPU-testen bestod ikke. HRA lastet ikke ned noe image; se rapporten for den lokale feilen.",
+        "bionemo_gpu_probe_not_run": "GPU-testen ble ikke kjørt.",
+        "bionemo_gpu_probe_command": "Fast containerkommando registrert i denne rapporten",
+        "bionemo_gpu_probe_boundary": (
+            "Dette er en valgfri infrastruktursjekk, ikke BioNeMo-inferens eller biomedisinsk evidens. HRA leverer verken containerimage eller påloggingsopplysninger."
+        ),
+        "bionemo_gpu_probe_download": "Last ned GPU-testrapport som JSON",
         "parity_download_execution_bundle": "Last ned kjøringspakke for Linux/GPU",
         "parity_use_fixture": "Bruk offline testresultat",
         "parity_use_fixture_help": (

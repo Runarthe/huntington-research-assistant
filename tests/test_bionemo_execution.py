@@ -8,6 +8,7 @@ import pytest
 
 from labs.protein_intelligence import (
     BIONEMO_BUNDLE_VERSION,
+    BIONEMO_CONTAINER_REFERENCE,
     BIONEMO_RESULT_VERSION,
     BioNeMoExecutionError,
     LocalESM2Config,
@@ -18,6 +19,7 @@ from labs.protein_intelligence import (
     fixture_sequence_record,
     load_bionemo_result_manifest,
     planned_bionemo_esm2_manifest,
+    planned_bionemo_recipes_esm2_manifest,
     planned_local_esm2_manifest,
     validate_bionemo_execution_bundle,
 )
@@ -52,7 +54,8 @@ def test_execution_bundle_is_deterministic_and_self_validating() -> None:
         run_script = archive.getinfo("run_container.sh")
         assert (run_script.external_attr >> 16) & 0o111
         run_script_content = archive.read("run_container.sh")
-        assert b"@sha256:" in run_script_content
+        assert b"--pull never" in run_script_content
+        assert b'!= "${EXPECTED_BIONEMO_IMAGE}"' in run_script_content
         assert b"\r\n" not in run_script_content
         inside_script = archive.read("run_inside_container.sh")
         assert b"infer_esm2" in inside_script
@@ -60,7 +63,51 @@ def test_execution_bundle_is_deterministic_and_self_validating() -> None:
         assert b"rm -rf" not in inside_script
         execution = json.loads(archive.read("execution.json"))
         assert execution["security"]["contains_credentials"] is False
+        assert execution["security"]["image_pull_policy"] == "never"
+        assert (
+            execution["container_review"]["immutable_reference"]
+            == BIONEMO_CONTAINER_REFERENCE
+        )
         assert execution["settings"]["checkpoint_tag"] == "esm2/650m:2.0"
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    (
+        ("tag", "moving-tag"),
+        ("digest", "sha256:" + "0" * 64),
+        (
+            "immutable_reference",
+            "nvcr.io/nvidia/clara/bionemo-framework@sha256:" + "0" * 64,
+        ),
+        ("status", "not-reviewed"),
+    ),
+)
+def test_execution_bundle_rejects_changed_container_review(
+    field: str,
+    value: str,
+) -> None:
+    record, config, _ = _inputs()
+    original = build_bionemo_execution_bundle(record, config)
+    with zipfile.ZipFile(io.BytesIO(original)) as source:
+        contents = {name: source.read(name) for name in source.namelist()}
+    execution = json.loads(contents["execution.json"])
+    execution["container_review"][field] = value
+    contents["execution.json"] = json.dumps(execution, indent=2, sort_keys=True).encode(
+        "utf-8"
+    )
+    bundle_manifest = json.loads(contents["bundle-manifest.json"])
+    bundle_manifest["files"]["execution.json"] = (
+        "sha256:" + hashlib.sha256(contents["execution.json"]).hexdigest()
+    )
+    contents["bundle-manifest.json"] = json.dumps(bundle_manifest).encode("utf-8")
+    rewritten = io.BytesIO()
+    with zipfile.ZipFile(rewritten, "w") as output:
+        for name, content in contents.items():
+            output.writestr(name, content)
+
+    with pytest.raises(BioNeMoExecutionError):
+        validate_bionemo_execution_bundle(rewritten.getvalue())
 
 
 def test_invalid_execution_archive_is_rejected() -> None:
@@ -138,6 +185,25 @@ def test_generated_result_rejects_incomplete_container_digest() -> None:
     result["runtime"]["interface"] = "bionemo-framework-container"
     result["runtime"]["container"] = "nvcr.io/example@sha256:not-a-digest"
 
+    with pytest.raises(BioNeMoExecutionError, match="immutable container digest"):
+        load_bionemo_result_manifest(json.dumps(result).encode("utf-8"), plan)
+
+
+def test_recipes_result_accepts_only_exact_plan_and_immutable_container() -> None:
+    record, config, _ = _inputs()
+    plan = planned_bionemo_recipes_esm2_manifest(
+        record,
+        config,
+        planned_at=date(2026, 7, 19),
+    )
+    result = fixture_bionemo_result_manifest(plan)
+    result["runtime"]["interface"] = "bionemo-recipes-container"
+    result["runtime"]["container"] = "local/hra-bionemo-recipes@sha256:" + "a" * 64
+
+    loaded = load_bionemo_result_manifest(json.dumps(result).encode("utf-8"), plan)
+    assert loaded["runtime"]["interface"] == "bionemo-recipes-container"
+
+    result["runtime"]["container"] = "hra-bionemo-recipes:latest"
     with pytest.raises(BioNeMoExecutionError, match="immutable container digest"):
         load_bionemo_result_manifest(json.dumps(result).encode("utf-8"), plan)
 

@@ -89,24 +89,47 @@ from labs.protein_intelligence import (
     SequenceCacheError,
     SequenceRetrievalError,
     BIONEMO_INFERENCE_URL,
+    BIONEMO_CONTAINER_CATALOG_URL,
+    BIONEMO_LICENSE_URL,
     BIONEMO_MODEL_URL,
     BIONEMO_PREREQUISITES_URL,
+    BIONEMO_RECIPES_URL,
+    BIONEMO_RECIPES_ESM2_DOCS_URL,
+    BIONEMO_RECIPES_MODEL_URL,
+    BIONEMO_RECIPES_RELEASE_URL,
     BioNeMoExecutionError,
+    BioNeMoRecipesExecutionError,
+    BioNeMoRecipesReadinessReport,
+    BioNeMoGPUProbeReport,
+    BioNeMoPreflightReport,
     build_bionemo_execution_bundle,
+    build_bionemo_recipes_execution_bundle,
     build_provider_parity_report,
     compare_embedding_manifests,
     fixture_sequence_record,
     fixture_bionemo_result_manifest,
+    inspect_bionemo_environment,
+    inspect_bionemo_recipes_readiness,
+    is_immutable_image_reference,
     local_esm2_manifest,
     local_esm2_status,
     load_bionemo_result_manifest,
     planned_local_esm2_manifest,
     planned_bionemo_esm2_manifest,
+    planned_bionemo_recipes_esm2_manifest,
     planned_sequence_manifest,
     read_cached_sequence,
     retrieve_and_cache_uniprot_sequence,
+    reviewed_bionemo_container,
+    reviewed_bionemo_model_code,
+    reviewed_bionemo_recipes_path,
+    reviewed_bionemo_recipes_runtime,
+    run_bionemo_gpu_probe,
 )
-from labs.protein_intelligence.entity_mapping import LiteratureEntity, map_entities_to_targets
+from labs.protein_intelligence.entity_mapping import (
+    LiteratureEntity,
+    map_entities_to_targets,
+)
 from labs.protein_intelligence.registry import build_manifest_registry
 from labs.protein_intelligence.reports import build_target_report
 from labs.protein_intelligence.report_validation import report_summary
@@ -213,7 +236,9 @@ def get_cache() -> SearchCache | None:
     try:
         return SearchCache()
     except (OSError, sqlite3.Error) as exc:
-        st.warning(f"Local cache is unavailable. Search will still work. Details: {exc}")
+        st.warning(
+            f"Local cache is unavailable. Search will still work. Details: {exc}"
+        )
         return None
 
 
@@ -229,7 +254,9 @@ def safe_cache_write(cache: SearchCache | None, action: str, *args: object) -> b
     return True
 
 
-def safe_recent_searches(cache: SearchCache | None, limit: int = 5) -> list[dict[str, object]]:
+def safe_recent_searches(
+    cache: SearchCache | None, limit: int = 5
+) -> list[dict[str, object]]:
     if cache is None:
         return []
 
@@ -322,7 +349,9 @@ def render_paper(
 
     link_parts = []
     if paper.source_provider != "unknown":
-        link_parts.append(f"{translate(language, 'source_provider')}: `{paper.source_provider}`")
+        link_parts.append(
+            f"{translate(language, 'source_provider')}: `{paper.source_provider}`"
+        )
     if paper.doi:
         link_parts.append(f"DOI: `{paper.doi}`")
     if paper.pmid:
@@ -333,14 +362,14 @@ def render_paper(
         )
     if paper.is_open_access is not None:
         access_value = translate(language, "yes" if paper.is_open_access else "no")
-        link_parts.append(
-            f"{translate(language, 'open_access')}: `{access_value}`"
-        )
+        link_parts.append(f"{translate(language, 'open_access')}: `{access_value}`")
     if link_parts:
         st.caption(" | ".join(link_parts))
 
-    action_count = 2 + int(paper.source_url is not None) + int(
-        paper.open_access_pdf_url is not None
+    action_count = (
+        2
+        + int(paper.source_url is not None)
+        + int(paper.open_access_pdf_url is not None)
     )
     action_columns = st.columns(action_count)
     action_index = 0
@@ -409,7 +438,9 @@ def render_paper(
             for notice in paper.correction_notices:
                 label = notice.reference or notice.notice_type
                 if notice.source_url:
-                    st.markdown(f"- [{notice.notice_type}: {label}]({notice.source_url})")
+                    st.markdown(
+                        f"- [{notice.notice_type}: {label}]({notice.source_url})"
+                    )
                 else:
                     st.write(f"- {notice.notice_type}: {label}")
 
@@ -616,9 +647,11 @@ def run_search_panel(
             translate(language, "research_topic"),
             value=default_query,
             placeholder=translate(language, "research_topic_placeholder"),
-            help=explanation(language, "research_topic_help", explanation_mode)
-            if help_text
-            else None,
+            help=(
+                explanation(language, "research_topic_help", explanation_mode)
+                if help_text
+                else None
+            ),
             key=f"{panel_key}-query",
         )
         selected_sources = st.multiselect(
@@ -722,9 +755,7 @@ def run_search_panel(
 
     page = int(st.session_state.get(f"{panel_key}-page", 1))
     sources = list(request.get("sources", [SOURCE_EUROPE_PMC]))
-    cursor_history = list(
-        st.session_state.get(f"{panel_key}-cursor-history", ["*"])
-    )
+    cursor_history = list(st.session_state.get(f"{panel_key}-cursor-history", ["*"]))
     if SOURCE_EUROPE_PMC in sources and page > len(cursor_history):
         page = len(cursor_history)
         st.session_state[f"{panel_key}-page"] = page
@@ -751,7 +782,9 @@ def run_search_panel(
                 st.error(str(exc))
                 return
             papers.extend(europe_response.papers)
-            total_results += europe_response.total_results or len(europe_response.papers)
+            total_results += europe_response.total_results or len(
+                europe_response.papers
+            )
             next_cursor_mark = europe_response.next_cursor_mark
 
         if SOURCE_PUBMED in sources:
@@ -765,7 +798,9 @@ def run_search_panel(
                 st.error(str(exc))
                 return
             papers.extend(pubmed_response.papers)
-            total_results += pubmed_response.total_results or len(pubmed_response.papers)
+            total_results += pubmed_response.total_results or len(
+                pubmed_response.papers
+            )
 
     papers = deduplicate_papers(papers)
     safe_cache_write(cache, "upsert_papers", papers)
@@ -884,7 +919,9 @@ def render_trial(trial: ClinicalTrial, language: str) -> None:
     if trial.sponsor:
         details.append(f"**{translate(language, 'trial_sponsor')}:** {trial.sponsor}")
     if trial.enrollment is not None:
-        details.append(f"**{translate(language, 'trial_enrollment')}:** {trial.enrollment:,}")
+        details.append(
+            f"**{translate(language, 'trial_enrollment')}:** {trial.enrollment:,}"
+        )
     if trial.interventions:
         details.append(
             f"**{translate(language, 'trial_interventions')}:** "
@@ -892,13 +929,18 @@ def render_trial(trial: ClinicalTrial, language: str) -> None:
         )
     if trial.countries:
         details.append(
-            f"**{translate(language, 'trial_locations')}:** " + ", ".join(trial.countries)
+            f"**{translate(language, 'trial_locations')}:** "
+            + ", ".join(trial.countries)
         )
-    dates = " – ".join(value for value in (trial.start_date, trial.completion_date) if value)
+    dates = " – ".join(
+        value for value in (trial.start_date, trial.completion_date) if value
+    )
     if dates:
         details.append(f"**{translate(language, 'trial_dates')}:** {dates}")
     if trial.last_update:
-        details.append(f"**{translate(language, 'trial_last_update')}:** {trial.last_update}")
+        details.append(
+            f"**{translate(language, 'trial_last_update')}:** {trial.last_update}"
+        )
     for detail in details:
         st.markdown(detail)
 
@@ -935,7 +977,9 @@ def run_trial_tracker(language: str, explanation_mode: str) -> None:
             try:
                 response = search_clinical_trials(
                     " ".join(other_terms.split()),
-                    tuple(status_codes_by_label[label] for label in selected_status_labels),
+                    tuple(
+                        status_codes_by_label[label] for label in selected_status_labels
+                    ),
                 )
             except ClinicalTrialsError as exc:
                 st.session_state["clinical-trial-error"] = str(exc)
@@ -954,7 +998,9 @@ def run_trial_tracker(language: str, explanation_mode: str) -> None:
         return
 
     studies = response.studies
-    registered_col, recruiting_col, active_col, completed_col, terminated_col = st.columns(5)
+    registered_col, recruiting_col, active_col, completed_col, terminated_col = (
+        st.columns(5)
+    )
     registered_col.metric(
         translate(language, "registered_studies"),
         f"{(response.total_results or len(studies)):,}",
@@ -1308,7 +1354,9 @@ def run_knowledge_graph(language: str, explanation_mode: str) -> None:
         st.dataframe(
             [
                 {
-                    translate(language, "knowledge_related_entity"): connection.entity_name,
+                    translate(
+                        language, "knowledge_related_entity"
+                    ): connection.entity_name,
                     translate(language, "knowledge_entity_type"): type_labels[
                         connection.entity_type
                     ],
@@ -1385,6 +1433,309 @@ def _parity_value(value: object, language: str) -> str:
     return str(value)
 
 
+def _render_bionemo_image_review(language: str, experiment_id: str) -> None:
+    review = reviewed_bionemo_container()
+    st.markdown(f"**{translate(language, 'bionemo_image_review_title')}**")
+    st.warning(translate(language, "bionemo_image_review_warning"))
+    st.code(review.immutable_reference, language=None)
+    tag_col, platform_col, size_col = st.columns(3)
+    tag_col.metric(translate(language, "bionemo_image_review_tag"), review.tag)
+    platform_col.metric(
+        translate(language, "bionemo_image_review_platform"), review.platform
+    )
+    size_col.metric(
+        translate(language, "bionemo_image_review_size"),
+        f"{review.compressed_size_gb:.2f} GB",
+    )
+    st.caption(translate(language, "bionemo_image_review_boundary"))
+    st.markdown(
+        " | ".join(
+            (
+                f"[{translate(language, 'bionemo_image_review_catalog')}]"
+                f"({BIONEMO_CONTAINER_CATALOG_URL})",
+                f"[{translate(language, 'bionemo_image_review_license')}]"
+                f"({BIONEMO_LICENSE_URL})",
+                f"[{translate(language, 'bionemo_image_review_recipes')}]"
+                f"({BIONEMO_RECIPES_URL})",
+            )
+        )
+    )
+    st.download_button(
+        translate(language, "bionemo_image_review_download"),
+        data=json.dumps(
+            review.model_dump(mode="json"), indent=2, sort_keys=True
+        ).encode("utf-8"),
+        file_name="hra-bionemo-container-review.json",
+        mime="application/json",
+        key=f"bionemo-image-review-{experiment_id}-download",
+    )
+
+
+def _render_bionemo_recipes_review(
+    language: str,
+    record: ProteinSequenceRecord,
+    config: LocalESM2Config,
+    experiment_id: str,
+) -> dict[str, object]:
+    review = reviewed_bionemo_recipes_path()
+    code_review = reviewed_bionemo_model_code()
+    runtime_review = reviewed_bionemo_recipes_runtime()
+    plan = planned_bionemo_recipes_esm2_manifest(record, config)
+    with st.expander(translate(language, "bionemo_recipes_review_title")):
+        st.info(translate(language, "bionemo_recipes_review_intro"))
+        st.caption(translate(language, "bionemo_recipes_review_scope"))
+        version_col, model_col, licence_col = st.columns(3)
+        version_col.metric(
+            translate(language, "bionemo_recipes_review_version"),
+            review.recipes_version,
+        )
+        model_col.metric(
+            translate(language, "bionemo_recipes_review_model"),
+            "ESM-2 8M",
+        )
+        licence_col.metric(
+            translate(language, "bionemo_recipes_review_license"),
+            translate(language, "bionemo_recipes_license_review_required"),
+        )
+        st.code(
+            f"{review.model_id}@{review.model_revision}",
+            language=None,
+        )
+        st.warning(translate(language, "bionemo_recipes_review_license_warning"))
+        st.success(translate(language, "bionemo_recipes_code_review_complete"))
+        st.caption(translate(language, "bionemo_recipes_review_remote_code"))
+        st.code(runtime_review.immutable_reference, language=None)
+        st.caption(
+            translate(
+                language,
+                "bionemo_recipes_runtime_scope",
+                size=f"{runtime_review.compressed_size_gb:.2f}",
+            )
+        )
+        st.markdown(
+            " | ".join(
+                (
+                    f"[{translate(language, 'bionemo_recipes_review_release')}]"
+                    f"({BIONEMO_RECIPES_RELEASE_URL})",
+                    f"[{translate(language, 'bionemo_recipes_review_docs')}]"
+                    f"({BIONEMO_RECIPES_ESM2_DOCS_URL})",
+                    f"[{translate(language, 'bionemo_recipes_review_model_card')}]"
+                    f"({BIONEMO_RECIPES_MODEL_URL})",
+                )
+            )
+        )
+        review_col, code_col, runtime_col = st.columns(3)
+        review_col.download_button(
+            translate(language, "bionemo_recipes_review_download"),
+            data=json.dumps(
+                review.model_dump(mode="json"), indent=2, sort_keys=True
+            ).encode("utf-8"),
+            file_name="hra-bionemo-recipes-review.json",
+            mime="application/json",
+            key=f"bionemo-recipes-review-{experiment_id}",
+        )
+        code_col.download_button(
+            translate(language, "bionemo_recipes_code_review_download"),
+            data=json.dumps(
+                code_review.model_dump(mode="json"), indent=2, sort_keys=True
+            ).encode("utf-8"),
+            file_name="hra-bionemo-recipes-code-review.json",
+            mime="application/json",
+            key=f"bionemo-recipes-code-review-{experiment_id}",
+        )
+        runtime_col.download_button(
+            translate(language, "bionemo_recipes_runtime_review_download"),
+            data=json.dumps(
+                runtime_review.model_dump(mode="json"), indent=2, sort_keys=True
+            ).encode("utf-8"),
+            file_name="hra-bionemo-recipes-runtime-review.json",
+            mime="application/json",
+            key=f"bionemo-recipes-runtime-review-{experiment_id}",
+        )
+        plan_col, bundle_col = st.columns(2)
+        plan_col.download_button(
+            translate(language, "bionemo_recipes_plan_download"),
+            data=json.dumps(plan, indent=2, sort_keys=True).encode("utf-8"),
+            file_name=f"hra-bionemo-recipes-plan-{record.target.symbol.lower()}.json",
+            mime="application/json",
+            key=f"bionemo-recipes-plan-{experiment_id}",
+        )
+        try:
+            execution_bundle = build_bionemo_recipes_execution_bundle(record, config)
+        except (BioNeMoRecipesExecutionError, LocalESM2Error, ValueError) as exc:
+            bundle_col.caption(
+                translate(
+                    language,
+                    "bionemo_recipes_bundle_unavailable",
+                    error=str(exc),
+                )
+            )
+        else:
+            bundle_col.download_button(
+                translate(language, "bionemo_recipes_bundle_download"),
+                data=execution_bundle,
+                file_name=(
+                    "hra-bionemo-recipes-fixture-" f"{record.target.symbol.lower()}.zip"
+                ),
+                mime="application/zip",
+                key=f"bionemo-recipes-bundle-{experiment_id}",
+            )
+            _render_bionemo_recipes_readiness(
+                language,
+                execution_bundle,
+                experiment_id,
+            )
+        st.caption(translate(language, "bionemo_recipes_bundle_boundary"))
+    return plan
+
+
+def _render_bionemo_recipes_readiness(
+    language: str,
+    execution_bundle: bytes,
+    experiment_id: str,
+) -> None:
+    readiness_key = f"bionemo-recipes-readiness-{experiment_id}"
+    st.markdown(f"**{translate(language, 'bionemo_recipes_readiness_title')}**")
+    st.caption(translate(language, "bionemo_recipes_readiness_help"))
+    terms_reviewed = st.checkbox(
+        translate(language, "bionemo_recipes_terms_declaration"),
+        help=translate(language, "bionemo_recipes_terms_declaration_help"),
+        key=f"{readiness_key}-terms",
+    )
+    if st.button(
+        translate(language, "bionemo_recipes_readiness_run"),
+        key=f"{readiness_key}-run",
+    ):
+        with st.spinner(translate(language, "bionemo_recipes_readiness_running")):
+            st.session_state[readiness_key] = inspect_bionemo_recipes_readiness(
+                execution_bundle,
+                terms_reviewed=terms_reviewed,
+            ).model_dump(mode="json")
+
+    payload = st.session_state.get(readiness_key)
+    if not isinstance(payload, dict):
+        return
+    report = BioNeMoRecipesReadinessReport.model_validate(payload)
+    status_key = f"bionemo_recipes_readiness_status_{report.status.replace('-', '_')}"
+    status_text = translate(language, status_key)
+    if report.status == "blocked":
+        st.error(status_text)
+    elif report.status == "review-required":
+        st.warning(status_text)
+    else:
+        st.success(status_text)
+
+    rows = []
+    for check in report.checks:
+        evidence = ", ".join(
+            f"{name.replace('_', ' ')}: {value}"
+            for name, value in check.evidence.items()
+            if value not in (None, "")
+        )
+        rows.append(
+            {
+                translate(language, "bionemo_recipes_readiness_check"): translate(
+                    language,
+                    f"bionemo_recipes_readiness_check_{check.check_id}",
+                ),
+                translate(language, "bionemo_recipes_readiness_result"): translate(
+                    language,
+                    f"bionemo_recipes_readiness_check_status_{check.status.replace('-', '_')}",
+                ),
+                translate(language, "bionemo_recipes_readiness_evidence"): evidence
+                or translate(language, "parity_not_recorded"),
+            }
+        )
+    st.dataframe(rows, hide_index=True, use_container_width=True)
+    st.caption(translate(language, "bionemo_recipes_readiness_boundary"))
+    st.download_button(
+        translate(language, "bionemo_recipes_readiness_download"),
+        data=json.dumps(
+            report.model_dump(mode="json"), indent=2, sort_keys=True
+        ).encode("utf-8"),
+        file_name="hra-bionemo-recipes-readiness.json",
+        mime="application/json",
+        key=f"{readiness_key}-download",
+    )
+
+
+def _render_bionemo_gpu_probe(language: str, experiment_id: str) -> None:
+    review = reviewed_bionemo_container()
+    probe_key = f"bionemo-gpu-probe-{experiment_id}"
+    with st.expander(translate(language, "bionemo_gpu_probe_title")):
+        st.caption(translate(language, "bionemo_gpu_probe_help"))
+        image_reference = st.text_input(
+            translate(language, "bionemo_gpu_probe_image"),
+            value=review.immutable_reference,
+            help=translate(language, "bionemo_gpu_probe_image_help"),
+            key=f"{probe_key}-image",
+        ).strip()
+        image_is_valid = is_immutable_image_reference(image_reference)
+        if image_reference and not image_is_valid:
+            st.warning(translate(language, "bionemo_gpu_probe_invalid_image"))
+        image_is_reviewed = image_reference == review.immutable_reference
+        if image_is_valid and not image_is_reviewed:
+            st.warning(translate(language, "bionemo_gpu_probe_unreviewed_image"))
+
+        license_reviewed = st.checkbox(
+            translate(language, "bionemo_gpu_probe_license_confirm"),
+            help=translate(language, "bionemo_gpu_probe_license_confirm_help"),
+            key=f"{probe_key}-license",
+        )
+
+        confirmed = st.checkbox(
+            translate(language, "bionemo_gpu_probe_confirm"),
+            help=translate(language, "bionemo_gpu_probe_confirm_help"),
+            key=f"{probe_key}-confirm",
+        )
+        if st.button(
+            translate(language, "bionemo_gpu_probe_run"),
+            disabled=not (
+                image_is_valid and image_is_reviewed and license_reviewed and confirmed
+            ),
+            key=f"{probe_key}-run",
+        ):
+            with st.spinner(translate(language, "bionemo_gpu_probe_running")):
+                st.session_state[probe_key] = run_bionemo_gpu_probe(
+                    image_reference,
+                    confirmed=True,
+                ).model_dump(mode="json")
+
+        payload = st.session_state.get(probe_key)
+        if not isinstance(payload, dict):
+            st.caption(translate(language, "bionemo_gpu_probe_boundary"))
+            return
+
+        report = BioNeMoGPUProbeReport.model_validate(payload)
+        if report.status == "passed":
+            st.success(translate(language, "bionemo_gpu_probe_passed"))
+        elif report.status == "blocked":
+            st.error(translate(language, "bionemo_gpu_probe_blocked"))
+        else:
+            st.warning(translate(language, "bionemo_gpu_probe_not_run"))
+
+        evidence = {
+            name.replace("_", " "): value
+            for name, value in report.evidence.items()
+            if value not in (None, "")
+        }
+        if evidence:
+            st.dataframe([evidence], hide_index=True, use_container_width=True)
+        if report.container_command:
+            st.caption(translate(language, "bionemo_gpu_probe_command"))
+            st.code(" ".join(report.container_command), language="shell")
+        st.caption(translate(language, "bionemo_gpu_probe_boundary"))
+        st.download_button(
+            translate(language, "bionemo_gpu_probe_download"),
+            data=json.dumps(
+                report.model_dump(mode="json"), indent=2, sort_keys=True
+            ).encode("utf-8"),
+            file_name="hra-bionemo-gpu-probe.json",
+            mime="application/json",
+            key=f"{probe_key}-download",
+        )
+
+
 def _render_provider_parity_experiment(
     language: str,
     record: ProteinSequenceRecord,
@@ -1403,6 +1754,93 @@ def _render_provider_parity_experiment(
         f"[{translate(language, 'parity_prerequisites_docs')}]"
         f"({BIONEMO_PREREQUISITES_URL})"
     )
+
+    st.markdown(f"**{translate(language, 'bionemo_preflight_title')}**")
+    st.caption(translate(language, "bionemo_preflight_help"))
+    preflight_key = f"bionemo-preflight-{bionemo_plan['experiment_id']}"
+    if st.button(
+        translate(language, "bionemo_preflight_run"),
+        key=f"{preflight_key}-run",
+    ):
+        with st.spinner(translate(language, "bionemo_preflight_running")):
+            st.session_state[preflight_key] = inspect_bionemo_environment().model_dump(
+                mode="json"
+            )
+
+    preflight_payload = st.session_state.get(preflight_key)
+    if isinstance(preflight_payload, dict):
+        preflight = BioNeMoPreflightReport.model_validate(preflight_payload)
+        status_label = translate(
+            language,
+            f"bionemo_preflight_status_{preflight.overall_status.replace('-', '_')}",
+        )
+        if preflight.overall_status == "blocked":
+            st.error(
+                translate(
+                    language,
+                    "bionemo_preflight_blocked",
+                    status=status_label,
+                )
+            )
+        elif preflight.overall_status == "review-required":
+            st.warning(
+                translate(
+                    language,
+                    "bionemo_preflight_review",
+                    status=status_label,
+                )
+            )
+        else:
+            st.success(
+                translate(
+                    language,
+                    "bionemo_preflight_ready",
+                    status=status_label,
+                )
+            )
+
+        preflight_rows = []
+        for check in preflight.checks:
+            detected = ", ".join(
+                f"{name.replace('_', ' ')}: {value}"
+                for name, value in check.evidence.items()
+                if value not in (None, "")
+            )
+            preflight_rows.append(
+                {
+                    translate(language, "bionemo_preflight_check"): translate(
+                        language,
+                        f"bionemo_preflight_check_{check.check_id}",
+                    ),
+                    translate(language, "bionemo_preflight_result"): translate(
+                        language,
+                        f"bionemo_preflight_check_status_{check.status.replace('-', '_')}",
+                    ),
+                    translate(language, "bionemo_preflight_detected"): detected
+                    or translate(language, "parity_not_recorded"),
+                }
+            )
+        st.dataframe(preflight_rows, hide_index=True, use_container_width=True)
+        st.caption(translate(language, "bionemo_preflight_boundary"))
+        st.download_button(
+            translate(language, "bionemo_preflight_download"),
+            data=json.dumps(
+                preflight.model_dump(mode="json"), indent=2, sort_keys=True
+            ).encode("utf-8"),
+            file_name="hra-bionemo-preflight.json",
+            mime="application/json",
+            key=f"{preflight_key}-download",
+        )
+
+    _render_bionemo_image_review(language, str(bionemo_plan["experiment_id"]))
+    recipes_plan = _render_bionemo_recipes_review(
+        language,
+        record,
+        config,
+        str(bionemo_plan["experiment_id"]),
+    )
+    _render_bionemo_gpu_probe(language, str(bionemo_plan["experiment_id"]))
+
     st.download_button(
         translate(language, "parity_download_execution_bundle"),
         data=execution_bundle,
@@ -1426,11 +1864,18 @@ def _render_provider_parity_experiment(
     candidate_manifest = bionemo_plan
     execution_label_key = "parity_planned_only"
     if uploaded_result is not None:
+        result_payload = uploaded_result.getvalue()
         try:
-            candidate_manifest = load_bionemo_result_manifest(
-                uploaded_result.getvalue(),
-                bionemo_plan,
-            )
+            try:
+                candidate_manifest = load_bionemo_result_manifest(
+                    result_payload,
+                    bionemo_plan,
+                )
+            except BioNeMoExecutionError:
+                candidate_manifest = load_bionemo_result_manifest(
+                    result_payload,
+                    recipes_plan,
+                )
             if candidate_manifest["runtime"]["interface"] == "fixture-validation":
                 execution_label_key = "parity_fixture_validated"
                 st.warning(translate(language, "parity_fixture_warning"))
@@ -1566,8 +2011,12 @@ def _render_local_esm2_experiment(
 
     source_label = translate(language, f"esm2_input_{input_source}")
     length_col, checksum_col, source_col = st.columns(3)
-    length_col.metric(translate(language, "esm2_sequence_length"), record.sequence_length)
-    checksum_col.metric(translate(language, "esm2_sequence_checksum"), record.checksum[7:19])
+    length_col.metric(
+        translate(language, "esm2_sequence_length"), record.sequence_length
+    )
+    checksum_col.metric(
+        translate(language, "esm2_sequence_checksum"), record.checksum[7:19]
+    )
     source_col.metric(translate(language, "esm2_sequence_source"), source_label)
     st.caption(
         translate(
@@ -1612,14 +2061,17 @@ def _render_local_esm2_experiment(
             key=f"esm2-window-length-{selected_target.symbol}-{input_source}",
         )
     )
-    device = st.segmented_control(
-        translate(language, "esm2_device"),
-        options=["auto", "cpu", "cuda"],
-        default="auto",
-        format_func=lambda value: translate(language, f"esm2_device_{value}"),
-        help=explanation(language, "esm2_device_help", explanation_mode),
-        key=f"esm2-device-{selected_target.symbol}",
-    ) or "auto"
+    device = (
+        st.segmented_control(
+            translate(language, "esm2_device"),
+            options=["auto", "cpu", "cuda"],
+            default="auto",
+            format_func=lambda value: translate(language, f"esm2_device_{value}"),
+            help=explanation(language, "esm2_device_help", explanation_mode),
+            key=f"esm2-device-{selected_target.symbol}",
+        )
+        or "auto"
+    )
     cached_model_only = st.checkbox(
         translate(language, "esm2_cached_model_only"),
         value=False,
@@ -1702,7 +2154,9 @@ def _render_local_esm2_experiment(
         embedding = manifest["outputs"]["embedding"]
         reproducibility = manifest["evaluation"]["reproducibility_check"]["status"]
         dimensions_col, tensor_col, repeat_col = st.columns(3)
-        dimensions_col.metric(translate(language, "esm2_dimensions"), embedding["dimensions"])
+        dimensions_col.metric(
+            translate(language, "esm2_dimensions"), embedding["dimensions"]
+        )
         tensor_col.metric(
             translate(language, "esm2_tensor_shape"),
             " x ".join(str(value) for value in embedding["token_embeddings_shape"]),
@@ -1882,6 +2336,21 @@ def run_protein_lab(
             [
                 "python -m labs.protein_intelligence list-targets",
                 f"python -m labs.protein_intelligence plan {selected_target.symbol}",
+                "python -m labs.protein_intelligence bionemo-image-review",
+                "python -m labs.protein_intelligence bionemo-recipes-review",
+                "python -m labs.protein_intelligence bionemo-code-review",
+                "python -m labs.protein_intelligence bionemo-recipes-runtime-review",
+                (
+                    "python -m labs.protein_intelligence bionemo-recipes-bundle "
+                    f"{selected_target.symbol} --output hra-recipes-"
+                    f"{selected_target.symbol.lower()}.zip"
+                ),
+                (
+                    "python -m labs.protein_intelligence bionemo-recipes-readiness "
+                    f"--bundle hra-recipes-{selected_target.symbol.lower()}.zip "
+                    "--artifact-root EXTRACTED_RUNTIME_DIRECTORY --strict"
+                ),
+                "python -m labs.protein_intelligence bionemo-preflight",
                 (
                     "python -m labs.protein_intelligence.report_cli "
                     f"target-report {selected_target.symbol} "
@@ -1924,10 +2393,7 @@ def _blueprint_cli_commands(
 ) -> tuple[str, ...]:
     commands = [
         "python -m labs.blueprint_experiments list-providers",
-        (
-            "python -m labs.blueprint_experiments "
-            f"describe-provider {provider_type}"
-        ),
+        ("python -m labs.blueprint_experiments " f"describe-provider {provider_type}"),
         (
             "python -m labs.blueprint_experiments "
             f"provider-config {provider_type} --execution-mode {execution_mode}"
@@ -1979,12 +2445,14 @@ def _render_blueprint_registry(language: str) -> dict[str, object]:
                     translate(language, "blueprint_lab_experiment_id"): record[
                         "experiment_id"
                     ],
-                    translate(language, "blueprint_lab_provider"): translate(
-                        language,
-                        f"blueprint_provider_{record['provider_type']}",
-                    )
-                    if record["provider_type"] in VALID_PROVIDER_TYPES
-                    else record["provider_type"],
+                    translate(language, "blueprint_lab_provider"): (
+                        translate(
+                            language,
+                            f"blueprint_provider_{record['provider_type']}",
+                        )
+                        if record["provider_type"] in VALID_PROVIDER_TYPES
+                        else record["provider_type"]
+                    ),
                     translate(language, "blueprint_lab_status"): record["status"],
                     translate(language, "blueprint_lab_targets"): ", ".join(
                         record["target_symbols"]
@@ -2042,7 +2510,9 @@ def _render_blueprint_lab_preview(language: str, explanation_mode: str) -> None:
         options=mode_options,
         index=0,
         format_func=lambda value: translate(language, f"blueprint_mode_{value}"),
-        help=explanation(language, "blueprint_lab_execution_mode_help", explanation_mode),
+        help=explanation(
+            language, "blueprint_lab_execution_mode_help", explanation_mode
+        ),
         key=f"blueprint-lab-mode-{language}-{selected_provider}",
     )
     selected_symbol = st.selectbox(
@@ -2199,13 +2669,11 @@ def _protein_lab_report_inputs(
         mapped_entity_ids,
         {paper.id: paper.year for paper in papers},
     )
-    note = (
-        translate(
-            language,
-            "protein_lab_using_reading_list",
-            count=len(source_records),
-            symbol=selected_symbol,
-        )
+    note = translate(
+        language,
+        "protein_lab_using_reading_list",
+        count=len(source_records),
+        symbol=selected_symbol,
     )
     if not source_records:
         note = translate(

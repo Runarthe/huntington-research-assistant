@@ -10,6 +10,27 @@ from labs.protein_intelligence.embeddings import (
     MockEmbeddingProvider,
     embedding_manifest,
 )
+from labs.protein_intelligence.bionemo_preflight import (
+    inspect_bionemo_environment,
+)
+from labs.protein_intelligence.bionemo_gpu_probe import run_bionemo_gpu_probe
+from labs.protein_intelligence.bionemo_image_review import reviewed_bionemo_container
+from labs.protein_intelligence.bionemo_recipes_review import (
+    reviewed_bionemo_recipes_path,
+)
+from labs.protein_intelligence.bionemo_code_review import (
+    reviewed_bionemo_model_code,
+)
+from labs.protein_intelligence.bionemo_recipes_execution import (
+    BIONEMO_RECIPES_MAX_FIXTURE_RESIDUES,
+    build_bionemo_recipes_execution_bundle,
+    reviewed_bionemo_recipes_runtime,
+    validate_bionemo_recipes_execution_bundle,
+)
+from labs.protein_intelligence.bionemo_recipes_readiness import (
+    inspect_bionemo_recipes_readiness,
+)
+from labs.protein_intelligence.local_esm2 import LocalESM2Config
 from labs.protein_intelligence.manifests import (
     ManifestValidationError,
     manifest_summary,
@@ -18,6 +39,7 @@ from labs.protein_intelligence.sequences import (
     ProteinSequenceRecord,
     SequenceRetrievalError,
     failed_sequence_manifest,
+    fixture_sequence_record,
     retrieve_uniprot_sequence,
     sequence_manifest,
 )
@@ -111,9 +133,7 @@ def build_retrieval_manifest(
 def _sequence_from_args(sequence: str, fasta_file: str | None) -> str:
     if not fasta_file:
         return sequence
-    return parse_fasta_sequence(
-        open(fasta_file, encoding="utf-8").read()
-    )
+    return parse_fasta_sequence(open(fasta_file, encoding="utf-8").read())
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -124,6 +144,62 @@ def main(argv: list[str] | None = None) -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("list-targets", help="List configured protein targets.")
+    subparsers.add_parser(
+        "bionemo-image-review",
+        help="Print the offline reviewed BioNeMo container provenance record.",
+    )
+    subparsers.add_parser(
+        "bionemo-recipes-review",
+        help="Print the pinned review of the maintained BioNeMo Recipes path.",
+    )
+    subparsers.add_parser(
+        "bionemo-code-review",
+        help="Print the static security review of the exact Recipes model code.",
+    )
+    subparsers.add_parser(
+        "bionemo-recipes-runtime-review",
+        help="Print the reviewed, not-yet-executed Linux/CUDA runtime record.",
+    )
+    recipes_bundle_parser = subparsers.add_parser(
+        "bionemo-recipes-bundle",
+        help="Build one credential-free, fixture-only Recipes execution bundle.",
+    )
+    recipes_bundle_parser.add_argument(
+        "target",
+        help="Bundled target fixture: HTT, BDNF, or NEFL.",
+    )
+    recipes_bundle_parser.add_argument(
+        "--output",
+        required=True,
+        help="New ZIP path to create. Existing files are not overwritten.",
+    )
+    recipes_bundle_parser.add_argument(
+        "--date",
+        help="ISO date to record for deterministic review output.",
+    )
+    recipes_readiness_parser = subparsers.add_parser(
+        "bionemo-recipes-readiness",
+        help="Inspect local Recipes build inputs without pulling or running a container.",
+    )
+    recipes_readiness_parser.add_argument(
+        "--bundle",
+        required=True,
+        help="Path to an HRA Recipes fixture ZIP.",
+    )
+    recipes_readiness_parser.add_argument(
+        "--artifact-root",
+        help="Extracted bundle directory containing model/ and wheelhouse/.",
+    )
+    recipes_readiness_parser.add_argument(
+        "--terms-reviewed",
+        action="store_true",
+        help="Record only that the user reviewed applicable terms; HRA accepts nothing on their behalf.",
+    )
+    recipes_readiness_parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Return exit code 3 unless every required build input is ready.",
+    )
 
     plan_parser = subparsers.add_parser(
         "plan",
@@ -136,7 +212,9 @@ def main(argv: list[str] | None = None) -> int:
         "retrieve",
         help="Print a sequence retrieval manifest. Requires --live for network.",
     )
-    retrieve_parser.add_argument("target", help="Target symbol, entity ID, or UniProt ID.")
+    retrieve_parser.add_argument(
+        "target", help="Target symbol, entity ID, or UniProt ID."
+    )
     retrieve_parser.add_argument("--date", help="ISO date to record in the manifest.")
     retrieve_parser.add_argument(
         "--live",
@@ -172,15 +250,90 @@ def main(argv: list[str] | None = None) -> int:
     )
     validate_parser.add_argument("path", help="Path to manifest JSON.")
 
+    preflight_parser = subparsers.add_parser(
+        "bionemo-preflight",
+        help="Inspect local BioNeMo prerequisites without network or containers.",
+    )
+    preflight_parser.add_argument(
+        "--image",
+        help="Optionally validate an immutable container image reference.",
+    )
+    preflight_parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Return exit code 3 unless every preflight check is complete.",
+    )
+
+    gpu_probe_parser = subparsers.add_parser(
+        "bionemo-gpu-probe",
+        help="Run a fixed GPU diagnostic in an already-local immutable image.",
+    )
+    gpu_probe_parser.add_argument(
+        "--image",
+        required=True,
+        help="Exact local image reference ending in @sha256:<64 hex characters>.",
+    )
+    gpu_probe_parser.add_argument(
+        "--confirm-local-container",
+        action="store_true",
+        help="Explicitly allow the fixed, network-disabled diagnostic container.",
+    )
+
     args = parser.parse_args(argv)
 
     try:
         if args.command == "list-targets":
             _write_json(list_targets())
             return 0
+        if args.command == "bionemo-image-review":
+            _write_json(reviewed_bionemo_container().model_dump(mode="json"))
+            return 0
+        if args.command == "bionemo-recipes-review":
+            _write_json(reviewed_bionemo_recipes_path().model_dump(mode="json"))
+            return 0
+        if args.command == "bionemo-code-review":
+            _write_json(reviewed_bionemo_model_code().model_dump(mode="json"))
+            return 0
+        if args.command == "bionemo-recipes-runtime-review":
+            _write_json(reviewed_bionemo_recipes_runtime().model_dump(mode="json"))
+            return 0
+        if args.command == "bionemo-recipes-bundle":
+            target = get_protein_target(args.target)
+            record = fixture_sequence_record(target)
+            archive = build_bionemo_recipes_execution_bundle(
+                record,
+                LocalESM2Config(
+                    max_residues=BIONEMO_RECIPES_MAX_FIXTURE_RESIDUES,
+                ),
+                planned_at=_date_arg(args.date),
+            )
+            validate_bionemo_recipes_execution_bundle(archive)
+            output_path = Path(args.output)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            with output_path.open("xb") as output:
+                output.write(archive)
+            _write_json(
+                {
+                    "status": "created",
+                    "target": target.symbol,
+                    "output": str(output_path),
+                    "size_bytes": len(archive),
+                }
+            )
+            return 0
+        if args.command == "bionemo-recipes-readiness":
+            report = inspect_bionemo_recipes_readiness(
+                Path(args.bundle).read_bytes(),
+                artifact_root=args.artifact_root,
+                terms_reviewed=args.terms_reviewed,
+            )
+            _write_json(report.model_dump(mode="json"))
+            return 3 if args.strict and report.status != "ready-to-build" else 0
         if args.command == "plan":
             target = get_protein_target(args.target)
-            _write_json(planned_sequence_manifest(target, retrieved_at=_date_arg(args.date)))
+            _write_json(
+                planned_sequence_manifest(target, retrieved_at=_date_arg(args.date))
+            )
             return 0
         if args.command == "retrieve":
             _write_json(
@@ -204,6 +357,17 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "validate-manifest":
             _write_json(validate_manifest_file(args.path))
             return 0
+        if args.command == "bionemo-preflight":
+            report = inspect_bionemo_environment(image_reference=args.image)
+            _write_json(report.model_dump(mode="json"))
+            return 3 if args.strict and report.overall_status != "ready" else 0
+        if args.command == "bionemo-gpu-probe":
+            report = run_bionemo_gpu_probe(
+                args.image,
+                confirmed=args.confirm_local_container,
+            )
+            _write_json(report.model_dump(mode="json"))
+            return 0 if report.status == "passed" else 3
     except (KeyError, ValueError, OSError, json.JSONDecodeError) as exc:
         parser.exit(2, f"{exc}\n")
 

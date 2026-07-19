@@ -170,6 +170,12 @@ See [V0_11_PROVIDER_PARITY.md](V0_11_PROVIDER_PARITY.md) for the implemented off
 ## v0.12: First BioNeMo Runtime Experiment (In Progress)
 
 - Validate an explicit Linux, Docker, NVIDIA GPU, and BioNeMo Framework environment before execution.
+- Require an explicit local-only GPU-container probe with immutable image provenance before model execution.
+- Pin and document one reviewed legacy container digest for the existing 2.7 ESM-2 contract, while directing future development to maintained BioNeMo Recipes.
+- Pin a maintained BioNeMo Recipes release and small public ESM-2 checkpoint, including exact custom-code and weight identities. **Implemented.**
+- Review the pinned model source and define a reproducible Linux/CUDA/TransformerEngine fixture environment. **Implemented as a static review and unexecuted runtime bundle.**
+- Validate local host, bundle, Docker endpoint, base presence, terms declaration, and exact artifact directory before building. **Implemented as a non-networking readiness gate.**
+- After human licence review, pull the exact base digest, build offline, and run one bounded fixture; preserve only runtime provenance, shapes, and checksums.
 - Execute one reviewed ESM-2 workflow from the v0.11 bundle using an immutable container digest.
 - Import only bounded provenance metadata into Protein Lab; keep registry credentials and full vectors outside the app.
 - Record runtime, hardware, dependency, tensor-shape, checksum, and failure provenance.
