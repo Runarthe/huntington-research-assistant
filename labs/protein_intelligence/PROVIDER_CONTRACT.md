@@ -1,6 +1,8 @@
 # Protein Embedding Provider Contract
 
-This contract defines what a real embedding adapter must provide before it can be used in the Digital Biology Lab. The v0.10 local ESM-2 adapter is the first implementation of this boundary.
+This contract defines what a real embedding adapter must provide before it can be used in the Digital Biology Lab. The v0.10 local ESM-2 adapter is the first implementation of this boundary. v0.11 adds the normalized `protein-embedding-artifact.v1` descriptor and `protein-embedding-provider-parity.v1` report so missing fields remain explicit across providers.
+
+The v0.11 BioNeMo handoff additionally uses `hra-bionemo-execution-bundle.v1` and `hra-bionemo-result.v1`. The bundle contains no credential, requires an immutable container reference at execution time, and returns shape/checksum provenance rather than the full embedding vector. Imported results must match the exact experiment, model, selected sequence checksum, and window recorded in the plan.
 
 ## Required Inputs
 

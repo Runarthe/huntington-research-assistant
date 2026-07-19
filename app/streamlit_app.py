@@ -84,14 +84,24 @@ from labs.protein_intelligence import (
     LocalESM2Config,
     LocalESM2Error,
     LocalESM2Provider,
+    ProteinSequenceRecord,
     ProteinTarget,
     SequenceCacheError,
     SequenceRetrievalError,
+    BIONEMO_INFERENCE_URL,
+    BIONEMO_MODEL_URL,
+    BIONEMO_PREREQUISITES_URL,
+    BioNeMoExecutionError,
+    build_bionemo_execution_bundle,
+    build_provider_parity_report,
     compare_embedding_manifests,
     fixture_sequence_record,
+    fixture_bionemo_result_manifest,
     local_esm2_manifest,
     local_esm2_status,
+    load_bionemo_result_manifest,
     planned_local_esm2_manifest,
+    planned_bionemo_esm2_manifest,
     planned_sequence_manifest,
     read_cached_sequence,
     retrieve_and_cache_uniprot_sequence,
@@ -1360,6 +1370,155 @@ def run_knowledge_graph(language: str, explanation_mode: str) -> None:
         )
 
 
+def _parity_value(value: object, language: str) -> str:
+    if value is None:
+        return translate(language, "parity_not_recorded")
+    if isinstance(value, dict):
+        provider = value.get("provider") or translate(language, "parity_not_recorded")
+        name = value.get("name") or translate(language, "parity_not_recorded")
+        version = value.get("version") or translate(language, "parity_not_recorded")
+        return f"{provider} | {name} | {version}"
+    if isinstance(value, (list, tuple)):
+        return " - ".join(str(item) for item in value)
+    if isinstance(value, bool):
+        return translate(language, "yes" if value else "no")
+    return str(value)
+
+
+def _render_provider_parity_experiment(
+    language: str,
+    record: ProteinSequenceRecord,
+    config: LocalESM2Config,
+    reference_manifest: dict[str, object],
+) -> None:
+    st.subheader(translate(language, "parity_lab_title"))
+    st.info(translate(language, "parity_lab_intro"))
+    st.caption(translate(language, "parity_lab_scope"))
+
+    bionemo_plan = planned_bionemo_esm2_manifest(record, config)
+    execution_bundle = build_bionemo_execution_bundle(record, config)
+    st.markdown(f"**{translate(language, 'parity_handoff_title')}**")
+    st.caption(translate(language, "parity_handoff_help"))
+    st.markdown(
+        f"[{translate(language, 'parity_prerequisites_docs')}]"
+        f"({BIONEMO_PREREQUISITES_URL})"
+    )
+    st.download_button(
+        translate(language, "parity_download_execution_bundle"),
+        data=execution_bundle,
+        file_name=f"hra-bionemo-execution-{record.target.symbol.lower()}.zip",
+        mime="application/zip",
+        key=f"parity-bundle-download-{bionemo_plan['experiment_id']}",
+    )
+
+    fixture_enabled = st.checkbox(
+        translate(language, "parity_use_fixture"),
+        value=False,
+        help=translate(language, "parity_use_fixture_help"),
+        key=f"parity-fixture-{bionemo_plan['experiment_id']}",
+    )
+    uploaded_result = st.file_uploader(
+        translate(language, "parity_import_result"),
+        type=["json"],
+        help=translate(language, "parity_import_result_help"),
+        key=f"parity-upload-{bionemo_plan['experiment_id']}",
+    )
+    candidate_manifest = bionemo_plan
+    execution_label_key = "parity_planned_only"
+    if uploaded_result is not None:
+        try:
+            candidate_manifest = load_bionemo_result_manifest(
+                uploaded_result.getvalue(),
+                bionemo_plan,
+            )
+            if candidate_manifest["runtime"]["interface"] == "fixture-validation":
+                execution_label_key = "parity_fixture_validated"
+                st.warning(translate(language, "parity_fixture_warning"))
+            else:
+                execution_label_key = "parity_imported_result"
+                st.success(translate(language, "parity_import_success"))
+        except BioNeMoExecutionError as exc:
+            st.error(translate(language, "parity_import_failed", error=str(exc)))
+    elif fixture_enabled:
+        candidate_manifest = fixture_bionemo_result_manifest(bionemo_plan)
+        execution_label_key = "parity_fixture_validated"
+        st.warning(translate(language, "parity_fixture_warning"))
+
+    report = build_provider_parity_report(reference_manifest, candidate_manifest)
+    report_payload = report.model_dump(mode="json")
+
+    input_col, execution_col, unknown_col = st.columns(3)
+    input_col.metric(
+        translate(language, "parity_input_contract"),
+        translate(
+            language,
+            "yes" if report.readiness["input_contract_ready"] else "no",
+        ),
+    )
+    execution_col.metric(
+        translate(language, "parity_bionemo_execution"),
+        translate(language, execution_label_key),
+    )
+    unknown_col.metric(
+        translate(language, "parity_unresolved_checks"),
+        report.summary["not-available"] + report.summary["not-comparable"],
+    )
+
+    rows = [
+        {
+            translate(language, "parity_check"): translate(
+                language,
+                f"parity_field_{check.field}",
+            ),
+            translate(language, "parity_result"): translate(
+                language,
+                f"parity_status_{check.status.replace('-', '_')}",
+            ),
+            translate(language, "parity_local_reference"): _parity_value(
+                check.reference,
+                language,
+            ),
+            translate(language, "parity_bionemo_candidate"): _parity_value(
+                check.candidate,
+                language,
+            ),
+            translate(language, "parity_meaning"): translate(
+                language,
+                f"parity_meaning_{check.field}",
+            ),
+        }
+        for check in report.checks
+    ]
+    st.dataframe(rows, use_container_width=True, hide_index=True)
+    st.caption(translate(language, "parity_sources"))
+    st.markdown(
+        f"[{translate(language, 'parity_bionemo_model_docs')}]({BIONEMO_MODEL_URL}) | "
+        f"[{translate(language, 'parity_bionemo_inference_docs')}]({BIONEMO_INFERENCE_URL})"
+    )
+
+    with st.expander(translate(language, "parity_bionemo_plan_title")):
+        st.json(bionemo_plan, expanded=False)
+    with st.expander(translate(language, "parity_report_title")):
+        st.json(report_payload, expanded=False)
+    plan_col, report_col = st.columns(2)
+    plan_col.download_button(
+        translate(language, "parity_download_bionemo_plan"),
+        data=json.dumps(bionemo_plan, indent=2, sort_keys=True).encode("utf-8"),
+        file_name=f"hra-bionemo-plan-{record.target.symbol.lower()}.json",
+        mime="application/json",
+        key=f"parity-plan-download-{bionemo_plan['experiment_id']}",
+        use_container_width=True,
+    )
+    report_col.download_button(
+        translate(language, "parity_download_report"),
+        data=json.dumps(report_payload, indent=2, sort_keys=True).encode("utf-8"),
+        file_name=f"hra-provider-parity-{record.target.symbol.lower()}.json",
+        mime="application/json",
+        key=f"parity-report-download-{bionemo_plan['experiment_id']}",
+        use_container_width=True,
+    )
+
+
 def _render_local_esm2_experiment(
     language: str,
     selected_target: ProteinTarget,
@@ -1539,29 +1698,35 @@ def _render_local_esm2_experiment(
             st.error(translate(language, "esm2_run_failed", error=str(exc)))
 
     manifest = artifacts.get(experiment_id)
-    if manifest is None:
-        return
-    embedding = manifest["outputs"]["embedding"]
-    reproducibility = manifest["evaluation"]["reproducibility_check"]["status"]
-    dimensions_col, tensor_col, repeat_col = st.columns(3)
-    dimensions_col.metric(translate(language, "esm2_dimensions"), embedding["dimensions"])
-    tensor_col.metric(
-        translate(language, "esm2_tensor_shape"),
-        " x ".join(str(value) for value in embedding["token_embeddings_shape"]),
-    )
-    repeat_col.metric(
-        translate(language, "esm2_repeat_status"),
-        translate(language, f"esm2_repeat_{reproducibility.replace('-', '_')}"),
-    )
-    st.caption(translate(language, "esm2_artifact_warning"))
-    with st.expander(translate(language, "esm2_artifact_title")):
-        st.json(manifest, expanded=False)
-    st.download_button(
-        translate(language, "esm2_download_artifact"),
-        data=json.dumps(manifest, indent=2, sort_keys=True).encode("utf-8"),
-        file_name=f"hra-esm2-artifact-{selected_target.symbol.lower()}.json",
-        mime="application/json",
-        key=f"esm2-artifact-download-{experiment_id}",
+    if manifest is not None:
+        embedding = manifest["outputs"]["embedding"]
+        reproducibility = manifest["evaluation"]["reproducibility_check"]["status"]
+        dimensions_col, tensor_col, repeat_col = st.columns(3)
+        dimensions_col.metric(translate(language, "esm2_dimensions"), embedding["dimensions"])
+        tensor_col.metric(
+            translate(language, "esm2_tensor_shape"),
+            " x ".join(str(value) for value in embedding["token_embeddings_shape"]),
+        )
+        repeat_col.metric(
+            translate(language, "esm2_repeat_status"),
+            translate(language, f"esm2_repeat_{reproducibility.replace('-', '_')}"),
+        )
+        st.caption(translate(language, "esm2_artifact_warning"))
+        with st.expander(translate(language, "esm2_artifact_title")):
+            st.json(manifest, expanded=False)
+        st.download_button(
+            translate(language, "esm2_download_artifact"),
+            data=json.dumps(manifest, indent=2, sort_keys=True).encode("utf-8"),
+            file_name=f"hra-esm2-artifact-{selected_target.symbol.lower()}.json",
+            mime="application/json",
+            key=f"esm2-artifact-download-{experiment_id}",
+        )
+
+    _render_provider_parity_experiment(
+        language,
+        record,
+        config,
+        manifest or plan,
     )
 
 

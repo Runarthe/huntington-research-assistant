@@ -84,6 +84,43 @@ def test_protein_lab_tab_renders_without_live_calls() -> None:
         button.label for button in app.get("download_button")
     }
     assert "Run local ESM-2" in {button.label for button in app.button}
+    assert "Provider parity review" in {
+        subheader.value for subheader in app.subheader
+    }
+    assert "Download BioNeMo plan JSON" in {
+        button.label for button in app.get("download_button")
+    }
+    assert "Download parity report JSON" in {
+        button.label for button in app.get("download_button")
+    }
+    assert "Download Linux/GPU execution bundle" in {
+        button.label for button in app.get("download_button")
+    }
+    assert "Import BioNeMo result JSON" in {
+        uploader.label for uploader in app.get("file_uploader")
+    }
+    assert "Use offline result fixture" in {
+        checkbox.label for checkbox in app.checkbox
+    }
+
+
+def test_provider_parity_fixture_is_not_presented_as_a_provider_run() -> None:
+    st.cache_data.clear()
+    app = AppTest.from_file(str(APP_PATH), default_timeout=30).run()
+    fixture_checkbox = next(
+        checkbox
+        for checkbox in app.checkbox
+        if checkbox.label == "Use offline result fixture"
+    )
+
+    fixture_checkbox.set_value(True).run()
+
+    assert not app.exception
+    assert any(
+        "test data, not BioNeMo model output" in warning.value
+        for warning in app.warning
+    )
+    assert "Fixture validated" in {metric.value for metric in app.metric}
 
 
 def test_blueprint_provider_status_keys_distinguish_provider_boundaries() -> None:
