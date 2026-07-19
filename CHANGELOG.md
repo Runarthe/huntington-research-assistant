@@ -9,10 +9,13 @@ All notable project changes are documented here. The project follows semantic ve
 - Added a non-networking BioNeMo environment preflight for the CLI and Protein Lab.
 - Added typed checks for host OS, CPU architecture, NVIDIA GPU and driver, bfloat16 compute capability, Docker Linux engine, declared NVIDIA runtime, and immutable image provenance.
 - Added a downloadable preflight report that explicitly records that no credential was inspected, no network call was made, and no container was started.
+- Added an advanced, explicit GPU-container probe for the CLI and Protein Lab. It accepts only an already-local immutable image and runs one fixed `nvidia-smi` diagnostic.
+- Added a downloadable GPU-probe report with the exact command, local image identity, hardware evidence, and execution boundary.
 
 ### Safety
 
-- The preflight uses only fixed diagnostic commands and never runs `docker login`, `docker pull`, or `docker run`.
+- The passive preflight uses only fixed diagnostic commands and never runs `docker login`, `docker pull`, or `docker run`.
+- The separate GPU probe requires explicit confirmation and a local Docker socket or named pipe, enforces `--pull never` and `--network none`, mounts no host path, overrides the image entrypoint, and never executes BioNeMo or a model.
 - A detected GPU or Docker installation is not reported as proof that BioNeMo can execute.
 - GPUs absent from the reviewed NVIDIA support matrix remain flagged for review even when they meet the documented compute-capability threshold.
 

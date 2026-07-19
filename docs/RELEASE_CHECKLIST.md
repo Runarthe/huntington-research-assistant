@@ -39,6 +39,11 @@ Use this checklist before publishing a tagged release.
 - [ ] Run the BioNeMo environment preflight and confirm that it makes no network call, inspects no credential, and starts no container.
 - [ ] Confirm a stopped Docker engine or unsupported architecture is reported as blocked rather than ready.
 - [ ] Confirm an unlisted GPU model is visibly marked for review even when its compute capability passes.
+- [ ] Confirm the GPU probe rejects moving image tags and remains disabled until its explicit container confirmation is selected.
+- [ ] Confirm a missing immutable image is reported without a registry login or image pull.
+- [ ] Confirm a remote Docker endpoint is blocked before image inspection or container execution.
+- [ ] If a reviewed local image is available, verify the probe command uses `--pull never`, `--network none`, no host mount, and only the fixed `nvidia-smi` entrypoint.
+- [ ] Confirm a passed GPU probe is not labelled as BioNeMo inference or model execution.
 
 ## Safety and Privacy
 

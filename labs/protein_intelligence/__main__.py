@@ -13,6 +13,7 @@ from labs.protein_intelligence.embeddings import (
 from labs.protein_intelligence.bionemo_preflight import (
     inspect_bionemo_environment,
 )
+from labs.protein_intelligence.bionemo_gpu_probe import run_bionemo_gpu_probe
 from labs.protein_intelligence.manifests import (
     ManifestValidationError,
     manifest_summary,
@@ -189,6 +190,21 @@ def main(argv: list[str] | None = None) -> int:
         help="Return exit code 3 unless every preflight check is complete.",
     )
 
+    gpu_probe_parser = subparsers.add_parser(
+        "bionemo-gpu-probe",
+        help="Run a fixed GPU diagnostic in an already-local immutable image.",
+    )
+    gpu_probe_parser.add_argument(
+        "--image",
+        required=True,
+        help="Exact local image reference ending in @sha256:<64 hex characters>.",
+    )
+    gpu_probe_parser.add_argument(
+        "--confirm-local-container",
+        action="store_true",
+        help="Explicitly allow the fixed, network-disabled diagnostic container.",
+    )
+
     args = parser.parse_args(argv)
 
     try:
@@ -225,6 +241,13 @@ def main(argv: list[str] | None = None) -> int:
             report = inspect_bionemo_environment(image_reference=args.image)
             _write_json(report.model_dump(mode="json"))
             return 3 if args.strict and report.overall_status != "ready" else 0
+        if args.command == "bionemo-gpu-probe":
+            report = run_bionemo_gpu_probe(
+                args.image,
+                confirmed=args.confirm_local_container,
+            )
+            _write_json(report.model_dump(mode="json"))
+            return 0 if report.status == "passed" else 3
     except (KeyError, ValueError, OSError, json.JSONDecodeError) as exc:
         parser.exit(2, f"{exc}\n")
 

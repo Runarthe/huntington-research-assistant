@@ -17,7 +17,7 @@ python -m labs.protein_intelligence bionemo-preflight `
   --image "nvcr.io/example/bionemo@sha256:REVIEWED_64_CHARACTER_DIGEST"
 ```
 
-Use `--strict` when automation should return a nonzero status until every requirement is complete. The current preflight intentionally remains `review-required` until a separate GPU-container probe is implemented.
+Use `--strict` when automation should return a nonzero status until every requirement is complete. The passive preflight remains `review-required` until the separate GPU-container probe and remaining support questions are resolved.
 
 The report checks:
 
@@ -38,6 +38,34 @@ The preflight does not:
 - infer that an unlisted GPU is supported merely because its compute capability is high enough;
 - produce a protein embedding or any biomedical claim.
 
+## Second Increment: Explicit GPU-Container Probe
+
+The advanced probe checks whether Docker can expose the GPU inside one reviewed image that is already stored locally. A complete immutable image digest is required. Without the confirmation flag, the command prints a `not-run` report and starts nothing:
+
+```powershell
+python -m labs.protein_intelligence bionemo-gpu-probe `
+  --image "nvcr.io/example/bionemo@sha256:REVIEWED_64_CHARACTER_DIGEST"
+```
+
+After separately verifying that exact local image, opt in to the bounded diagnostic:
+
+```powershell
+python -m labs.protein_intelligence bionemo-gpu-probe `
+  --image "nvcr.io/example/bionemo@sha256:REVIEWED_64_CHARACTER_DIGEST" `
+  --confirm-local-container
+```
+
+The implementation first requires Docker to use a local Unix socket or Windows named pipe, then uses `docker image inspect` to require the exact digest locally. Remote Docker endpoints are blocked before image inspection or execution, and Docker endpoint environment overrides are removed from the probe subprocess. Only then can it run a fixed `docker run` command with:
+
+- `--pull never`;
+- `--network none`;
+- a read-only filesystem and no host mounts;
+- dropped Linux capabilities and `no-new-privileges`;
+- `nvidia-smi` as the overridden entrypoint;
+- no BioNeMo command, checkpoint, embedding, credential, or user-controlled container command.
+
+A passing report establishes only local GPU visibility through that image. It is not proof that BioNeMo supports the GPU or that ESM-2 inference can complete.
+
 ## Current Machine Observation
 
 The initial Windows development-host review detected:
@@ -46,10 +74,10 @@ The initial Windows development-host review detected:
 - 16 GB VRAM;
 - driver 591.86;
 - compute capability 12.0;
-- Docker client 29.1.3 with the Docker Desktop Linux engine stopped;
+- Docker client and Linux engine 29.1.3 with the NVIDIA runtime declared;
 - WSL 2 installed through Docker Desktop.
 
-The GPU and driver clear the documented numeric thresholds, but the RTX 5070 Ti is not named in the reviewed BioNeMo support matrix. This is recorded as `warning`, not silently upgraded to supported. The stopped Docker engine is a blocking condition.
+The GPU and driver clear the documented numeric thresholds, but the RTX 5070 Ti is not named in the reviewed BioNeMo support matrix. This is recorded as `warning`, not silently upgraded to supported. No reviewed BioNeMo image is currently stored locally, so the explicit GPU-container probe remains unexecuted.
 
 ## Official Runtime Contract
 
@@ -65,11 +93,11 @@ The NVIDIA startup documentation demonstrates a moving `nightly` container tag. 
 
 The next v0.12 increment should:
 
-1. Start and review the Docker Linux engine outside Streamlit.
-2. Re-run the non-networking preflight.
-3. Add an explicit GPU-container probe against an already available, immutable image.
-4. Keep registry authentication outside the app and out of generated artifacts.
-5. Run the v0.11 execution bundle only after the probe passes.
+1. Select and review a compatible BioNeMo container release and its licence outside HRA.
+2. Resolve that image to an immutable repository digest and make it available locally without storing registry credentials in this repository.
+3. Run the explicit GPU-container probe and retain its JSON provenance report.
+4. Review the RTX 5070 Ti compatibility warning rather than treating numeric capability as vendor support.
+5. Run the v0.11 execution bundle only after the probe passes and the exact image/runtime contract is approved.
 6. Import the bounded `hra-bionemo-result.json` and review runtime provenance before comparing provider output fields.
 
 No biological interpretation, model ranking, treatment relevance, efficacy, safety, or clinical claim is part of this experiment.

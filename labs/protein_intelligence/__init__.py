@@ -80,6 +80,12 @@ from labs.protein_intelligence.bionemo_preflight import (
     CommandResult,
     inspect_bionemo_environment,
 )
+from labs.protein_intelligence.bionemo_gpu_probe import (
+    BIONEMO_GPU_PROBE_VERSION,
+    BioNeMoGPUProbeReport,
+    is_immutable_image_reference,
+    run_bionemo_gpu_probe,
+)
 
 __all__ = [
     "PROTEIN_TARGETS",
@@ -147,4 +153,8 @@ __all__ = [
     "BioNeMoPreflightReport",
     "CommandResult",
     "inspect_bionemo_environment",
+    "BIONEMO_GPU_PROBE_VERSION",
+    "BioNeMoGPUProbeReport",
+    "is_immutable_image_reference",
+    "run_bionemo_gpu_probe",
 ]

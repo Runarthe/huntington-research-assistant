@@ -469,6 +469,29 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "No credentials are inspected, no network call is made, and no container is started by this check."
         ),
         "bionemo_preflight_download": "Download preflight report JSON",
+        "bionemo_gpu_probe_title": "GPU container probe (advanced)",
+        "bionemo_gpu_probe_help": (
+            "Run only nvidia-smi inside a reviewed image that already exists locally. The probe cannot pull an image, access the network, inspect credentials, or execute BioNeMo."
+        ),
+        "bionemo_gpu_probe_image": "Local immutable image reference",
+        "bionemo_gpu_probe_image_help": (
+            "Enter an exact local Docker reference ending in @sha256 followed by 64 hexadecimal characters. Moving tags such as latest are rejected."
+        ),
+        "bionemo_gpu_probe_invalid_image": "Enter a complete immutable image digest before continuing.",
+        "bionemo_gpu_probe_confirm": "I understand that this starts one local diagnostic container.",
+        "bionemo_gpu_probe_confirm_help": (
+            "The fixed container is read-only, has no network or host mounts, uses --pull never, and runs nvidia-smi instead of the image entrypoint."
+        ),
+        "bionemo_gpu_probe_run": "Run local GPU probe",
+        "bionemo_gpu_probe_running": "Running the bounded local GPU probe...",
+        "bionemo_gpu_probe_passed": "GPU visibility passed. This does not mean BioNeMo or a model has run.",
+        "bionemo_gpu_probe_blocked": "The GPU probe did not pass. HRA did not pull an image; inspect the report for the local failure.",
+        "bionemo_gpu_probe_not_run": "The GPU probe was not run.",
+        "bionemo_gpu_probe_command": "Fixed container command recorded in this report",
+        "bionemo_gpu_probe_boundary": (
+            "This is an opt-in infrastructure diagnostic, not BioNeMo inference or biomedical evidence. HRA supplies no container image or registry credential."
+        ),
+        "bionemo_gpu_probe_download": "Download GPU probe report JSON",
         "parity_download_execution_bundle": "Download Linux/GPU execution bundle",
         "parity_use_fixture": "Use offline result fixture",
         "parity_use_fixture_help": (
@@ -1085,6 +1108,29 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Kontrollen leser ingen påloggingsopplysninger, gjør ingen nettverkskall og starter ingen container."
         ),
         "bionemo_preflight_download": "Last ned miljørapport som JSON",
+        "bionemo_gpu_probe_title": "Test av GPU-container (avansert)",
+        "bionemo_gpu_probe_help": (
+            "Kjør bare nvidia-smi i et gjennomgått image som allerede finnes lokalt. Testen kan ikke laste ned et image, bruke nettverket, lese påloggingsopplysninger eller kjøre BioNeMo."
+        ),
+        "bionemo_gpu_probe_image": "Lokalt image med uforanderlig referanse",
+        "bionemo_gpu_probe_image_help": (
+            "Oppgi en nøyaktig lokal Docker-referanse som slutter med @sha256 og 64 heksadesimale tegn. Bevegelige tagger som latest avvises."
+        ),
+        "bionemo_gpu_probe_invalid_image": "Oppgi en fullstendig uforanderlig image-digest før du fortsetter.",
+        "bionemo_gpu_probe_confirm": "Jeg forstår at dette starter én lokal diagnosecontainer.",
+        "bionemo_gpu_probe_confirm_help": (
+            "Den faste containeren er skrivebeskyttet, har verken nettverk eller mapper fra verten, bruker --pull never og kjører nvidia-smi i stedet for imagets startkommando."
+        ),
+        "bionemo_gpu_probe_run": "Kjør lokal GPU-test",
+        "bionemo_gpu_probe_running": "Kjører den avgrensede lokale GPU-testen...",
+        "bionemo_gpu_probe_passed": "GPU-en var synlig. Dette betyr ikke at BioNeMo eller en modell er kjørt.",
+        "bionemo_gpu_probe_blocked": "GPU-testen bestod ikke. HRA lastet ikke ned noe image; se rapporten for den lokale feilen.",
+        "bionemo_gpu_probe_not_run": "GPU-testen ble ikke kjørt.",
+        "bionemo_gpu_probe_command": "Fast containerkommando registrert i denne rapporten",
+        "bionemo_gpu_probe_boundary": (
+            "Dette er en valgfri infrastruktursjekk, ikke BioNeMo-inferens eller biomedisinsk evidens. HRA leverer verken containerimage eller påloggingsopplysninger."
+        ),
+        "bionemo_gpu_probe_download": "Last ned GPU-testrapport som JSON",
         "parity_download_execution_bundle": "Last ned kjøringspakke for Linux/GPU",
         "parity_use_fixture": "Bruk offline testresultat",
         "parity_use_fixture_help": (

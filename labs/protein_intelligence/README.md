@@ -30,10 +30,14 @@ The Streamlit Protein Lab exposes this workflow without making PyTorch or Transf
 
 `provider_parity.py` normalizes embedding provenance into `protein-embedding-artifact.v1`, builds a plan-only BioNeMo ESM-2 manifest from the same selected sequence, and reports each comparable or unresolved field. `bionemo_execution.py` creates a credential-free external execution bundle and validates bounded result JSON against the exact plan. Streamlit never calls BioNeMo or NVIDIA NIM and does not interpret embedding values. See [`docs/V0_11_PROVIDER_PARITY.md`](../../docs/V0_11_PROVIDER_PARITY.md).
 
+## v0.12 Runtime-Readiness Slice
+
+`bionemo_preflight.py` records passive host prerequisites without starting a container. `bionemo_gpu_probe.py` adds a separate opt-in GPU visibility check for an immutable image already stored locally through a local Docker socket or named pipe. The probe cannot pull, use container networking, mount host paths, inspect credentials, execute BioNeMo, or load a model. See [`docs/V0_12_BIONEMO_RUNTIME.md`](../../docs/V0_12_BIONEMO_RUNTIME.md).
+
 ## Not Included Yet
 
 - AlphaFold or NIM calls;
-- BioNeMo integration;
+- BioNeMo model execution;
 - generated biological hypotheses;
 
 Those belong behind explicit adapters, fixtures, and provenance checks.

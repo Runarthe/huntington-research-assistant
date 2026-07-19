@@ -92,6 +92,7 @@ from labs.protein_intelligence import (
     BIONEMO_MODEL_URL,
     BIONEMO_PREREQUISITES_URL,
     BioNeMoExecutionError,
+    BioNeMoGPUProbeReport,
     BioNeMoPreflightReport,
     build_bionemo_execution_bundle,
     build_provider_parity_report,
@@ -99,6 +100,7 @@ from labs.protein_intelligence import (
     fixture_sequence_record,
     fixture_bionemo_result_manifest,
     inspect_bionemo_environment,
+    is_immutable_image_reference,
     local_esm2_manifest,
     local_esm2_status,
     load_bionemo_result_manifest,
@@ -107,6 +109,7 @@ from labs.protein_intelligence import (
     planned_sequence_manifest,
     read_cached_sequence,
     retrieve_and_cache_uniprot_sequence,
+    run_bionemo_gpu_probe,
 )
 from labs.protein_intelligence.entity_mapping import LiteratureEntity, map_entities_to_targets
 from labs.protein_intelligence.registry import build_manifest_registry
@@ -1387,6 +1390,71 @@ def _parity_value(value: object, language: str) -> str:
     return str(value)
 
 
+def _render_bionemo_gpu_probe(language: str, experiment_id: str) -> None:
+    probe_key = f"bionemo-gpu-probe-{experiment_id}"
+    with st.expander(translate(language, "bionemo_gpu_probe_title")):
+        st.caption(translate(language, "bionemo_gpu_probe_help"))
+        image_reference = st.text_input(
+            translate(language, "bionemo_gpu_probe_image"),
+            placeholder="nvcr.io/...@sha256:<64 hex characters>",
+            help=translate(language, "bionemo_gpu_probe_image_help"),
+            key=f"{probe_key}-image",
+        ).strip()
+        image_is_valid = is_immutable_image_reference(image_reference)
+        if image_reference and not image_is_valid:
+            st.warning(translate(language, "bionemo_gpu_probe_invalid_image"))
+
+        confirmed = st.checkbox(
+            translate(language, "bionemo_gpu_probe_confirm"),
+            help=translate(language, "bionemo_gpu_probe_confirm_help"),
+            key=f"{probe_key}-confirm",
+        )
+        if st.button(
+            translate(language, "bionemo_gpu_probe_run"),
+            disabled=not (image_is_valid and confirmed),
+            key=f"{probe_key}-run",
+        ):
+            with st.spinner(translate(language, "bionemo_gpu_probe_running")):
+                st.session_state[probe_key] = run_bionemo_gpu_probe(
+                    image_reference,
+                    confirmed=True,
+                ).model_dump(mode="json")
+
+        payload = st.session_state.get(probe_key)
+        if not isinstance(payload, dict):
+            st.caption(translate(language, "bionemo_gpu_probe_boundary"))
+            return
+
+        report = BioNeMoGPUProbeReport.model_validate(payload)
+        if report.status == "passed":
+            st.success(translate(language, "bionemo_gpu_probe_passed"))
+        elif report.status == "blocked":
+            st.error(translate(language, "bionemo_gpu_probe_blocked"))
+        else:
+            st.warning(translate(language, "bionemo_gpu_probe_not_run"))
+
+        evidence = {
+            name.replace("_", " "): value
+            for name, value in report.evidence.items()
+            if value not in (None, "")
+        }
+        if evidence:
+            st.dataframe([evidence], hide_index=True, use_container_width=True)
+        if report.container_command:
+            st.caption(translate(language, "bionemo_gpu_probe_command"))
+            st.code(" ".join(report.container_command), language="shell")
+        st.caption(translate(language, "bionemo_gpu_probe_boundary"))
+        st.download_button(
+            translate(language, "bionemo_gpu_probe_download"),
+            data=json.dumps(
+                report.model_dump(mode="json"), indent=2, sort_keys=True
+            ).encode("utf-8"),
+            file_name="hra-bionemo-gpu-probe.json",
+            mime="application/json",
+            key=f"{probe_key}-download",
+        )
+
+
 def _render_provider_parity_experiment(
     language: str,
     record: ProteinSequenceRecord,
@@ -1482,6 +1550,8 @@ def _render_provider_parity_experiment(
             mime="application/json",
             key=f"{preflight_key}-download",
         )
+
+    _render_bionemo_gpu_probe(language, str(bionemo_plan["experiment_id"]))
 
     st.download_button(
         translate(language, "parity_download_execution_bundle"),

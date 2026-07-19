@@ -43,6 +43,7 @@ This project is not affiliated with any medical association, including the Norwe
 - Optionally run a pinned small local ESM-2 checkpoint on an explicit protein-sequence window and download a provenance-rich embedding artifact.
 - Compare the local ESM-2 provenance contract with a gated BioNeMo Framework workflow, download a credential-free Linux/GPU execution bundle, and validate returned provenance without importing full vectors.
 - Run an explicit, non-networking BioNeMo host preflight that records local GPU, driver, Docker, and runtime readiness without inspecting credentials or starting a container.
+- Optionally run one explicit, network-disabled GPU visibility check in an already-local immutable container image; this does not pull an image or execute BioNeMo.
 - Offer English and Norwegian UI labels and safety disclaimers.
 - Offer English plain-language and research-detail summary modes.
 - Keep experimental Norwegian generation available to developers, but disabled by default until it passes linguistic and biomedical review.
@@ -184,7 +185,7 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-The released v0.11 milestone compares the local ESM-2 artifact contract with a gated BioNeMo Framework workflow and exports a credential-free external execution bundle. The v0.12 experiment will evaluate that contract in an appropriate NVIDIA environment without making GPU infrastructure part of the core app. Personalized medical features and automated claims about study suitability remain out of scope.
+The released v0.11 milestone compares the local ESM-2 artifact contract with a gated BioNeMo Framework workflow and exports a credential-free external execution bundle. The v0.12 experiment now includes passive environment checks and an explicit local GPU-container probe before any BioNeMo model run is considered. GPU infrastructure remains optional and outside the core app. Personalized medical features and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
 

@@ -64,6 +64,7 @@ No live NVIDIA, BioNeMo, NIM, AlphaFold, or Blueprint provider runs in the appli
 7. Confirm the execution boundary and run the local model.
 8. Inspect or download the embedding artifact, then repeat the same run to compare checksums.
 9. Review the Provider parity table and download the planned BioNeMo manifest or parity report.
+10. Run the passive environment preflight; advanced users can separately test GPU visibility with a reviewed image already stored locally.
 
 The CLI commands shown in the app are equivalent developer checks. They are optional for normal UI use.
 
@@ -86,7 +87,9 @@ It has not yet exercised GPU inference, NIM deployment, BioNeMo runtime executio
 
 v0.12 begins with a non-networking BioNeMo environment preflight. It records the host OS and architecture, NVIDIA GPU and driver, bfloat16 compute capability, Docker Linux engine, declared NVIDIA runtime, and immutable-image readiness. It does not inspect NGC credentials, pull an image, or start a container.
 
-On the current development machine, the preflight detects an RTX 5070 Ti with 16 GB VRAM, compute capability 12.0, and driver 591.86. Docker Desktop is installed, but its Linux engine was stopped during the initial review. The exact GPU model is also absent from the reviewed NVIDIA support matrix, so compatibility remains unverified even though the documented compute-capability and driver thresholds are met.
+The next bounded layer is a separate, advanced GPU-container probe. It requires explicit confirmation, a local Docker socket or named pipe, and an exact immutable image already present in Docker. The fixed command uses `--pull never`, disables container networking, mounts no host path, and runs only `nvidia-smi`. It records GPU visibility but does not execute BioNeMo or load a model.
+
+On the current development machine, the preflight detects an RTX 5070 Ti with 16 GB VRAM, compute capability 12.0, and driver 591.86. Docker Desktop 29.1.3 now exposes a running Linux engine and declares the NVIDIA runtime. The exact GPU model is absent from the reviewed NVIDIA support matrix, so compatibility remains unverified even though the documented compute-capability and driver thresholds are met. No reviewed BioNeMo image is currently stored locally, so the GPU-container probe has not run.
 
 See [V0_12_BIONEMO_RUNTIME.md](V0_12_BIONEMO_RUNTIME.md) for the execution boundary and next verification step.
 
