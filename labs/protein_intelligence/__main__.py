@@ -14,6 +14,7 @@ from labs.protein_intelligence.bionemo_preflight import (
     inspect_bionemo_environment,
 )
 from labs.protein_intelligence.bionemo_gpu_probe import run_bionemo_gpu_probe
+from labs.protein_intelligence.bionemo_image_review import reviewed_bionemo_container
 from labs.protein_intelligence.manifests import (
     ManifestValidationError,
     manifest_summary,
@@ -128,6 +129,10 @@ def main(argv: list[str] | None = None) -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     subparsers.add_parser("list-targets", help="List configured protein targets.")
+    subparsers.add_parser(
+        "bionemo-image-review",
+        help="Print the offline reviewed BioNeMo container provenance record.",
+    )
 
     plan_parser = subparsers.add_parser(
         "plan",
@@ -210,6 +215,9 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if args.command == "list-targets":
             _write_json(list_targets())
+            return 0
+        if args.command == "bionemo-image-review":
+            _write_json(reviewed_bionemo_container().model_dump(mode="json"))
             return 0
         if args.command == "plan":
             target = get_protein_target(args.target)

@@ -17,6 +17,11 @@ from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from labs.protein_intelligence.local_esm2 import LocalESM2Config, select_sequence_window
 from labs.protein_intelligence.manifests import validate_manifest
+from labs.protein_intelligence.bionemo_image_review import (
+    BIONEMO_FRAMEWORK_CONTRACT,
+    BioNeMoContainerReview,
+    reviewed_bionemo_container,
+)
 from labs.protein_intelligence.provider_parity import (
     BIONEMO_INFERENCE_URL,
     BIONEMO_MODEL_VERSION,
@@ -27,7 +32,6 @@ from labs.protein_intelligence.sequences import ProteinSequenceRecord
 
 BIONEMO_BUNDLE_VERSION = "hra-bionemo-execution-bundle.v1"
 BIONEMO_RESULT_VERSION = "hra-bionemo-result.v1"
-BIONEMO_FRAMEWORK_CONTRACT = "2.7"
 BIONEMO_PREREQUISITES_URL = (
     "https://docs.nvidia.com/bionemo-framework/latest/main/getting-started/"
     "pre-reqs/index.html"
@@ -139,10 +143,12 @@ def build_bionemo_execution_bundle(
         "official_inference_documentation": BIONEMO_INFERENCE_URL,
         "official_prerequisites": BIONEMO_PREREQUISITES_URL,
         "settings": execution.model_dump(mode="json"),
+        "container_review": reviewed_bionemo_container().model_dump(mode="json"),
         "security": {
             "contains_credentials": False,
-            "container_image": "supplied at run time via BIONEMO_IMAGE",
-            "image_requirement": "immutable image reference containing @sha256:",
+            "container_image_must_match_review": True,
+            "image_pull_policy": "never",
+            "registry_authentication_managed_by_hra": False,
         },
     }
     bundle_files: dict[str, bytes] = {
@@ -165,8 +171,9 @@ def build_bionemo_execution_bundle(
             name: _sha256(content) for name, content in sorted(bundle_files.items())
         },
         "limitations": [
-            "The bundle has not executed BioNeMo or verified a particular container image.",
+            "The bundle has not executed BioNeMo or pulled the reviewed container image.",
             "Execution requires a separately reviewed Linux, Docker, and NVIDIA GPU environment.",
+            "The pinned prebuilt container is archived and is retained only for this bounded legacy contract.",
             "Generated artifacts are computational provenance, not biomedical evidence.",
         ],
     }
@@ -221,6 +228,23 @@ def validate_bionemo_execution_bundle(archive: bytes) -> dict[str, object]:
             if not isinstance(settings, dict):
                 raise BioNeMoExecutionError("Execution settings are missing.")
             BioNeMoExecutionConfig.model_validate(settings)
+            review_payload = execution.get("container_review")
+            if not isinstance(review_payload, dict):
+                raise BioNeMoExecutionError("Container review provenance is missing.")
+            reviewed = BioNeMoContainerReview.model_validate(review_payload)
+            if reviewed != reviewed_bionemo_container():
+                raise BioNeMoExecutionError(
+                    "Container review does not match this HRA version."
+                )
+            security = execution.get("security")
+            expected_security = {
+                "contains_credentials": False,
+                "container_image_must_match_review": True,
+                "image_pull_policy": "never",
+                "registry_authentication_managed_by_hra": False,
+            }
+            if security != expected_security:
+                raise BioNeMoExecutionError("Bundle security policy is invalid.")
 
             input_rows = list(
                 csv.DictReader(

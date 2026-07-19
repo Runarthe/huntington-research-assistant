@@ -11,6 +11,8 @@ All notable project changes are documented here. The project follows semantic ve
 - Added a downloadable preflight report that explicitly records that no credential was inspected, no network call was made, and no container was started.
 - Added an advanced, explicit GPU-container probe for the CLI and Protein Lab. It accepts only an already-local immutable image and runs one fixed `nvidia-smi` diagnostic.
 - Added a downloadable GPU-probe report with the exact command, local image identity, hardware evidence, and execution boundary.
+- Added a deterministic review record for the archived BioNeMo Framework 2.7.1 Linux/AMD64 image, pinned to its immutable registry digest with lifecycle, catalogue, scan, signature, licence, and review provenance.
+- Added a bilingual Protein Lab review panel and offline `bionemo-image-review` CLI export for the selected container candidate.
 
 ### Safety
 
@@ -18,6 +20,8 @@ All notable project changes are documented here. The project follows semantic ve
 - The separate GPU probe requires explicit confirmation and a local Docker socket or named pipe, enforces `--pull never` and `--network none`, mounts no host path, overrides the image entrypoint, and never executes BioNeMo or a model.
 - A detected GPU or Docker installation is not reported as proof that BioNeMo can execute.
 - GPUs absent from the reviewed NVIDIA support matrix remain flagged for review even when they meet the documented compute-capability threshold.
+- HRA does not pull the reviewed image, accept NVIDIA terms, authenticate with NGC, verify the catalogue signature, or represent the archived container as a maintained production dependency.
+- The execution bundle accepts only the reviewed digest and uses `docker run --pull never` so a missing image cannot be fetched implicitly.
 
 ## [0.11.0] - 2026-07-19
 

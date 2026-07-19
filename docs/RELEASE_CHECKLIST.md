@@ -44,6 +44,9 @@ Use this checklist before publishing a tagged release.
 - [ ] Confirm a remote Docker endpoint is blocked before image inspection or container execution.
 - [ ] If a reviewed local image is available, verify the probe command uses `--pull never`, `--network none`, no host mount, and only the fixed `nvidia-smi` entrypoint.
 - [ ] Confirm a passed GPU probe is not labelled as BioNeMo inference or model execution.
+- [ ] Export the reviewed container JSON and confirm its tag, full digest, Linux/AMD64 platform, archived lifecycle, catalogue-reported scan/signature, and local-verification limitations are present.
+- [ ] Confirm the Protein Lab requires licence review and local-container confirmation before enabling the reviewed-image GPU probe.
+- [ ] Confirm the execution bundle rejects a different image reference and its runner includes `--pull never`.
 
 ## Safety and Privacy
 

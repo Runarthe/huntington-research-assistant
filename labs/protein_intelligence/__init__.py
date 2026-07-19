@@ -86,6 +86,18 @@ from labs.protein_intelligence.bionemo_gpu_probe import (
     is_immutable_image_reference,
     run_bionemo_gpu_probe,
 )
+from labs.protein_intelligence.bionemo_image_review import (
+    BIONEMO_CONTAINER_CATALOG_URL,
+    BIONEMO_CONTAINER_DIGEST,
+    BIONEMO_CONTAINER_REFERENCE,
+    BIONEMO_CONTAINER_REVIEW_VERSION,
+    BIONEMO_CONTAINER_REPOSITORY,
+    BIONEMO_CONTAINER_TAG,
+    BIONEMO_LICENSE_URL,
+    BIONEMO_RECIPES_URL,
+    BioNeMoContainerReview,
+    reviewed_bionemo_container,
+)
 
 __all__ = [
     "PROTEIN_TARGETS",
@@ -157,4 +169,14 @@ __all__ = [
     "BioNeMoGPUProbeReport",
     "is_immutable_image_reference",
     "run_bionemo_gpu_probe",
+    "BIONEMO_CONTAINER_CATALOG_URL",
+    "BIONEMO_CONTAINER_DIGEST",
+    "BIONEMO_CONTAINER_REFERENCE",
+    "BIONEMO_CONTAINER_REVIEW_VERSION",
+    "BIONEMO_CONTAINER_REPOSITORY",
+    "BIONEMO_CONTAINER_TAG",
+    "BIONEMO_LICENSE_URL",
+    "BIONEMO_RECIPES_URL",
+    "BioNeMoContainerReview",
+    "reviewed_bionemo_container",
 ]

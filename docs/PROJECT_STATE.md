@@ -89,7 +89,9 @@ v0.12 begins with a non-networking BioNeMo environment preflight. It records the
 
 The next bounded layer is a separate, advanced GPU-container probe. It requires explicit confirmation, a local Docker socket or named pipe, and an exact immutable image already present in Docker. The fixed command uses `--pull never`, disables container networking, mounts no host path, and runs only `nvidia-smi`. It records GPU visibility but does not execute BioNeMo or load a model.
 
-On the current development machine, the preflight detects an RTX 5070 Ti with 16 GB VRAM, compute capability 12.0, and driver 591.86. Docker Desktop 29.1.3 now exposes a running Linux engine and declares the NVIDIA runtime. The exact GPU model is absent from the reviewed NVIDIA support matrix, so compatibility remains unverified even though the documented compute-capability and driver thresholds are met. No reviewed BioNeMo image is currently stored locally, so the GPU-container probe has not run.
+The reviewed reproduction candidate is the archived BioNeMo Framework `2.7.1` Linux/AMD64 image at `sha256:7d15abfbd648915c367ec14a1eef93d4aa40f3e346bacfe63c05f9269dabd678`. Its tag, digest, reported catalogue signature/scan, lifecycle, licence boundary, and anonymous manifest resolution are recorded in a deterministic JSON artifact. HRA did not pull, execute, locally scan, or independently verify the signature, and it directs future development to maintained BioNeMo Recipes.
+
+On the current development machine, the preflight detects an RTX 5070 Ti with 16 GB VRAM, compute capability 12.0, and driver 591.86. Docker Desktop 29.1.3 now exposes a running Linux engine and declares the NVIDIA runtime. The exact GPU model is absent from the reviewed NVIDIA support matrix, so compatibility remains unverified even though the documented compute-capability and driver thresholds are met. The selected image is not currently stored locally, so the GPU-container probe has not run.
 
 See [V0_12_BIONEMO_RUNTIME.md](V0_12_BIONEMO_RUNTIME.md) for the execution boundary and next verification step.
 

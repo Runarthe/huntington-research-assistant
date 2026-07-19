@@ -89,8 +89,11 @@ from labs.protein_intelligence import (
     SequenceCacheError,
     SequenceRetrievalError,
     BIONEMO_INFERENCE_URL,
+    BIONEMO_CONTAINER_CATALOG_URL,
+    BIONEMO_LICENSE_URL,
     BIONEMO_MODEL_URL,
     BIONEMO_PREREQUISITES_URL,
+    BIONEMO_RECIPES_URL,
     BioNeMoExecutionError,
     BioNeMoGPUProbeReport,
     BioNeMoPreflightReport,
@@ -109,6 +112,7 @@ from labs.protein_intelligence import (
     planned_sequence_manifest,
     read_cached_sequence,
     retrieve_and_cache_uniprot_sequence,
+    reviewed_bionemo_container,
     run_bionemo_gpu_probe,
 )
 from labs.protein_intelligence.entity_mapping import LiteratureEntity, map_entities_to_targets
@@ -1390,19 +1394,67 @@ def _parity_value(value: object, language: str) -> str:
     return str(value)
 
 
+def _render_bionemo_image_review(language: str, experiment_id: str) -> None:
+    review = reviewed_bionemo_container()
+    st.markdown(f"**{translate(language, 'bionemo_image_review_title')}**")
+    st.warning(translate(language, "bionemo_image_review_warning"))
+    st.code(review.immutable_reference, language=None)
+    tag_col, platform_col, size_col = st.columns(3)
+    tag_col.metric(translate(language, "bionemo_image_review_tag"), review.tag)
+    platform_col.metric(
+        translate(language, "bionemo_image_review_platform"), review.platform
+    )
+    size_col.metric(
+        translate(language, "bionemo_image_review_size"),
+        f"{review.compressed_size_gb:.2f} GB",
+    )
+    st.caption(translate(language, "bionemo_image_review_boundary"))
+    st.markdown(
+        " | ".join(
+            (
+                f"[{translate(language, 'bionemo_image_review_catalog')}]"
+                f"({BIONEMO_CONTAINER_CATALOG_URL})",
+                f"[{translate(language, 'bionemo_image_review_license')}]"
+                f"({BIONEMO_LICENSE_URL})",
+                f"[{translate(language, 'bionemo_image_review_recipes')}]"
+                f"({BIONEMO_RECIPES_URL})",
+            )
+        )
+    )
+    st.download_button(
+        translate(language, "bionemo_image_review_download"),
+        data=json.dumps(review.model_dump(mode="json"), indent=2, sort_keys=True).encode(
+            "utf-8"
+        ),
+        file_name="hra-bionemo-container-review.json",
+        mime="application/json",
+        key=f"bionemo-image-review-{experiment_id}-download",
+    )
+
+
 def _render_bionemo_gpu_probe(language: str, experiment_id: str) -> None:
+    review = reviewed_bionemo_container()
     probe_key = f"bionemo-gpu-probe-{experiment_id}"
     with st.expander(translate(language, "bionemo_gpu_probe_title")):
         st.caption(translate(language, "bionemo_gpu_probe_help"))
         image_reference = st.text_input(
             translate(language, "bionemo_gpu_probe_image"),
-            placeholder="nvcr.io/...@sha256:<64 hex characters>",
+            value=review.immutable_reference,
             help=translate(language, "bionemo_gpu_probe_image_help"),
             key=f"{probe_key}-image",
         ).strip()
         image_is_valid = is_immutable_image_reference(image_reference)
         if image_reference and not image_is_valid:
             st.warning(translate(language, "bionemo_gpu_probe_invalid_image"))
+        image_is_reviewed = image_reference == review.immutable_reference
+        if image_is_valid and not image_is_reviewed:
+            st.warning(translate(language, "bionemo_gpu_probe_unreviewed_image"))
+
+        license_reviewed = st.checkbox(
+            translate(language, "bionemo_gpu_probe_license_confirm"),
+            help=translate(language, "bionemo_gpu_probe_license_confirm_help"),
+            key=f"{probe_key}-license",
+        )
 
         confirmed = st.checkbox(
             translate(language, "bionemo_gpu_probe_confirm"),
@@ -1411,7 +1463,9 @@ def _render_bionemo_gpu_probe(language: str, experiment_id: str) -> None:
         )
         if st.button(
             translate(language, "bionemo_gpu_probe_run"),
-            disabled=not (image_is_valid and confirmed),
+            disabled=not (
+                image_is_valid and image_is_reviewed and license_reviewed and confirmed
+            ),
             key=f"{probe_key}-run",
         ):
             with st.spinner(translate(language, "bionemo_gpu_probe_running")):
@@ -1551,6 +1605,7 @@ def _render_provider_parity_experiment(
             key=f"{preflight_key}-download",
         )
 
+    _render_bionemo_image_review(language, str(bionemo_plan["experiment_id"]))
     _render_bionemo_gpu_probe(language, str(bionemo_plan["experiment_id"]))
 
     st.download_button(
@@ -2032,6 +2087,7 @@ def run_protein_lab(
             [
                 "python -m labs.protein_intelligence list-targets",
                 f"python -m labs.protein_intelligence plan {selected_target.symbol}",
+                "python -m labs.protein_intelligence bionemo-image-review",
                 "python -m labs.protein_intelligence bionemo-preflight",
                 (
                     "python -m labs.protein_intelligence.report_cli "

@@ -469,6 +469,21 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "No credentials are inspected, no network call is made, and no container is started by this check."
         ),
         "bionemo_preflight_download": "Download preflight report JSON",
+        "bionemo_image_review_title": "Reviewed container candidate",
+        "bionemo_image_review_warning": (
+            "BioNeMo Framework 2.7.1 is pinned only for HRA's bounded legacy ESM-2 contract. "
+            "NVIDIA has archived this prebuilt container and no longer maintains it; use BioNeMo Recipes for future development."
+        ),
+        "bionemo_image_review_tag": "Catalog tag",
+        "bionemo_image_review_platform": "Platform",
+        "bionemo_image_review_size": "Compressed size",
+        "bionemo_image_review_boundary": (
+            "The catalog reports this digest as signed and scanned with no malware found. HRA resolved the manifest digest through an anonymous registry request, but did not pull, execute, locally scan, or verify the signature. NVIDIA licence review and NGC access remain the user's responsibility."
+        ),
+        "bionemo_image_review_catalog": "NGC catalog record",
+        "bionemo_image_review_license": "NVIDIA licence terms",
+        "bionemo_image_review_recipes": "Maintained BioNeMo Recipes",
+        "bionemo_image_review_download": "Download container review JSON",
         "bionemo_gpu_probe_title": "GPU container probe (advanced)",
         "bionemo_gpu_probe_help": (
             "Run only nvidia-smi inside a reviewed image that already exists locally. The probe cannot pull an image, access the network, inspect credentials, or execute BioNeMo."
@@ -478,6 +493,11 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Enter an exact local Docker reference ending in @sha256 followed by 64 hexadecimal characters. Moving tags such as latest are rejected."
         ),
         "bionemo_gpu_probe_invalid_image": "Enter a complete immutable image digest before continuing.",
+        "bionemo_gpu_probe_unreviewed_image": "This reference is immutable but does not match the reviewed v0.12 container candidate.",
+        "bionemo_gpu_probe_license_confirm": "I have reviewed the selected image and applicable NVIDIA licence terms.",
+        "bionemo_gpu_probe_license_confirm_help": (
+            "HRA does not accept NVIDIA terms, authenticate with NGC, or download the container on your behalf."
+        ),
         "bionemo_gpu_probe_confirm": "I understand that this starts one local diagnostic container.",
         "bionemo_gpu_probe_confirm_help": (
             "The fixed container is read-only, has no network or host mounts, uses --pull never, and runs nvidia-smi instead of the image entrypoint."
@@ -1108,6 +1128,21 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Kontrollen leser ingen påloggingsopplysninger, gjør ingen nettverkskall og starter ingen container."
         ),
         "bionemo_preflight_download": "Last ned miljørapport som JSON",
+        "bionemo_image_review_title": "Gjennomgått containerkandidat",
+        "bionemo_image_review_warning": (
+            "BioNeMo Framework 2.7.1 er kun valgt for HRAs avgrensede, eldre ESM-2-kontrakt. "
+            "NVIDIA har arkivert denne ferdigbygde containeren og vedlikeholder den ikke lenger; bruk BioNeMo Recipes for videre utvikling."
+        ),
+        "bionemo_image_review_tag": "Katalogtagg",
+        "bionemo_image_review_platform": "Plattform",
+        "bionemo_image_review_size": "Komprimert størrelse",
+        "bionemo_image_review_boundary": (
+            "Katalogen oppgir at denne digesten er signert og skannet uten funn av skadevare. HRA slo opp manifestdigesten gjennom en anonym registerforespørsel, men lastet ikke ned, kjørte, skannet lokalt eller verifiserte signaturen. Brukeren må selv gjennomgå NVIDIA-lisensen og NGC-tilgangen."
+        ),
+        "bionemo_image_review_catalog": "Katalogpost i NGC",
+        "bionemo_image_review_license": "NVIDIAs lisensvilkår",
+        "bionemo_image_review_recipes": "Vedlikeholdte BioNeMo Recipes",
+        "bionemo_image_review_download": "Last ned containergjennomgang som JSON",
         "bionemo_gpu_probe_title": "Test av GPU-container (avansert)",
         "bionemo_gpu_probe_help": (
             "Kjør bare nvidia-smi i et gjennomgått image som allerede finnes lokalt. Testen kan ikke laste ned et image, bruke nettverket, lese påloggingsopplysninger eller kjøre BioNeMo."
@@ -1117,6 +1152,11 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Oppgi en nøyaktig lokal Docker-referanse som slutter med @sha256 og 64 heksadesimale tegn. Bevegelige tagger som latest avvises."
         ),
         "bionemo_gpu_probe_invalid_image": "Oppgi en fullstendig uforanderlig image-digest før du fortsetter.",
+        "bionemo_gpu_probe_unreviewed_image": "Referansen er uforanderlig, men samsvarer ikke med den gjennomgåtte containerkandidaten for v0.12.",
+        "bionemo_gpu_probe_license_confirm": "Jeg har gjennomgått det valgte imaget og gjeldende NVIDIA-lisensvilkår.",
+        "bionemo_gpu_probe_license_confirm_help": (
+            "HRA godtar ikke NVIDIA-vilkår, logger ikke inn på NGC og laster ikke ned containeren på dine vegne."
+        ),
         "bionemo_gpu_probe_confirm": "Jeg forstår at dette starter én lokal diagnosecontainer.",
         "bionemo_gpu_probe_confirm_help": (
             "Den faste containeren er skrivebeskyttet, har verken nettverk eller mapper fra verten, bruker --pull never og kjører nvidia-smi i stedet for imagets startkommando."

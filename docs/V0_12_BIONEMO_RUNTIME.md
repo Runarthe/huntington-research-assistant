@@ -38,6 +38,30 @@ The preflight does not:
 - infer that an unlisted GPU is supported merely because its compute capability is high enough;
 - produce a protein embedding or any biomedical claim.
 
+## Reviewed Container Candidate
+
+For the existing BioNeMo Framework 2.7 ESM-2 command contract, HRA records this exact reproduction candidate:
+
+```text
+nvcr.io/nvidia/clara/bionemo-framework@sha256:7d15abfbd648915c367ec14a1eef93d4aa40f3e346bacfe63c05f9269dabd678
+```
+
+- NGC tag: `2.7.1`;
+- platform: `linux/amd64`;
+- compressed size reported by NGC: 16.33 GB;
+- checkpoint contract: `esm2/650m:2.0` through `infer_esm2`;
+- lifecycle: archived and no longer maintained.
+
+The NGC catalogue reports the artifact as signed and scanned with no malware found. HRA independently resolved the platform manifest to the same digest without registry credentials. HRA did not pull or execute the image, independently verify its signature, or scan it locally. Those distinctions are retained in the downloadable review JSON.
+
+The image is selected only to reproduce the already-reviewed 2.7 command contract. New development should evaluate [BioNeMo Recipes](https://github.com/NVIDIA-BioNeMo/bionemo-recipes), which NVIDIA identifies as the maintained successor. Before acquiring the legacy image, the user must independently review the [NVIDIA AI Product Agreement](https://www.nvidia.com/en-us/agreements/enterprise-software/product-specific-terms-for-ai-products/) and NGC access terms.
+
+Print the same offline review record from the CLI:
+
+```powershell
+python -m labs.protein_intelligence bionemo-image-review
+```
+
 ## Second Increment: Explicit GPU-Container Probe
 
 The advanced probe checks whether Docker can expose the GPU inside one reviewed image that is already stored locally. A complete immutable image digest is required. Without the confirmation flag, the command prints a `not-run` report and starts nothing:
@@ -77,7 +101,7 @@ The initial Windows development-host review detected:
 - Docker client and Linux engine 29.1.3 with the NVIDIA runtime declared;
 - WSL 2 installed through Docker Desktop.
 
-The GPU and driver clear the documented numeric thresholds, but the RTX 5070 Ti is not named in the reviewed BioNeMo support matrix. This is recorded as `warning`, not silently upgraded to supported. No reviewed BioNeMo image is currently stored locally, so the explicit GPU-container probe remains unexecuted.
+The GPU and driver clear the documented numeric thresholds, but the RTX 5070 Ti is not named in the reviewed BioNeMo support matrix. This is recorded as `warning`, not silently upgraded to supported. The reviewed image is not currently stored locally, so the explicit GPU-container probe remains unexecuted.
 
 ## Official Runtime Contract
 
@@ -87,17 +111,17 @@ The reviewed NVIDIA prerequisites specify x86 Linux, an NVIDIA GPU, driver 560 o
 - [BioNeMo access and container startup](https://docs.nvidia.com/bionemo-framework/latest/main/getting-started/access-startup/)
 - [BioNeMo Framework 2.7 ESM-2 inference](https://docs.nvidia.com/bionemo-framework/2.7/main/examples/bionemo-esm2/inference/index.html)
 
-The NVIDIA startup documentation demonstrates a moving `nightly` container tag. HRA does not use a moving tag for a provenance experiment. An operator must resolve and review an immutable image digest separately before execution.
+HRA never uses a moving tag for this provenance experiment. The execution bundle embeds the selected digest, rejects any different `BIONEMO_IMAGE`, and uses `docker run --pull never`. Image acquisition and registry authentication must happen explicitly outside HRA.
 
 ## Next Verification Step
 
 The next v0.12 increment should:
 
-1. Select and review a compatible BioNeMo container release and its licence outside HRA.
-2. Resolve that image to an immutable repository digest and make it available locally without storing registry credentials in this repository.
+1. Review the selected image, NVIDIA licence, archived lifecycle, and NGC access terms outside HRA.
+2. If accepted, authenticate and pull the exact immutable reference outside HRA without storing registry credentials in this repository.
 3. Run the explicit GPU-container probe and retain its JSON provenance report.
 4. Review the RTX 5070 Ti compatibility warning rather than treating numeric capability as vendor support.
-5. Run the v0.11 execution bundle only after the probe passes and the exact image/runtime contract is approved.
+5. Resolve checkpoint access and run the v0.11 execution bundle only after the probe passes and the exact image/runtime contract is approved.
 6. Import the bounded `hra-bionemo-result.json` and review runtime provenance before comparing provider output fields.
 
 No biological interpretation, model ranking, treatment relevance, efficacy, safety, or clinical claim is part of this experiment.
