@@ -2,6 +2,25 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.9.1] - 2026-07-19
+
+### Changed
+
+- Clarified Blueprint Lab provider status labels so mock fixtures, public-data providers, planned-only adapters, and live-reviewed adapters are visually distinct.
+- Added a concise four-step Blueprint workflow and an adapter-availability signal.
+- Limited the preview to execution modes it can currently perform: offline for mock fixtures and plan-only for other providers.
+- Hid mock artifacts and `run-mock` commands when a non-mock provider is selected.
+
+### Added
+
+- Added provider-specific planned-manifest downloads.
+- Added `docs/PROJECT_STATE.md` as a maintained overview of stable, experimental, planned, and unavailable functionality.
+
+### Safety
+
+- The Blueprint Lab preview now states when a provider is fixture-only or public-data gated, reducing the chance that users mistake provenance planning for live model execution.
+- Non-mock provider selections no longer present deterministic mock output beside their planned artifacts.
+
 ## [0.9.0] - 2026-07-16
 
 ### Added

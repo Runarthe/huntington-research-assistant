@@ -2,7 +2,7 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The current released version is **v0.9.0**. See [CHANGELOG.md](CHANGELOG.md) for release highlights and known limitations.
+The current released version is **v0.9.1**. The next planned milestone is **v0.10.0**. See [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for a concise current-state overview and [CHANGELOG.md](CHANGELOG.md) for release details.
 
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
@@ -175,6 +175,8 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 Near-term priorities include the v0.9 provider-adapter foundation, reviewed entity extraction, stable biomedical identifiers, Norwegian refinement, accessibility testing, and stronger summary evaluation. Optional BioNeMo, NIM, Blueprint, and protein-model experiments remain in a separate Digital Biology Lab and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
+
+For a shorter explanation of what is stable, experimental, planned, and not yet implemented, see [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md).
 
 The first v0.8 planning notes are in [docs/V0_8_BLUEPRINT_PLAN.md](docs/V0_8_BLUEPRINT_PLAN.md).
 
