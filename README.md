@@ -2,7 +2,7 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The current public release is **v0.10.0**. Development is now focused on **v0.11.0**. See [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for a concise current-state overview and [CHANGELOG.md](CHANGELOG.md) for release details.
+The current public release is **v0.11.0**. Development is now focused on a bounded **v0.12 BioNeMo runtime experiment**. See [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for a concise current-state overview and [CHANGELOG.md](CHANGELOG.md) for release details.
 
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
@@ -183,7 +183,7 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-The v0.11 development milestone compares the local ESM-2 artifact contract with a plan-only BioNeMo Framework workflow. A future milestone can execute the reviewed contract in an appropriate NVIDIA environment and add evaluation fixtures. Scientific-AI labs remain optional and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
+The released v0.11 milestone compares the local ESM-2 artifact contract with a gated BioNeMo Framework workflow and exports a credential-free external execution bundle. The v0.12 experiment will evaluate that contract in an appropriate NVIDIA environment without making GPU infrastructure part of the core app. Personalized medical features and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
 
