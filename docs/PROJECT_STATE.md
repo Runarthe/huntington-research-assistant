@@ -6,9 +6,9 @@ This page is the quickest way to understand what Huntington Research Assistant c
 
 ## Release Status
 
-- Latest public release: `v0.10.0`
-- Current development version: `v0.11.0`
-- Current development focus: provider-neutral parity reporting for local ESM-2 and a plan-only BioNeMo Framework run
+- Latest public release: `v0.11.0`
+- Current development version: `v0.12.0`
+- Current development focus: one bounded, externally executed BioNeMo Framework experiment with strict runtime provenance
 - Core application requirement: Python 3.11 or newer
 - Optional local summarization: Ollama with no cloud API key
 
@@ -82,7 +82,7 @@ The project has already exercised:
 
 It has not yet exercised GPU inference, NIM deployment, BioNeMo runtime execution, task-specific model-output evaluation, or structure-prediction interpretation.
 
-## Current v0.11 Development
+## Released v0.11 Milestone
 
 v0.11 normalizes local and future provider artifacts into a small shared descriptor, then compares each provenance field explicitly. Identical input checksum, window, length, and truncation policy can be verified before a second provider runs. Checkpoint weights, pooling implementation, tensor output, vector checksum, hardware, and precision remain different, unavailable, or not comparable until supporting runtime records exist.
 

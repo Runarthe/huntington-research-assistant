@@ -156,7 +156,7 @@ See [V0_9_PROVIDER_ADAPTERS.md](V0_9_PROVIDER_ADAPTERS.md) for the adapter bound
 - Verify deterministic preprocessing and reproducible output metadata before comparing local and future BioNeMo execution.
 - Keep embeddings and other model outputs in the experimental lab and make no claims about function, causality, treatment relevance, or clinical meaning.
 
-## v0.11: Provider-Parity Experiment (In Progress)
+## v0.11: Provider-Parity Experiment (Released)
 
 - Define one provider-neutral embedding artifact contract shared by local ESM-2 and future BioNeMo or NIM execution.
 - Add a deterministic comparison report for preprocessing, model identity, tensor shape, pooling, runtime, and vector checksum provenance.
@@ -166,6 +166,15 @@ See [V0_9_PROVIDER_ADAPTERS.md](V0_9_PROVIDER_ADAPTERS.md) for the adapter bound
 - Export a credential-free Linux/GPU execution bundle and validate returned BioNeMo provenance through an offline fixture before any real provider run is accepted.
 
 See [V0_11_PROVIDER_PARITY.md](V0_11_PROVIDER_PARITY.md) for the implemented offline contract and the remaining live-execution boundary.
+
+## v0.12: First BioNeMo Runtime Experiment (In Progress)
+
+- Validate an explicit Linux, Docker, NVIDIA GPU, and BioNeMo Framework environment before execution.
+- Execute one reviewed ESM-2 workflow from the v0.11 bundle using an immutable container digest.
+- Import only bounded provenance metadata into Protein Lab; keep registry credentials and full vectors outside the app.
+- Record runtime, hardware, dependency, tensor-shape, checksum, and failure provenance.
+- Compare provider contracts as engineering artifacts without interpreting embedding similarity or biological meaning.
+- Keep the experiment reproducible through offline fixtures when no compatible GPU environment is available.
 
 ## Toward v1.0
 
