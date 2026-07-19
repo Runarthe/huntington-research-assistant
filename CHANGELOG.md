@@ -2,6 +2,23 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.10.0] - 2026-07-19
+
+### Added
+
+- Added an optional local ESM-2 adapter pinned to `facebook/esm2_t6_8M_UR50D` revision `c731040`.
+- Added explicit local or cached UniProt sequence inputs, sequence checksums, one-based input windows, and strict rejection of silent truncation.
+- Added downloadable planned and generated embedding manifests with model, runtime, hardware, tensor-shape, pooling, vector, and checksum provenance.
+- Added repeat-run checksum comparison for the same model and sequence window.
+- Added a user-local authoritative sequence cache and offline fixture fragments for HTT, BDNF, and NEFL.
+- Added a `scientific-ai` optional dependency group; core application installs do not include PyTorch or Transformers.
+
+### Safety
+
+- ESM-2 runs only after an explicit user action and confirmation.
+- Embeddings remain experimental computational artifacts and are not interpreted as protein function, biological similarity, disease causality, treatment relevance, or clinical meaning.
+- Full HTT and other long sequences require an explicit bounded window rather than hidden truncation.
+
 ## [0.9.1] - 2026-07-19
 
 ### Changed

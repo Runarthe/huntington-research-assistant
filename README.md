@@ -2,7 +2,7 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The current released version is **v0.9.1**. The next planned milestone is **v0.10.0**. See [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for a concise current-state overview and [CHANGELOG.md](CHANGELOG.md) for release details.
+The current released version is **v0.10.0**. The next planned milestone is **v0.11.0**. See [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for a concise current-state overview and [CHANGELOG.md](CHANGELOG.md) for release details.
 
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
@@ -40,6 +40,7 @@ This project is not affiliated with any medical association, including the Norwe
 - Explore source-linked genes, proteins, biomarkers, pathways, and compounds with canonical catalogue entries, exact evidence passages, and clearly labelled paper-level co-occurrences.
 - Review an experimental Protein Lab tab with curated HTT, BDNF, and NEFL identifiers, planned sequence manifests, and read-only provenance reports.
 - Build evidence-grounded Protein Lab reports from locally saved reading-list papers and controlled entity mentions.
+- Optionally run a pinned small local ESM-2 checkpoint on an explicit protein-sequence window and download a provenance-rich embedding artifact.
 - Offer English and Norwegian UI labels and safety disclaimers.
 - Offer English plain-language and research-detail summary modes.
 - Keep experimental Norwegian generation available to developers, but disabled by default until it passes linguistic and biomedical review.
@@ -112,6 +113,14 @@ python -m pytest
 python -m build
 ```
 
+The literature app does not require scientific-model packages. To evaluate the experimental local ESM-2 workflow, install the optional extra separately:
+
+```bash
+python -m pip install -e ".[scientific-ai]"
+```
+
+PyTorch is much larger than the approximately 31 MB ESM-2 checkpoint. For NVIDIA GPU support, use the install command generated for your operating system and CUDA setup by the [official PyTorch installer](https://pytorch.org/get-started/locally/), then install the remaining project extra. CPU execution is sufficient for the bundled short fragments. See [docs/LOCAL_ESM2_EXPERIMENT.md](docs/LOCAL_ESM2_EXPERIMENT.md).
+
 ## Automated Tests
 
 GitHub Actions runs the test suite automatically on Python 3.11 and 3.12 whenever code is pushed or a pull request is opened. It also verifies that the package can be built. The workflow does not require Ollama, an API key, or access to personal data.
@@ -154,6 +163,7 @@ Supported variables:
 - `OLLAMA_NORWEGIAN_MODEL`: experimental Norwegian rendering model. Defaults to `hf.co/norallm/normistral-7b-warm-instruct:Q4_K_M`.
 - `HRA_ENABLE_EXPERIMENTAL_NORWEGIAN_SUMMARIES`: developer-only opt-in for unreviewed Norwegian generation. Defaults to `false`.
 - `HRA_CACHE_PATH`: optional SQLite cache path override. By default the app stores cache in the OS local app data/cache directory, outside the repo. If that location is unavailable, it falls back to the system temp directory. This avoids SQLite I/O problems in synced folders such as OneDrive.
+- `HRA_PROTEIN_CACHE_DIR`: optional cache path for explicitly retrieved UniProt sequences. The default is an OS-local user data/cache directory outside the repository.
 - `HRA_EUROPE_PMC_EMAIL`: optional contact email sent in the Europe PMC user agent.
 - `HRA_NCBI_EMAIL`: optional contact email sent to NCBI E-utilities. NCBI recommends including a contact email for tools that use E-utilities.
 - `HRA_NCBI_API_KEY`: optional NCBI API key for higher E-utilities rate limits. It is not required for normal local use.
@@ -172,7 +182,7 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-Near-term priorities include the v0.9 provider-adapter foundation, reviewed entity extraction, stable biomedical identifiers, Norwegian refinement, accessibility testing, and stronger summary evaluation. Optional BioNeMo, NIM, Blueprint, and protein-model experiments remain in a separate Digital Biology Lab and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
+The next experimental milestone compares the local ESM-2 artifact contract with a gated BioNeMo or NIM execution plan, while reviewed entity extraction, Norwegian refinement, accessibility, and summary evaluation remain public-app priorities. Scientific-AI labs are optional and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
 

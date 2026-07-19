@@ -78,7 +78,24 @@ from hra.tagging import TAG_KEYWORDS
 from hra.trial_filters import filter_trials, trial_filter_options
 from hra.ui_keys import summarize_button_key
 
-from labs.protein_intelligence import PROTEIN_TARGETS, planned_sequence_manifest
+from labs.protein_intelligence import (
+    DEFAULT_MAX_RESIDUES,
+    PROTEIN_TARGETS,
+    LocalESM2Config,
+    LocalESM2Error,
+    LocalESM2Provider,
+    ProteinTarget,
+    SequenceCacheError,
+    SequenceRetrievalError,
+    compare_embedding_manifests,
+    fixture_sequence_record,
+    local_esm2_manifest,
+    local_esm2_status,
+    planned_local_esm2_manifest,
+    planned_sequence_manifest,
+    read_cached_sequence,
+    retrieve_and_cache_uniprot_sequence,
+)
 from labs.protein_intelligence.entity_mapping import LiteratureEntity, map_entities_to_targets
 from labs.protein_intelligence.registry import build_manifest_registry
 from labs.protein_intelligence.reports import build_target_report
@@ -1343,6 +1360,211 @@ def run_knowledge_graph(language: str, explanation_mode: str) -> None:
         )
 
 
+def _render_local_esm2_experiment(
+    language: str,
+    selected_target: ProteinTarget,
+    explanation_mode: str,
+) -> None:
+    st.subheader(translate(language, "esm2_lab_title"))
+    st.info(translate(language, "esm2_lab_intro"))
+    st.caption(translate(language, "esm2_lab_scope"))
+
+    input_source = st.radio(
+        translate(language, "esm2_input_source"),
+        options=["fixture", "uniprot_cache"],
+        format_func=lambda value: translate(language, f"esm2_input_{value}"),
+        horizontal=True,
+        help=explanation(language, "esm2_input_source_help", explanation_mode),
+        key=f"esm2-input-source-{language}-{selected_target.symbol}",
+    )
+
+    record = None
+    if input_source == "fixture":
+        try:
+            record = fixture_sequence_record(selected_target)
+        except SequenceCacheError as exc:
+            st.error(str(exc))
+    else:
+        try:
+            record = read_cached_sequence(selected_target)
+        except SequenceCacheError as exc:
+            st.error(str(exc))
+        if st.button(
+            translate(language, "esm2_retrieve_uniprot"),
+            key=f"esm2-retrieve-{selected_target.symbol}",
+        ):
+            try:
+                with st.spinner(translate(language, "esm2_retrieving")):
+                    record = retrieve_and_cache_uniprot_sequence(selected_target)
+                st.success(translate(language, "esm2_retrieved"))
+            except (SequenceRetrievalError, OSError) as exc:
+                st.error(translate(language, "esm2_retrieval_failed", error=str(exc)))
+        if record is None:
+            st.warning(translate(language, "esm2_no_cached_sequence"))
+
+    if record is None:
+        return
+
+    source_label = translate(language, f"esm2_input_{input_source}")
+    length_col, checksum_col, source_col = st.columns(3)
+    length_col.metric(translate(language, "esm2_sequence_length"), record.sequence_length)
+    checksum_col.metric(translate(language, "esm2_sequence_checksum"), record.checksum[7:19])
+    source_col.metric(translate(language, "esm2_sequence_source"), source_label)
+    st.caption(
+        translate(
+            language,
+            "esm2_sequence_details",
+            accession=record.accession,
+            date=record.retrieved_at.isoformat(),
+        )
+    )
+
+    max_length = min(DEFAULT_MAX_RESIDUES, record.sequence_length)
+    if record.sequence_length > DEFAULT_MAX_RESIDUES:
+        st.warning(
+            translate(
+                language,
+                "esm2_window_required",
+                length=record.sequence_length,
+                limit=DEFAULT_MAX_RESIDUES,
+            )
+        )
+    window_col, size_col = st.columns(2)
+    window_start = int(
+        window_col.number_input(
+            translate(language, "esm2_window_start"),
+            min_value=1,
+            max_value=record.sequence_length,
+            value=1,
+            step=1,
+            help=explanation(language, "esm2_window_start_help", explanation_mode),
+            key=f"esm2-window-start-{selected_target.symbol}-{input_source}",
+        )
+    )
+    remaining = record.sequence_length - window_start + 1
+    window_length = int(
+        size_col.number_input(
+            translate(language, "esm2_window_length"),
+            min_value=1,
+            max_value=min(DEFAULT_MAX_RESIDUES, remaining),
+            value=min(max_length, remaining),
+            step=1,
+            help=explanation(language, "esm2_window_length_help", explanation_mode),
+            key=f"esm2-window-length-{selected_target.symbol}-{input_source}",
+        )
+    )
+    device = st.segmented_control(
+        translate(language, "esm2_device"),
+        options=["auto", "cpu", "cuda"],
+        default="auto",
+        format_func=lambda value: translate(language, f"esm2_device_{value}"),
+        help=explanation(language, "esm2_device_help", explanation_mode),
+        key=f"esm2-device-{selected_target.symbol}",
+    ) or "auto"
+    cached_model_only = st.checkbox(
+        translate(language, "esm2_cached_model_only"),
+        value=False,
+        help=explanation(language, "esm2_cached_model_only_help", explanation_mode),
+        key=f"esm2-cache-only-{selected_target.symbol}",
+    )
+
+    config = LocalESM2Config(
+        window_start=window_start,
+        window_length=window_length,
+        device=device,
+        local_files_only=cached_model_only,
+    )
+    plan = planned_local_esm2_manifest(record, config)
+    with st.expander(translate(language, "esm2_plan_title")):
+        st.json(plan, expanded=False)
+    st.download_button(
+        translate(language, "esm2_download_plan"),
+        data=json.dumps(plan, indent=2, sort_keys=True).encode("utf-8"),
+        file_name=f"hra-esm2-plan-{selected_target.symbol.lower()}.json",
+        mime="application/json",
+        key=f"esm2-plan-download-{selected_target.symbol}-{input_source}",
+    )
+
+    status = local_esm2_status()
+    if status.available:
+        versions = ", ".join(
+            f"{name} {package_version}"
+            for name, package_version in status.installed_versions.items()
+        )
+        st.success(translate(language, "esm2_runtime_ready"))
+        st.caption(versions)
+    else:
+        st.warning(
+            translate(
+                language,
+                "esm2_runtime_missing",
+                packages=", ".join(status.missing_packages),
+            )
+        )
+        st.code('python -m pip install -e ".[scientific-ai]"', language="powershell")
+
+    confirmed = st.checkbox(
+        translate(language, "esm2_run_confirmation"),
+        value=False,
+        key=f"esm2-confirm-{selected_target.symbol}",
+    )
+    experiment_id = str(plan["experiment_id"])
+    artifacts = st.session_state.setdefault("local-esm2-artifacts", {})
+    if st.button(
+        translate(language, "esm2_run"),
+        disabled=not status.available or not confirmed,
+        key=f"esm2-run-{selected_target.symbol}-{input_source}",
+    ):
+        try:
+            with st.spinner(translate(language, "esm2_running")):
+                artifact = LocalESM2Provider(config).embed(record)
+                manifest = local_esm2_manifest(artifact)
+            previous = artifacts.get(experiment_id)
+            comparison = (
+                compare_embedding_manifests(previous, manifest)
+                if previous is not None
+                else "baseline-recorded"
+            )
+            manifest["evaluation"]["reproducibility_check"] = {
+                "status": comparison,
+                "compared_checksum": (
+                    previous["outputs"]["embedding"]["checksum"]
+                    if previous is not None
+                    else None
+                ),
+            }
+            artifacts[experiment_id] = manifest
+            st.success(translate(language, "esm2_run_complete"))
+        except (LocalESM2Error, OSError, ValueError) as exc:
+            st.error(translate(language, "esm2_run_failed", error=str(exc)))
+
+    manifest = artifacts.get(experiment_id)
+    if manifest is None:
+        return
+    embedding = manifest["outputs"]["embedding"]
+    reproducibility = manifest["evaluation"]["reproducibility_check"]["status"]
+    dimensions_col, tensor_col, repeat_col = st.columns(3)
+    dimensions_col.metric(translate(language, "esm2_dimensions"), embedding["dimensions"])
+    tensor_col.metric(
+        translate(language, "esm2_tensor_shape"),
+        " x ".join(str(value) for value in embedding["token_embeddings_shape"]),
+    )
+    repeat_col.metric(
+        translate(language, "esm2_repeat_status"),
+        translate(language, f"esm2_repeat_{reproducibility.replace('-', '_')}"),
+    )
+    st.caption(translate(language, "esm2_artifact_warning"))
+    with st.expander(translate(language, "esm2_artifact_title")):
+        st.json(manifest, expanded=False)
+    st.download_button(
+        translate(language, "esm2_download_artifact"),
+        data=json.dumps(manifest, indent=2, sort_keys=True).encode("utf-8"),
+        file_name=f"hra-esm2-artifact-{selected_target.symbol.lower()}.json",
+        mime="application/json",
+        key=f"esm2-artifact-download-{experiment_id}",
+    )
+
+
 def run_protein_lab(
     language: str,
     cache: SearchCache | None,
@@ -1459,6 +1681,9 @@ def run_protein_lab(
         mime="application/json",
         key=f"protein-lab-report-download-{selected_target.symbol}",
     )
+
+    st.divider()
+    _render_local_esm2_experiment(language, selected_target, explanation_mode)
 
     if source_records:
         st.subheader(translate(language, "protein_lab_source_papers"))

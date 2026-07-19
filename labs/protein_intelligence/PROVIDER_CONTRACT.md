@@ -1,6 +1,6 @@
 # Protein Embedding Provider Contract
 
-This contract defines what a future real embedding adapter must provide before it can be used in the Digital Biology Lab.
+This contract defines what a real embedding adapter must provide before it can be used in the Digital Biology Lab. The v0.10 local ESM-2 adapter is the first implementation of this boundary.
 
 ## Required Inputs
 
@@ -12,7 +12,7 @@ This contract defines what a future real embedding adapter must provide before i
   - source URL;
   - retrieval date.
 
-Adapters must not accept personal health data or raw publication text as embedding input.
+Adapters must not accept personal health data or raw publication text as embedding input. Oversize sequences must be rejected or handled through explicit, recorded windows; silent truncation is not allowed.
 
 ## Required Output
 

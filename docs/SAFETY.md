@@ -41,6 +41,8 @@ The app must always show a prominent disclaimer explaining that it is not medica
 - Local Ollama summaries should remain local by default.
 - SQLite history must not be treated as a place for sensitive or medical data.
 - Reading-list and seen-paper states are local workflow metadata and must not be interpreted as health information or scientific endorsement.
+- Protein embeddings are experimental computational representations. Do not present them as evidence of function, similarity, pathogenicity, treatment relevance, clinical effectiveness, or personal medical meaning.
+- Scientific-model runs must remain explicit and optional, preserve model and sequence provenance, and reject silent sequence truncation.
 - New telemetry or analytics must be documented and opt-in before introduction.
 
 ## Reporting Safety Issues

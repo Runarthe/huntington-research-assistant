@@ -6,9 +6,9 @@ This page is the quickest way to understand what Huntington Research Assistant c
 
 ## Release Status
 
-- Latest public release: `v0.9.1`
-- Next planned version: `v0.10.0`
-- Next development focus: the first bounded local protein foundation-model experiment
+- Latest public release: `v0.10.0`
+- Next planned version: `v0.11.0`
+- Next development focus: provider-parity reporting for local ESM-2 and future BioNeMo or NIM execution
 - Core application requirement: Python 3.11 or newer
 - Optional local summarization: Ollama with no cloud API key
 
@@ -50,18 +50,18 @@ This is not a full knowledge graph and is not classic retrieval-augmented genera
 - Non-mock providers no longer display mock artifacts or mock-run commands.
 - The UI exposes only execution modes it can currently perform safely.
 
-No live NVIDIA, BioNeMo, NIM, AlphaFold, Blueprint, or GPU inference runs in the application today.
+No live NVIDIA, BioNeMo, NIM, AlphaFold, or Blueprint provider runs in the application today. v0.10 adds one optional local ESM-2 run with no biological interpretation.
 
 ## Using the Newest Addition
 
 1. Run `streamlit run app/streamlit_app.py`.
 2. Open **Protein Lab (experimental)**.
-3. Scroll to **Blueprint Lab preview**.
-4. Select a curated protein target and provider family.
-5. Inspect provider status and adapter availability.
-6. Expand the planned manifest to see the intended inputs, provider, output type, and safety boundary.
-7. With Mock selected, inspect or download the deterministic fixture.
-8. Review the local registry to see indexed manifests and checksums.
+3. Scroll to **Local ESM-2 experiment**.
+4. Select a bundled fixture fragment or explicitly retrieve and cache a UniProt sequence.
+5. Review the sequence checksum, explicit input window, pinned model revision, and planned manifest.
+6. Install the optional `scientific-ai` dependencies when real local inference is wanted.
+7. Confirm the execution boundary and run the local model.
+8. Inspect or download the embedding artifact, then repeat the same run to compare checksums.
 
 The CLI commands shown in the app are equivalent developer checks. They are optional for normal UI use.
 
@@ -75,13 +75,14 @@ The project has already exercised:
 - deterministic biomedical entity extraction;
 - evidence-preserving UI and export design;
 - identifier resolution and artifact provenance;
-- provider interfaces, execution gating, manifests, registries, CI, and releases.
+- provider interfaces, execution gating, manifests, registries, CI, and releases;
+- a real local protein-model tensor workflow with explicit preprocessing and reproducibility metadata.
 
-It has not yet exercised real protein-model tensors, GPU inference, NIM deployment, BioNeMo runtime execution, model-output evaluation, or structure-prediction interpretation.
+It has not yet exercised GPU inference, NIM deployment, BioNeMo runtime execution, task-specific model-output evaluation, or structure-prediction interpretation.
 
-## Recommended Next Milestone
+## Released v0.10 Milestone
 
-The proposed `v0.10.0` milestone is one bounded, optional foundation-model workflow:
+The `v0.10.0` release implements one bounded, optional foundation-model workflow:
 
 ```text
 authoritative sequence record
@@ -92,7 +93,7 @@ authoritative sequence record
   -> provenance-linked lab view
 ```
 
-The first implementation should use a small local ESM-2 checkpoint and record sequence checksum, model version, input handling, tensor shape, pooling method, runtime, and hardware. It should not infer treatment relevance, protein function, clinical meaning, or biological causality.
+The first implementation uses a pinned 8M-parameter ESM-2 checkpoint and records sequence checksum, model revision, input handling, tensor shape, pooling method, runtime, hardware, embedding checksum, and repeat-run comparison. Long sequences require an explicit input window. It does not infer treatment relevance, protein function, clinical meaning, or biological causality.
 
 After that contract is evaluated locally, the same provider boundary can be used to study BioNeMo Framework execution and NIM deployment without changing the public research-navigation application.
 
