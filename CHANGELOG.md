@@ -10,10 +10,14 @@ All notable project changes are documented here. The project follows semantic ve
 - Added a planned BioNeMo Framework ESM-2 manifest that reuses the exact local sequence checksum, one-based window, and no-silent-truncation policy.
 - Added a deterministic provider-parity report covering input handling, model identity, checkpoint identity, pooling, execution status, tensor metadata, checksums, hardware, and numerical precision.
 - Added a bilingual Provider Parity review in Protein Lab with readable status labels, official BioNeMo source links, and downloadable plan/report JSON.
+- Added a credential-free BioNeMo execution bundle containing the exact selected input CSV, reviewed settings, immutable-container guard, `infer_esm2` command, and result exporter for an external Linux/GPU environment.
+- Added bounded import validation for generated BioNeMo result JSON, including exact plan/input matching, tensor shape, runtime metadata, and checksums without accepting full vector payloads.
+- Added a deterministic offline result fixture that exercises the import and comparison path without claiming a BioNeMo, container, or GPU run.
 
 ### Safety
 
 - BioNeMo and NVIDIA NIM remain plan-only; v0.11 performs no NVIDIA, remote, credentialed, or GPU provider call.
+- External execution requires an explicit user-run bundle in a separately reviewed environment; the Streamlit app never invokes Docker or forwards an NGC credential.
 - Unknown or unexecuted fields are labelled `not-available` or `not-comparable`, never inferred as matches.
 - The report explicitly excludes biological similarity, protein function, structure, causality, treatment relevance, efficacy, safety, and clinical interpretation.
 

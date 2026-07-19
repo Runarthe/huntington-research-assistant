@@ -30,6 +30,7 @@ def test_bionemo_plan_reuses_exact_local_sequence_selection() -> None:
     assert bionemo_plan["runtime"]["parameters"]["silent_truncation"] is False
     assert bionemo_plan["runtime"]["parameters"]["include_embeddings"] is True
     assert "not asserted" in bionemo_plan["evaluation"]["limitations"][1]
+    assert bionemo_plan["model"]["version"] == "esm2/650m:2.0"
 
 
 def test_normalized_contract_exposes_only_provenance_fields() -> None:

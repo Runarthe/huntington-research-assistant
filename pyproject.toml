@@ -43,7 +43,7 @@ exclude = ["tests*", "docs*", "app*"]
 
 [tool.setuptools.package-data]
 "labs.blueprint_experiments" = ["README.md", "PROVIDER_CONTRACT.md", "examples/*.json"]
-"labs.protein_intelligence" = ["README.md", "PROVIDER_CONTRACT.md", "fixtures/*.fasta", "examples/*.json"]
+"labs.protein_intelligence" = ["README.md", "PROVIDER_CONTRACT.md", "fixtures/*.fasta", "examples/*.json", "bionemo_runtime/*.md", "bionemo_runtime/*.py", "bionemo_runtime/*.sh"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

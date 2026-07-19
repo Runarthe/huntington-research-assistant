@@ -431,9 +431,30 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "parity_lab_scope": (
             "BioNeMo is not executed here. Matching fields show engineering input compatibility only, not equivalent model weights, vectors, or biological meaning."
         ),
+        "parity_handoff_title": "External BioNeMo handoff",
+        "parity_handoff_help": (
+            "Download a credential-free bundle for a separately reviewed x86 Linux, Docker, and NVIDIA GPU environment. Inspect every included file before running it."
+        ),
+        "parity_prerequisites_docs": "Official BioNeMo hardware and software prerequisites",
+        "parity_download_execution_bundle": "Download Linux/GPU execution bundle",
+        "parity_use_fixture": "Use offline result fixture",
+        "parity_use_fixture_help": (
+            "Exercise result validation and UI plumbing with deterministic metadata. No model, container, or GPU runs."
+        ),
+        "parity_import_result": "Import BioNeMo result JSON",
+        "parity_import_result_help": (
+            "Import the small hra-bionemo-result.json created by the execution bundle. Full vectors and files over 1 MB are rejected."
+        ),
+        "parity_import_success": "The BioNeMo result matches this exact plan and passed structural validation.",
+        "parity_import_failed": "The BioNeMo result was rejected: {error}",
+        "parity_fixture_warning": (
+            "Fixture validation is active. These tensor values and checksums are test data, not BioNeMo model output."
+        ),
         "parity_input_contract": "Input contract ready",
         "parity_bionemo_execution": "BioNeMo execution",
         "parity_planned_only": "Planned only",
+        "parity_imported_result": "Imported result",
+        "parity_fixture_validated": "Fixture validated",
         "parity_unresolved_checks": "Unresolved checks",
         "parity_check": "Check",
         "parity_result": "Result",
@@ -993,9 +1014,30 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "parity_lab_scope": (
             "BioNeMo kjøres ikke her. Samsvar viser bare teknisk kompatibilitet for inndata, ikke like modellvekter, vektorer eller biologisk betydning."
         ),
+        "parity_handoff_title": "Ekstern BioNeMo-overføring",
+        "parity_handoff_help": (
+            "Last ned en pakke uten påloggingsopplysninger for et separat gjennomgått miljø med x86 Linux, Docker og NVIDIA GPU. Kontroller alle filene før kjøring."
+        ),
+        "parity_prerequisites_docs": "Offisielle maskin- og programvarekrav for BioNeMo",
+        "parity_download_execution_bundle": "Last ned kjøringspakke for Linux/GPU",
+        "parity_use_fixture": "Bruk offline testresultat",
+        "parity_use_fixture_help": (
+            "Test resultatvalidering og brukergrensesnitt med deterministiske metadata. Ingen modell, container eller GPU kjøres."
+        ),
+        "parity_import_result": "Importer BioNeMo-resultat som JSON",
+        "parity_import_result_help": (
+            "Importer den lille hra-bionemo-result.json som lages av kjøringspakken. Hele vektorer og filer over 1 MB avvises."
+        ),
+        "parity_import_success": "BioNeMo-resultatet samsvarer med denne nøyaktige planen og bestod strukturvalideringen.",
+        "parity_import_failed": "BioNeMo-resultatet ble avvist: {error}",
+        "parity_fixture_warning": (
+            "Validering med testdata er aktiv. Disse tensorverdiene og sjekksummene er ikke resultat fra BioNeMo-modellen."
+        ),
         "parity_input_contract": "Inndatakontrakt klar",
         "parity_bionemo_execution": "BioNeMo-kjøring",
         "parity_planned_only": "Bare planlagt",
+        "parity_imported_result": "Importert resultat",
+        "parity_fixture_validated": "Testdata validert",
         "parity_unresolved_checks": "Uavklarte kontroller",
         "parity_check": "Kontroll",
         "parity_result": "Resultat",

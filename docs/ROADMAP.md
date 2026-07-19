@@ -163,6 +163,7 @@ See [V0_9_PROVIDER_ADAPTERS.md](V0_9_PROVIDER_ADAPTERS.md) for the adapter bound
 - Keep NVIDIA providers planned or explicitly gated until their runtime, licence, credentials, and failure paths are reviewed.
 - Do not compare embeddings as scientific evidence or infer function, similarity, efficacy, or clinical meaning.
 - Surface the comparison in Protein Lab with machine-readable downloads and links to the official provider documentation.
+- Export a credential-free Linux/GPU execution bundle and validate returned BioNeMo provenance through an offline fixture before any real provider run is accepted.
 
 See [V0_11_PROVIDER_PARITY.md](V0_11_PROVIDER_PARITY.md) for the implemented offline contract and the remaining live-execution boundary.
 

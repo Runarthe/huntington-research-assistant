@@ -90,11 +90,16 @@ from labs.protein_intelligence import (
     SequenceRetrievalError,
     BIONEMO_INFERENCE_URL,
     BIONEMO_MODEL_URL,
+    BIONEMO_PREREQUISITES_URL,
+    BioNeMoExecutionError,
+    build_bionemo_execution_bundle,
     build_provider_parity_report,
     compare_embedding_manifests,
     fixture_sequence_record,
+    fixture_bionemo_result_manifest,
     local_esm2_manifest,
     local_esm2_status,
+    load_bionemo_result_manifest,
     planned_local_esm2_manifest,
     planned_bionemo_esm2_manifest,
     planned_sequence_manifest,
@@ -1391,7 +1396,55 @@ def _render_provider_parity_experiment(
     st.caption(translate(language, "parity_lab_scope"))
 
     bionemo_plan = planned_bionemo_esm2_manifest(record, config)
-    report = build_provider_parity_report(reference_manifest, bionemo_plan)
+    execution_bundle = build_bionemo_execution_bundle(record, config)
+    st.markdown(f"**{translate(language, 'parity_handoff_title')}**")
+    st.caption(translate(language, "parity_handoff_help"))
+    st.markdown(
+        f"[{translate(language, 'parity_prerequisites_docs')}]"
+        f"({BIONEMO_PREREQUISITES_URL})"
+    )
+    st.download_button(
+        translate(language, "parity_download_execution_bundle"),
+        data=execution_bundle,
+        file_name=f"hra-bionemo-execution-{record.target.symbol.lower()}.zip",
+        mime="application/zip",
+        key=f"parity-bundle-download-{bionemo_plan['experiment_id']}",
+    )
+
+    fixture_enabled = st.checkbox(
+        translate(language, "parity_use_fixture"),
+        value=False,
+        help=translate(language, "parity_use_fixture_help"),
+        key=f"parity-fixture-{bionemo_plan['experiment_id']}",
+    )
+    uploaded_result = st.file_uploader(
+        translate(language, "parity_import_result"),
+        type=["json"],
+        help=translate(language, "parity_import_result_help"),
+        key=f"parity-upload-{bionemo_plan['experiment_id']}",
+    )
+    candidate_manifest = bionemo_plan
+    execution_label_key = "parity_planned_only"
+    if uploaded_result is not None:
+        try:
+            candidate_manifest = load_bionemo_result_manifest(
+                uploaded_result.getvalue(),
+                bionemo_plan,
+            )
+            if candidate_manifest["runtime"]["interface"] == "fixture-validation":
+                execution_label_key = "parity_fixture_validated"
+                st.warning(translate(language, "parity_fixture_warning"))
+            else:
+                execution_label_key = "parity_imported_result"
+                st.success(translate(language, "parity_import_success"))
+        except BioNeMoExecutionError as exc:
+            st.error(translate(language, "parity_import_failed", error=str(exc)))
+    elif fixture_enabled:
+        candidate_manifest = fixture_bionemo_result_manifest(bionemo_plan)
+        execution_label_key = "parity_fixture_validated"
+        st.warning(translate(language, "parity_fixture_warning"))
+
+    report = build_provider_parity_report(reference_manifest, candidate_manifest)
     report_payload = report.model_dump(mode="json")
 
     input_col, execution_col, unknown_col = st.columns(3)
@@ -1404,7 +1457,7 @@ def _render_provider_parity_experiment(
     )
     execution_col.metric(
         translate(language, "parity_bionemo_execution"),
-        translate(language, "parity_planned_only"),
+        translate(language, execution_label_key),
     )
     unknown_col.metric(
         translate(language, "parity_unresolved_checks"),

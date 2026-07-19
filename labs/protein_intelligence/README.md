@@ -28,7 +28,7 @@ The Streamlit Protein Lab exposes this workflow without making PyTorch or Transf
 
 ## v0.11 Provider-Parity Slice
 
-`provider_parity.py` normalizes embedding provenance into `protein-embedding-artifact.v1`, builds a plan-only BioNeMo ESM-2 manifest from the same selected sequence, and reports each comparable or unresolved field. It never calls BioNeMo or NVIDIA NIM and does not interpret embedding values. See [`docs/V0_11_PROVIDER_PARITY.md`](../../docs/V0_11_PROVIDER_PARITY.md).
+`provider_parity.py` normalizes embedding provenance into `protein-embedding-artifact.v1`, builds a plan-only BioNeMo ESM-2 manifest from the same selected sequence, and reports each comparable or unresolved field. `bionemo_execution.py` creates a credential-free external execution bundle and validates bounded result JSON against the exact plan. Streamlit never calls BioNeMo or NVIDIA NIM and does not interpret embedding values. See [`docs/V0_11_PROVIDER_PARITY.md`](../../docs/V0_11_PROVIDER_PARITY.md).
 
 ## Not Included Yet
 

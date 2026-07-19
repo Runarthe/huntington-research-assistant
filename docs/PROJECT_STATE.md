@@ -35,7 +35,7 @@ The experimental features are deliberately conservative:
 1. **Entity Explorer** links catalogued terms to exact paper passages and paper-level co-occurrence. It does not assert causality or scientific consensus.
 2. **Protein Lab** maps controlled literature entities to curated HTT, BDNF, and NEFL identifiers and provenance reports.
 3. **Blueprint Lab preview** records provider boundaries, planned runs, deterministic mock artifacts, and a local manifest registry.
-4. **Provider parity review** checks whether local ESM-2 and a future BioNeMo run share the same recorded input and whether output fields are genuinely comparable.
+4. **Provider parity review** checks whether local ESM-2 and a future BioNeMo run share the same recorded input, exports a gated external execution bundle, and validates returned provenance without importing full vectors.
 
 This is not a full knowledge graph and is not classic retrieval-augmented generation. The current graph relationships mean only "mentioned in" or "catalogued in the same source paper." The lab artifacts describe engineering provenance rather than biomedical findings.
 
@@ -86,7 +86,7 @@ It has not yet exercised GPU inference, NIM deployment, BioNeMo runtime executio
 
 v0.11 normalizes local and future provider artifacts into a small shared descriptor, then compares each provenance field explicitly. Identical input checksum, window, length, and truncation policy can be verified before a second provider runs. Checkpoint weights, pooling implementation, tensor output, vector checksum, hardware, and precision remain different, unavailable, or not comparable until supporting runtime records exist.
 
-The candidate BioNeMo artifact is a plan only. It is sourced from official NVIDIA BioNeMo ESM-2 documentation and does not execute a container, GPU, NIM, endpoint, or credentialed service. See [V0_11_PROVIDER_PARITY.md](V0_11_PROVIDER_PARITY.md).
+The Streamlit-side BioNeMo artifact is a plan only. It is sourced from official NVIDIA BioNeMo ESM-2 documentation and does not execute a container, GPU, NIM, endpoint, or credentialed service. A credential-free bundle can be downloaded for explicit execution in a separately reviewed x86 Linux/NVIDIA environment, and only its bounded provenance JSON is imported back. See [V0_11_PROVIDER_PARITY.md](V0_11_PROVIDER_PARITY.md).
 
 ## Released v0.10 Milestone
 

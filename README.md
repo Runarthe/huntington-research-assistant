@@ -41,7 +41,7 @@ This project is not affiliated with any medical association, including the Norwe
 - Review an experimental Protein Lab tab with curated HTT, BDNF, and NEFL identifiers, planned sequence manifests, and read-only provenance reports.
 - Build evidence-grounded Protein Lab reports from locally saved reading-list papers and controlled entity mentions.
 - Optionally run a pinned small local ESM-2 checkpoint on an explicit protein-sequence window and download a provenance-rich embedding artifact.
-- Compare the local ESM-2 provenance contract with an offline, plan-only BioNeMo Framework manifest and download a provider-parity report.
+- Compare the local ESM-2 provenance contract with a gated BioNeMo Framework workflow, download a credential-free Linux/GPU execution bundle, and validate returned provenance without importing full vectors.
 - Offer English and Norwegian UI labels and safety disclaimers.
 - Offer English plain-language and research-detail summary modes.
 - Keep experimental Norwegian generation available to developers, but disabled by default until it passes linguistic and biomedical review.

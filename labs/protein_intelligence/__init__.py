@@ -60,6 +60,19 @@ from labs.protein_intelligence.provider_parity import (
     normalize_embedding_manifest,
     planned_bionemo_esm2_manifest,
 )
+from labs.protein_intelligence.bionemo_execution import (
+    BIONEMO_BUNDLE_VERSION,
+    BIONEMO_FRAMEWORK_CONTRACT,
+    BIONEMO_PREREQUISITES_URL,
+    BIONEMO_RESULT_VERSION,
+    BioNeMoExecutionConfig,
+    BioNeMoExecutionError,
+    build_bionemo_execution_bundle,
+    fixture_bionemo_result_manifest,
+    load_bionemo_result_manifest,
+    validate_bionemo_execution_bundle,
+    validate_bionemo_result_manifest,
+)
 
 __all__ = [
     "PROTEIN_TARGETS",
@@ -111,4 +124,15 @@ __all__ = [
     "build_provider_parity_report",
     "normalize_embedding_manifest",
     "planned_bionemo_esm2_manifest",
+    "BIONEMO_BUNDLE_VERSION",
+    "BIONEMO_FRAMEWORK_CONTRACT",
+    "BIONEMO_PREREQUISITES_URL",
+    "BIONEMO_RESULT_VERSION",
+    "BioNeMoExecutionConfig",
+    "BioNeMoExecutionError",
+    "build_bionemo_execution_bundle",
+    "fixture_bionemo_result_manifest",
+    "load_bionemo_result_manifest",
+    "validate_bionemo_execution_bundle",
+    "validate_bionemo_result_manifest",
 ]

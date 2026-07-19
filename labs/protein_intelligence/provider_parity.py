@@ -17,13 +17,14 @@ from labs.protein_intelligence.sequences import ProteinSequenceRecord
 
 ARTIFACT_CONTRACT_VERSION = "protein-embedding-artifact.v1"
 PARITY_REPORT_VERSION = "protein-embedding-provider-parity.v1"
-BIONEMO_MODEL_NAME = "ESM-2 8M candidate checkpoint"
-BIONEMO_MODEL_VERSION = "esm2/8m:2.0"
+BIONEMO_MODEL_NAME = "ESM-2 650M tutorial checkpoint"
+BIONEMO_MODEL_VERSION = "esm2/650m:2.0"
 BIONEMO_MODEL_URL = (
-    "https://docs.nvidia.com/bionemo-recipes/latest/models/ESM-2/pre-training/"
+    "https://docs.nvidia.com/bionemo-framework/2.7/main/examples/"
+    "bionemo-esm2/inference/index.html"
 )
 BIONEMO_INFERENCE_URL = (
-    "https://docs.nvidia.com/bionemo-framework/latest/main/examples/"
+    "https://docs.nvidia.com/bionemo-framework/2.7/main/examples/"
     "bionemo-esm2/inference/index.html"
 )
 
@@ -286,7 +287,10 @@ def build_provider_parity_report(
         and reference.model.name == candidate.model.name
         and reference.model.version == candidate.model.version
     )
-    candidate_generated = candidate.execution_status == "generated"
+    candidate_fixture = candidate.runtime.interface == "fixture-validation"
+    candidate_generated = (
+        candidate.execution_status == "generated" and not candidate_fixture
+    )
     checks = (
         _check(
             "selected_sequence_checksum",
@@ -346,18 +350,21 @@ def build_provider_parity_report(
             "embedding_dimensions",
             reference.output.dimensions,
             candidate.output.dimensions,
+            comparable=candidate_generated,
             explanation="Output dimensions can be compared only after both providers run.",
         ),
         _check(
             "token_embeddings_shape",
             reference.output.token_embeddings_shape,
             candidate.output.token_embeddings_shape,
+            comparable=candidate_generated,
             explanation="Tensor shapes can be compared only after both providers run.",
         ),
         _check(
             "vector_checksum",
             reference.output.vector_checksum,
             candidate.output.vector_checksum,
+            comparable=candidate_generated,
             explanation="Checksums are reproducibility metadata, not a scientific similarity measure.",
         ),
         _check(
@@ -371,6 +378,7 @@ def build_provider_parity_report(
             "runtime_precision",
             reference.runtime.precision,
             candidate.runtime.precision,
+            comparable=candidate_generated,
             explanation="Numerical precision must be recorded before output comparison.",
         ),
     )
@@ -379,11 +387,14 @@ def build_provider_parity_report(
         for status in ("matched", "different", "not-available", "not-comparable")
     }
     input_contract_ready = all(check.status == "matched" for check in checks[:4])
-    overall_status = (
-        "input-compatible-plan-only"
-        if input_contract_ready and not candidate_generated
-        else "review-required"
-    )
+    if input_contract_ready and candidate_fixture:
+        overall_status = "input-compatible-fixture"
+    elif input_contract_ready and not candidate_generated:
+        overall_status = "input-compatible-plan-only"
+    elif input_contract_ready and candidate_generated:
+        overall_status = "generated-output-review"
+    else:
+        overall_status = "review-required"
     return ProviderParityReport(
         report_id=(
             f"parity-{reference.source_experiment_id}--{candidate.source_experiment_id}"
@@ -397,7 +408,8 @@ def build_provider_parity_report(
         readiness={
             "input_contract_ready": input_contract_ready,
             "candidate_provider_executed": candidate_generated,
-            "output_comparison_available": all(
+            "candidate_fixture_validated": candidate_fixture,
+            "output_comparison_available": candidate_generated and all(
                 check.status in {"matched", "different"}
                 for check in checks[8:11]
             ),
