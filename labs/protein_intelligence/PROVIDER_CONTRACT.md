@@ -1,6 +1,6 @@
 # Protein Embedding Provider Contract
 
-This contract defines what a real embedding adapter must provide before it can be used in the Digital Biology Lab. The v0.10 local ESM-2 adapter is the first implementation of this boundary.
+This contract defines what a real embedding adapter must provide before it can be used in the Digital Biology Lab. The v0.10 local ESM-2 adapter is the first implementation of this boundary. v0.11 adds the normalized `protein-embedding-artifact.v1` descriptor and `protein-embedding-provider-parity.v1` report so missing fields remain explicit across providers.
 
 ## Required Inputs
 

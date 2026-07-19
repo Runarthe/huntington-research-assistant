@@ -7,8 +7,8 @@ This page is the quickest way to understand what Huntington Research Assistant c
 ## Release Status
 
 - Latest public release: `v0.10.0`
-- Next planned version: `v0.11.0`
-- Next development focus: provider-parity reporting for local ESM-2 and future BioNeMo or NIM execution
+- Current development version: `v0.11.0`
+- Current development focus: provider-neutral parity reporting for local ESM-2 and a plan-only BioNeMo Framework run
 - Core application requirement: Python 3.11 or newer
 - Optional local summarization: Ollama with no cloud API key
 
@@ -35,6 +35,7 @@ The experimental features are deliberately conservative:
 1. **Entity Explorer** links catalogued terms to exact paper passages and paper-level co-occurrence. It does not assert causality or scientific consensus.
 2. **Protein Lab** maps controlled literature entities to curated HTT, BDNF, and NEFL identifiers and provenance reports.
 3. **Blueprint Lab preview** records provider boundaries, planned runs, deterministic mock artifacts, and a local manifest registry.
+4. **Provider parity review** checks whether local ESM-2 and a future BioNeMo run share the same recorded input and whether output fields are genuinely comparable.
 
 This is not a full knowledge graph and is not classic retrieval-augmented generation. The current graph relationships mean only "mentioned in" or "catalogued in the same source paper." The lab artifacts describe engineering provenance rather than biomedical findings.
 
@@ -50,7 +51,7 @@ This is not a full knowledge graph and is not classic retrieval-augmented genera
 - Non-mock providers no longer display mock artifacts or mock-run commands.
 - The UI exposes only execution modes it can currently perform safely.
 
-No live NVIDIA, BioNeMo, NIM, AlphaFold, or Blueprint provider runs in the application today. v0.10 adds one optional local ESM-2 run with no biological interpretation.
+No live NVIDIA, BioNeMo, NIM, AlphaFold, or Blueprint provider runs in the application today. v0.10 adds one optional local ESM-2 run with no biological interpretation; v0.11 adds an offline BioNeMo planning and parity layer around that run.
 
 ## Using the Newest Addition
 
@@ -62,6 +63,7 @@ No live NVIDIA, BioNeMo, NIM, AlphaFold, or Blueprint provider runs in the appli
 6. Install the optional `scientific-ai` dependencies when real local inference is wanted.
 7. Confirm the execution boundary and run the local model.
 8. Inspect or download the embedding artifact, then repeat the same run to compare checksums.
+9. Review the Provider parity table and download the planned BioNeMo manifest or parity report.
 
 The CLI commands shown in the app are equivalent developer checks. They are optional for normal UI use.
 
@@ -79,6 +81,12 @@ The project has already exercised:
 - a real local protein-model tensor workflow with explicit preprocessing and reproducibility metadata.
 
 It has not yet exercised GPU inference, NIM deployment, BioNeMo runtime execution, task-specific model-output evaluation, or structure-prediction interpretation.
+
+## Current v0.11 Development
+
+v0.11 normalizes local and future provider artifacts into a small shared descriptor, then compares each provenance field explicitly. Identical input checksum, window, length, and truncation policy can be verified before a second provider runs. Checkpoint weights, pooling implementation, tensor output, vector checksum, hardware, and precision remain different, unavailable, or not comparable until supporting runtime records exist.
+
+The candidate BioNeMo artifact is a plan only. It is sourced from official NVIDIA BioNeMo ESM-2 documentation and does not execute a container, GPU, NIM, endpoint, or credentialed service. See [V0_11_PROVIDER_PARITY.md](V0_11_PROVIDER_PARITY.md).
 
 ## Released v0.10 Milestone
 

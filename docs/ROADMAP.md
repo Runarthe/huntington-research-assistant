@@ -156,12 +156,15 @@ See [V0_9_PROVIDER_ADAPTERS.md](V0_9_PROVIDER_ADAPTERS.md) for the adapter bound
 - Verify deterministic preprocessing and reproducible output metadata before comparing local and future BioNeMo execution.
 - Keep embeddings and other model outputs in the experimental lab and make no claims about function, causality, treatment relevance, or clinical meaning.
 
-## v0.11: Provider-Parity Experiment (Planned)
+## v0.11: Provider-Parity Experiment (In Progress)
 
 - Define one provider-neutral embedding artifact contract shared by local ESM-2 and future BioNeMo or NIM execution.
 - Add a deterministic comparison report for preprocessing, model identity, tensor shape, pooling, runtime, and vector checksum provenance.
 - Keep NVIDIA providers planned or explicitly gated until their runtime, licence, credentials, and failure paths are reviewed.
 - Do not compare embeddings as scientific evidence or infer function, similarity, efficacy, or clinical meaning.
+- Surface the comparison in Protein Lab with machine-readable downloads and links to the official provider documentation.
+
+See [V0_11_PROVIDER_PARITY.md](V0_11_PROVIDER_PARITY.md) for the implemented offline contract and the remaining live-execution boundary.
 
 ## Toward v1.0
 

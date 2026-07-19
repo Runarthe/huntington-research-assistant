@@ -48,6 +48,18 @@ from labs.protein_intelligence.local_esm2 import (
     planned_local_esm2_manifest,
     select_sequence_window,
 )
+from labs.protein_intelligence.provider_parity import (
+    ARTIFACT_CONTRACT_VERSION,
+    BIONEMO_INFERENCE_URL,
+    BIONEMO_MODEL_URL,
+    PARITY_REPORT_VERSION,
+    EmbeddingArtifactDescriptor,
+    ProviderParityCheck,
+    ProviderParityReport,
+    build_provider_parity_report,
+    normalize_embedding_manifest,
+    planned_bionemo_esm2_manifest,
+)
 
 __all__ = [
     "PROTEIN_TARGETS",
@@ -64,6 +76,7 @@ __all__ = [
     "planned_sequence_manifest",
     "ProteinEmbeddingProvider",
     "ProteinEmbeddingRecord",
+    "ProteinSequenceRecord",
     "ProteinSequenceRecord",
     "read_cached_sequence",
     "retrieve_and_cache_uniprot_sequence",
@@ -88,4 +101,14 @@ __all__ = [
     "local_esm2_status",
     "planned_local_esm2_manifest",
     "select_sequence_window",
+    "ARTIFACT_CONTRACT_VERSION",
+    "BIONEMO_INFERENCE_URL",
+    "BIONEMO_MODEL_URL",
+    "PARITY_REPORT_VERSION",
+    "EmbeddingArtifactDescriptor",
+    "ProviderParityCheck",
+    "ProviderParityReport",
+    "build_provider_parity_report",
+    "normalize_embedding_manifest",
+    "planned_bionemo_esm2_manifest",
 ]

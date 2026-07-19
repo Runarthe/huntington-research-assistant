@@ -2,6 +2,21 @@
 
 All notable project changes are documented here. The project follows semantic versioning where practical.
 
+## [0.11.0] - Unreleased
+
+### Added
+
+- Added a versioned, provider-neutral protein embedding descriptor for comparing provenance without interpreting vectors.
+- Added a planned BioNeMo Framework ESM-2 manifest that reuses the exact local sequence checksum, one-based window, and no-silent-truncation policy.
+- Added a deterministic provider-parity report covering input handling, model identity, checkpoint identity, pooling, execution status, tensor metadata, checksums, hardware, and numerical precision.
+- Added a bilingual Provider Parity review in Protein Lab with readable status labels, official BioNeMo source links, and downloadable plan/report JSON.
+
+### Safety
+
+- BioNeMo and NVIDIA NIM remain plan-only; v0.11 performs no NVIDIA, remote, credentialed, or GPU provider call.
+- Unknown or unexecuted fields are labelled `not-available` or `not-comparable`, never inferred as matches.
+- The report explicitly excludes biological similarity, protein function, structure, causality, treatment relevance, efficacy, safety, and clinical interpretation.
+
 ## [0.10.0] - 2026-07-19
 
 ### Added

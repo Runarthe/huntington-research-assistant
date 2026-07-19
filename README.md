@@ -2,7 +2,7 @@
 
 Huntington Research Assistant is a small open-source app for searching, summarizing, and navigating Huntington's disease research papers and registered clinical studies.
 
-The current released version is **v0.10.0**. The next planned milestone is **v0.11.0**. See [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for a concise current-state overview and [CHANGELOG.md](CHANGELOG.md) for release details.
+The current public release is **v0.10.0**. Development is now focused on **v0.11.0**. See [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md) for a concise current-state overview and [CHANGELOG.md](CHANGELOG.md) for release details.
 
 The app uses [Europe PMC](https://europepmc.org/RestfulWebService) and [NCBI E-utilities](https://www.ncbi.nlm.nih.gov/books/NBK25501/) for publications, plus the [ClinicalTrials.gov API](https://clinicaltrials.gov/data-api/api) for registered study information. It is intended as an educational public-good project for research navigation.
 
@@ -41,6 +41,7 @@ This project is not affiliated with any medical association, including the Norwe
 - Review an experimental Protein Lab tab with curated HTT, BDNF, and NEFL identifiers, planned sequence manifests, and read-only provenance reports.
 - Build evidence-grounded Protein Lab reports from locally saved reading-list papers and controlled entity mentions.
 - Optionally run a pinned small local ESM-2 checkpoint on an explicit protein-sequence window and download a provenance-rich embedding artifact.
+- Compare the local ESM-2 provenance contract with an offline, plan-only BioNeMo Framework manifest and download a provider-parity report.
 - Offer English and Norwegian UI labels and safety disclaimers.
 - Offer English plain-language and research-detail summary modes.
 - Keep experimental Norwegian generation available to developers, but disabled by default until it passes linguistic and biomedical review.
@@ -119,7 +120,7 @@ The literature app does not require scientific-model packages. To evaluate the e
 python -m pip install -e ".[scientific-ai]"
 ```
 
-PyTorch is much larger than the approximately 31 MB ESM-2 checkpoint. For NVIDIA GPU support, use the install command generated for your operating system and CUDA setup by the [official PyTorch installer](https://pytorch.org/get-started/locally/), then install the remaining project extra. CPU execution is sufficient for the bundled short fragments. See [docs/LOCAL_ESM2_EXPERIMENT.md](docs/LOCAL_ESM2_EXPERIMENT.md).
+PyTorch is much larger than the approximately 31 MB ESM-2 checkpoint. For NVIDIA GPU support, use the install command generated for your operating system and CUDA setup by the [official PyTorch installer](https://pytorch.org/get-started/locally/), then install the remaining project extra. CPU execution is sufficient for the bundled short fragments. See [docs/LOCAL_ESM2_EXPERIMENT.md](docs/LOCAL_ESM2_EXPERIMENT.md) and [docs/V0_11_PROVIDER_PARITY.md](docs/V0_11_PROVIDER_PARITY.md).
 
 ## Automated Tests
 
@@ -182,7 +183,7 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-The next experimental milestone compares the local ESM-2 artifact contract with a gated BioNeMo or NIM execution plan, while reviewed entity extraction, Norwegian refinement, accessibility, and summary evaluation remain public-app priorities. Scientific-AI labs are optional and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
+The v0.11 development milestone compares the local ESM-2 artifact contract with a plan-only BioNeMo Framework workflow. A future milestone can execute the reviewed contract in an appropriate NVIDIA environment and add evaluation fixtures. Scientific-AI labs remain optional and are not required to run the core app. Personalized medical features and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
 

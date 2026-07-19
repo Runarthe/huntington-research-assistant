@@ -84,6 +84,15 @@ def test_protein_lab_tab_renders_without_live_calls() -> None:
         button.label for button in app.get("download_button")
     }
     assert "Run local ESM-2" in {button.label for button in app.button}
+    assert "Provider parity review" in {
+        subheader.value for subheader in app.subheader
+    }
+    assert "Download BioNeMo plan JSON" in {
+        button.label for button in app.get("download_button")
+    }
+    assert "Download parity report JSON" in {
+        button.label for button in app.get("download_button")
+    }
 
 
 def test_blueprint_provider_status_keys_distinguish_provider_boundaries() -> None:

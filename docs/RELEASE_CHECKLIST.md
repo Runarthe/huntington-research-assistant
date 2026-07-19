@@ -30,6 +30,9 @@ Use this checklist before publishing a tagged release.
 - [ ] Confirm paper-level co-occurrences are labelled as navigation signals, not biological relationships.
 - [ ] Confirm catalogue ID, catalogue version, aliases, extraction method, and mention confidence are visible for inspected entities.
 - [ ] Check the main workflows at a narrow mobile viewport without clipped or overlapping controls.
+- [ ] Review the local ESM-2 plan with a bundled fixture without running the model.
+- [ ] Confirm the Provider parity table marks identical input fields as matched and unexecuted BioNeMo output as unavailable.
+- [ ] Download and validate the BioNeMo plan and provider-parity JSON files.
 
 ## Safety and Privacy
 

@@ -26,6 +26,10 @@ The first real model adapter uses the pinned `facebook/esm2_t6_8M_UR50D` checkpo
 
 The Streamlit Protein Lab exposes this workflow without making PyTorch or Transformers core dependencies. See [`docs/LOCAL_ESM2_EXPERIMENT.md`](../../docs/LOCAL_ESM2_EXPERIMENT.md).
 
+## v0.11 Provider-Parity Slice
+
+`provider_parity.py` normalizes embedding provenance into `protein-embedding-artifact.v1`, builds a plan-only BioNeMo ESM-2 manifest from the same selected sequence, and reports each comparable or unresolved field. It never calls BioNeMo or NVIDIA NIM and does not interpret embedding values. See [`docs/V0_11_PROVIDER_PARITY.md`](../../docs/V0_11_PROVIDER_PARITY.md).
+
 ## Not Included Yet
 
 - AlphaFold or NIM calls;
