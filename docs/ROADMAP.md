@@ -139,7 +139,7 @@ See [V0_8_BLUEPRINT_PLAN.md](V0_8_BLUEPRINT_PLAN.md) for the initial experiment 
 
 See [V0_9_PROVIDER_ADAPTERS.md](V0_9_PROVIDER_ADAPTERS.md) for the adapter boundary.
 
-## v0.9.1: Blueprint Status Polish (In Progress)
+## v0.9.1: Blueprint Status Polish (Released)
 
 - Make provider execution boundaries easier to inspect in the UI.
 - Distinguish mock fixtures, public-data providers, planned-only adapters, and live-reviewed adapters.

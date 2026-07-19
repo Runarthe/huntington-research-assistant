@@ -6,9 +6,9 @@ This page is the quickest way to understand what Huntington Research Assistant c
 
 ## Release Status
 
-- Latest public release: `v0.9.0`
-- Current development version: `v0.9.1`
-- Development focus: clearer Blueprint Lab provider and artifact boundaries
+- Latest public release: `v0.9.1`
+- Next planned version: `v0.10.0`
+- Next development focus: the first bounded local protein foundation-model experiment
 - Core application requirement: Python 3.11 or newer
 - Optional local summarization: Ollama with no cloud API key
 
