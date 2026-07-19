@@ -1,4 +1,4 @@
-"""Pinned, plan-only review of the maintained BioNeMo Recipes ESM-2 path."""
+"""Pinned review of the maintained BioNeMo Recipes ESM-2 path."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ from labs.protein_intelligence.local_esm2 import (
 from labs.protein_intelligence.sequences import ProteinSequenceRecord
 
 
-BIONEMO_RECIPES_REVIEW_VERSION = "hra-bionemo-recipes-review.v1"
+BIONEMO_RECIPES_REVIEW_VERSION = "hra-bionemo-recipes-review.v2"
 BIONEMO_RECIPES_VERSION = "v3.0.0"
 BIONEMO_RECIPES_COMMIT = "66c150f2920d6155697d4edfc87289f239b65022"
 BIONEMO_RECIPES_RELEASE_URL = (
@@ -31,9 +31,7 @@ BIONEMO_RECIPES_INFERENCE_URL = (
 )
 BIONEMO_RECIPES_MODEL_ID = "nvidia/esm2_t6_8M_UR50D"
 BIONEMO_RECIPES_MODEL_REVISION = "3674a6acb6c217bbeff709d182a11b196125dfc3"
-BIONEMO_RECIPES_MODEL_URL = (
-    f"https://huggingface.co/{BIONEMO_RECIPES_MODEL_ID}"
-)
+BIONEMO_RECIPES_MODEL_URL = f"https://huggingface.co/{BIONEMO_RECIPES_MODEL_ID}"
 BIONEMO_RECIPES_REMOTE_CODE_BLOB = "bbef1bf7708711a0dd9b855f68d094de88024f53"
 BIONEMO_RECIPES_CONFIG_BLOB = "c6595500ba1a74526a63f8ff2e351c66552446b7"
 BIONEMO_RECIPES_WEIGHTS_SHA256 = (
@@ -59,14 +57,16 @@ class BioNeMoRecipesReview(BaseModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     schema_version: str = BIONEMO_RECIPES_REVIEW_VERSION
-    status: Literal["reviewed-plan-only"] = "reviewed-plan-only"
+    status: Literal["reviewed-runtime-prepared"] = "reviewed-runtime-prepared"
     reviewed_on: date = date(2026, 7, 19)
     recipes_version: str = BIONEMO_RECIPES_VERSION
     recipes_commit: str = BIONEMO_RECIPES_COMMIT
     recipes_license: Literal["Apache-2.0"] = "Apache-2.0"
     model_id: str = BIONEMO_RECIPES_MODEL_ID
     model_revision: str = BIONEMO_RECIPES_MODEL_REVISION
-    model_license: Literal["MIT"] = "MIT"
+    model_card_license: Literal["MIT"] = "MIT"
+    repository_license_file: Literal["Apache-2.0"] = "Apache-2.0"
+    license_consistency: Literal["review-required"] = "review-required"
     model_public: bool = True
     model_gated: bool = False
     model_parameters: int = 7_512_353
@@ -80,7 +80,9 @@ class BioNeMoRecipesReview(BaseModel):
     remote_code_required: bool = True
     remote_code_reviewed_in_full: bool = False
     remote_code_executed: bool = False
-    model_weights_downloaded: bool = False
+    model_weights_downloaded_during_review: bool = True
+    model_weights_retained_by_repository: bool = False
+    model_weights_loaded: bool = False
     inference_executed: bool = False
     network_calls_made_during_review: bool = True
     credentials_used_during_review: bool = False
@@ -118,14 +120,14 @@ class BioNeMoRecipesReview(BaseModel):
         ),
     }
     limitations: tuple[str, ...] = (
-        "The review pins public metadata and file identities; it is not a security audit of the remote model code.",
-        "HRA has not downloaded the model weights, executed remote code, loaded TransformerEngine, or run inference.",
+        "The model-card metadata says MIT, while the repository LICENSE and source header identify Apache 2.0; HRA does not resolve this licence discrepancy.",
+        "HRA has not pulled the reviewed base image, built the derived image, or run inference.",
         "Publisher-reported checkpoint equivalence has not been independently reproduced by HRA.",
         "A model embedding does not establish protein function, disease causality, treatment relevance, or clinical meaning.",
     )
     required_next_actions: tuple[str, ...] = (
-        "Review the pinned esm_nv.py code and its dependencies before enabling trust_remote_code.",
-        "Create a reproducible Linux, CUDA, PyTorch, and TransformerEngine environment.",
+        "Complete human licence review before downloading or executing model artifacts.",
+        "Review the native PyTorch and TransformerEngine dependency boundary before expanding beyond the fixture runtime.",
         "Download only the pinned model revision and verify the safetensors SHA-256 digest.",
         "Run one fixture sequence and import only bounded provenance metadata for comparison.",
     )
@@ -168,7 +170,7 @@ def planned_bionemo_recipes_esm2_manifest(
             "provider": "NVIDIA BioNeMo Recipes / Hugging Face",
             "name": BIONEMO_RECIPES_MODEL_ID,
             "version": BIONEMO_RECIPES_MODEL_REVISION,
-            "licence": "MIT",
+            "licence": "review-required (model card MIT; repository Apache-2.0)",
             "source_url": BIONEMO_RECIPES_MODEL_URL,
             "weights_sha256": BIONEMO_RECIPES_WEIGHTS_SHA256,
         },

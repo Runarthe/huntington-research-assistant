@@ -34,12 +34,12 @@ The Streamlit Protein Lab exposes this workflow without making PyTorch or Transf
 
 `bionemo_preflight.py` records passive host prerequisites without starting a container. `bionemo_image_review.py` pins the archived BioNeMo Framework 2.7.1 image only as a reproducibility candidate for the existing ESM-2 contract and records its lifecycle, licence, catalogue, and verification boundaries. `bionemo_gpu_probe.py` adds a separate opt-in GPU visibility check for that immutable image when it is already stored locally through a local Docker socket or named pipe. The probe cannot pull, use container networking, mount host paths, inspect credentials, execute BioNeMo, or load a model. See [`docs/V0_12_BIONEMO_RUNTIME.md`](../../docs/V0_12_BIONEMO_RUNTIME.md).
 
-`bionemo_recipes_review.py` keeps the preferred maintained path separate from the archived container. It pins BioNeMo Recipes `v3.0.0`, a public 8M NVIDIA ESM-2 model revision, the executable custom-code blob, and the safetensors digest. It can create a sequence-specific plan, but cannot download weights, enable remote code, import TransformerEngine, or execute inference.
+`bionemo_recipes_review.py` keeps the preferred maintained path separate from the archived container. `bionemo_code_review.py` records a bounded static review of the exact model source. `bionemo_recipes_execution.py` creates and validates a fixture-only runtime handoff pinned to one Linux/AMD64 CUDA/TransformerEngine base and exact artifact hashes. The bundle contains no downloaded artifacts or credentials and Streamlit never launches it.
 
 ## Not Included Yet
 
 - AlphaFold or NIM calls;
-- BioNeMo model execution;
+- a completed BioNeMo Recipes fixture run;
 - generated biological hypotheses;
 
 Those belong behind explicit adapters, fixtures, and provenance checks.
@@ -70,6 +70,9 @@ python -m labs.protein_intelligence mock-embed HTT --fasta-file labs/protein_int
 python -m labs.protein_intelligence validate-manifest outputs/example-manifest.json
 python -m labs.protein_intelligence bionemo-image-review
 python -m labs.protein_intelligence bionemo-recipes-review
+python -m labs.protein_intelligence bionemo-code-review
+python -m labs.protein_intelligence bionemo-recipes-runtime-review
+python -m labs.protein_intelligence bionemo-recipes-bundle HTT --output hra-recipes-htt.zip --date 2026-07-19
 ```
 
 `mock-embed` uses a deterministic fixture vector. It does not call ESM-2, BioNeMo, NIM, AlphaFold, or any external service.

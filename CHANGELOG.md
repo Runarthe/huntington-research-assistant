@@ -15,6 +15,10 @@ All notable project changes are documented here. The project follows semantic ve
 - Added a bilingual Protein Lab review panel and offline `bionemo-image-review` CLI export for the selected container candidate.
 - Added a separate maintained-path review for BioNeMo Recipes `v3.0.0` and NVIDIA's public 8M ESM-2 model, pinned to immutable source and model revisions.
 - Added a plan-only Recipes ESM-2 manifest that reuses the exact selected protein sequence while recording the remote-code, TransformerEngine, checkpoint-hash, and no-execution boundaries.
+- Added a static AST and Bandit review record for the exact pinned Recipes ESM-2 source, including its one low-severity assert finding and the unaudited native-dependency boundary.
+- Added a reproducible Linux/AMD64, CUDA 13.2, PyTorch 2.12, and TransformerEngine 2.14 fixture runtime pinned to an immutable NVIDIA base-image digest.
+- Added a deterministic, credential-free Recipes runtime ZIP with exact model and wheel hashes, offline build verification, a 64-residue limit, and hardened one-GPU execution scripts.
+- Added CLI and Protein Lab downloads for the code review, runtime review, exact plan, and fixture bundle, plus import validation for bounded Recipes result metadata.
 
 ### Safety
 
@@ -24,7 +28,9 @@ All notable project changes are documented here. The project follows semantic ve
 - GPUs absent from the reviewed NVIDIA support matrix remain flagged for review even when they meet the documented compute-capability threshold.
 - HRA does not pull the reviewed image, accept NVIDIA terms, authenticate with NGC, verify the catalogue signature, or represent the archived container as a maintained production dependency.
 - The execution bundle accepts only the reviewed digest and uses `docker run --pull never` so a missing image cannot be fetched implicitly.
-- The maintained Recipes path does not enable `trust_remote_code`, download model weights, load TransformerEngine, or execute inference. Publisher-reported checkpoint equivalence remains explicitly unverified by HRA.
+- HRA does not pull the 9.67 GB NVIDIA base, accept its terms, or execute the model automatically. Fetch, build, and run are separate, explicit, fail-closed steps outside Streamlit.
+- The model-card metadata says MIT while the repository LICENSE and source header identify Apache 2.0. HRA records the discrepancy, redistributes no model artifact, and requires human licence review.
+- The maintained runtime accepts one bundled sequence window of at most 64 residues, batch size one, no network, a read-only root filesystem, dropped capabilities, no full embedding export, and no biological or clinical interpretation.
 
 ## [0.11.0] - 2026-07-19
 

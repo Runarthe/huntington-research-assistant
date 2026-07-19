@@ -47,9 +47,12 @@ Use this checklist before publishing a tagged release.
 - [ ] Export the reviewed container JSON and confirm its tag, full digest, Linux/AMD64 platform, archived lifecycle, catalogue-reported scan/signature, and local-verification limitations are present.
 - [ ] Confirm the Protein Lab requires licence review and local-container confirmation before enabling the reviewed-image GPU probe.
 - [ ] Confirm the execution bundle rejects a different image reference and its runner includes `--pull never`.
-- [ ] Export the maintained Recipes review and confirm the release commit, model revision, custom-code blob, model licence, and safetensors SHA-256 are present.
+- [ ] Export the maintained Recipes review and confirm the release commit, model revision, custom-code blob, conflicting licence signals, and safetensors SHA-256 are present.
 - [ ] Download the Recipes ESM-2 plan and confirm it records the exact selected sequence window while reporting no model execution or embedding.
-- [ ] Confirm the maintained-path panel does not enable remote code, download model weights, or describe publisher-reported checkpoint equivalence as independently verified.
+- [ ] Download and validate the Recipes runtime ZIP; confirm it contains no weights, wheels, credentials, or embedding values.
+- [ ] Confirm the Recipes runtime requires an explicit window of at most 64 residues and does not start Docker from Streamlit.
+- [ ] Confirm the code review retains the low assert finding, incomplete native-dependency audit, and licence-review requirement.
+- [ ] Confirm the runtime pins the exact Linux/AMD64 base digest and reports the image, derived build, and fixture inference as not executed until manually proven.
 
 ## Safety and Privacy
 

@@ -45,7 +45,7 @@ This project is not affiliated with any medical association, including the Norwe
 - Run an explicit, non-networking BioNeMo host preflight that records local GPU, driver, Docker, and runtime readiness without inspecting credentials or starting a container.
 - Optionally run one explicit, network-disabled GPU visibility check in an already-local immutable container image; this does not pull an image or execute BioNeMo.
 - Inspect and export the pinned BioNeMo Framework 2.7.1 container review, including its immutable digest, archived lifecycle, licence boundary, and independent registry-manifest resolution.
-- Review a separate maintained BioNeMo Recipes `v3.0.0` path using a public 8M ESM-2 model pinned to immutable source, model, remote-code, and safetensors identities; this path remains plan-only.
+- Review a maintained BioNeMo Recipes `v3.0.0` path with static source findings, immutable model and runtime identities, and a credential-free bundle for one bounded Linux/CUDA fixture inference.
 - Offer English and Norwegian UI labels and safety disclaimers.
 - Offer English plain-language and research-detail summary modes.
 - Keep experimental Norwegian generation available to developers, but disabled by default until it passes linguistic and biomedical review.
@@ -187,7 +187,7 @@ No API keys are required or hardcoded. If local summarization is unavailable, th
 
 ## Roadmap
 
-The released v0.11 milestone compares the local ESM-2 artifact contract with a gated BioNeMo Framework workflow and exports a credential-free external execution bundle. The v0.12 experiment now includes passive environment checks, a reviewed immutable 2.7.1 container candidate, an explicit local GPU-container probe, and a plan-only migration review for maintained BioNeMo Recipes `v3.0.0`. The prebuilt image is archived and retained only as an optional reproduction target. The maintained path pins public model and source identities but does not execute remote code or download weights. GPU infrastructure remains optional and outside the core app. Personalized medical features and automated claims about study suitability remain out of scope.
+The released v0.11 milestone compares the local ESM-2 artifact contract with a gated BioNeMo Framework workflow. The v0.12 experiment adds passive environment checks, an archived reproduction candidate, an explicit GPU probe, and a maintained BioNeMo Recipes `v3.0.0` path. That path now includes a bounded static source review and an immutable Linux/CUDA/TransformerEngine fixture bundle. HRA has not pulled the NVIDIA base, built the derived image, or run the fixture; those remain explicit actions after licence review. GPU infrastructure stays optional and outside the core app. Personalized medical features and automated claims about study suitability remain out of scope.
 
 See [docs/ROADMAP.md](docs/ROADMAP.md).
 

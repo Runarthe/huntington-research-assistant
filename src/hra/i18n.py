@@ -489,19 +489,38 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Review a smaller, public ESM-2 model from the maintained BioNeMo Recipes ecosystem as the preferred future runtime path."
         ),
         "bionemo_recipes_review_scope": (
-            "This is a pinned plan only. HRA has not downloaded the weights, executed model code, loaded TransformerEngine, or run inference."
+            "The exact model source has received a bounded static review and the runtime is pinned. HRA has not pulled the image, built it, or run model inference."
         ),
         "bionemo_recipes_review_version": "Recipes release",
         "bionemo_recipes_review_model": "Candidate model",
         "bionemo_recipes_review_license": "Model licence",
+        "bionemo_recipes_license_review_required": "Review required",
+        "bionemo_recipes_review_license_warning": (
+            "Licence signals conflict: the model card says MIT, while the repository LICENSE and source header identify Apache 2.0. Review the terms before downloading or running artifacts."
+        ),
+        "bionemo_recipes_code_review_complete": (
+            "The exact pinned model source passed the bounded static review: no network, file, subprocess, dynamic-import, eval, pickle, or torch.load calls were found. Native dependencies remain outside that audit."
+        ),
         "bionemo_recipes_review_remote_code": (
-            "The checkpoint requires executable remote model code and TransformerEngine. The exact revision and file identities are recorded, but the code has not received a complete security review and cannot run from this panel."
+            "One low-severity assert finding is mitigated by rejecting optimized Python and independently checking the exact configuration before import."
+        ),
+        "bionemo_recipes_runtime_scope": (
+            "Pinned Linux/AMD64 base: NVIDIA PyTorch 26.04 with CUDA 13.2, PyTorch 2.12 and TransformerEngine 2.14. The base is about {size} GB compressed and is not pulled automatically."
         ),
         "bionemo_recipes_review_release": "BioNeMo Recipes release",
         "bionemo_recipes_review_docs": "Official ESM-2 documentation",
         "bionemo_recipes_review_model_card": "Pinned model card",
         "bionemo_recipes_review_download": "Download Recipes review JSON",
+        "bionemo_recipes_code_review_download": "Download code review JSON",
+        "bionemo_recipes_runtime_review_download": "Download runtime review JSON",
         "bionemo_recipes_plan_download": "Download Recipes ESM-2 plan JSON",
+        "bionemo_recipes_bundle_download": "Download bounded Recipes runtime bundle",
+        "bionemo_recipes_bundle_unavailable": (
+            "The runtime bundle requires one explicit sequence window of at most 64 residues: {error}"
+        ),
+        "bionemo_recipes_bundle_boundary": (
+            "The ZIP contains reviewed scripts, one fixture, hashes, and lock files only. It contains no weights, wheels, credentials, or embedding values and does not run Docker from Streamlit."
+        ),
         "bionemo_gpu_probe_title": "GPU container probe (advanced)",
         "bionemo_gpu_probe_help": (
             "Run only nvidia-smi inside a reviewed image that already exists locally. The probe cannot pull an image, access the network, inspect credentials, or execute BioNeMo."
@@ -1166,19 +1185,38 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Gjennomgå en mindre, offentlig ESM-2-modell fra det vedlikeholdte BioNeMo Recipes-økosystemet som foretrukket fremtidig kjørevei."
         ),
         "bionemo_recipes_review_scope": (
-            "Dette er kun en versjonslåst plan. HRA har ikke lastet ned modellvektene, kjørt modellkode, lastet TransformerEngine eller utført inferens."
+            "Den eksakte modellkilden har fått en avgrenset statisk gjennomgang, og kjøreoppsettet er versjonslåst. HRA har ikke hentet eller bygget imaget og har ikke kjørt modellinferens."
         ),
         "bionemo_recipes_review_version": "Recipes-utgivelse",
         "bionemo_recipes_review_model": "Kandidatmodell",
         "bionemo_recipes_review_license": "Modelllisens",
+        "bionemo_recipes_license_review_required": "Må gjennomgås",
+        "bionemo_recipes_review_license_warning": (
+            "Lisensopplysningene spriker: modellkortet sier MIT, mens repositoryets LICENSE og kildekodehodet viser Apache 2.0. Gjennomgå vilkårene før artefakter lastes ned eller kjøres."
+        ),
+        "bionemo_recipes_code_review_complete": (
+            "Den eksakte versjonslåste modellkilden besto den avgrensede statiske gjennomgangen: ingen kall til nettverk, filer, underprosesser, dynamisk import, eval, pickle eller torch.load ble funnet. Native avhengigheter er ikke del av denne revisjonen."
+        ),
         "bionemo_recipes_review_remote_code": (
-            "Kontrollpunktet krever kjørbar ekstern modellkode og TransformerEngine. Nøyaktig revisjon og filidentiteter er registrert, men koden er ikke fullstendig sikkerhetsgjennomgått og kan ikke kjøres fra dette panelet."
+            "Ett funn med lav alvorlighetsgrad gjelder assert. Det håndteres ved å avvise optimalisert Python og kontrollere den eksakte konfigurasjonen uavhengig før import."
+        ),
+        "bionemo_recipes_runtime_scope": (
+            "Versjonslåst Linux/AMD64-base: NVIDIA PyTorch 26.04 med CUDA 13.2, PyTorch 2.12 og TransformerEngine 2.14. Basen er omtrent {size} GB komprimert og hentes ikke automatisk."
         ),
         "bionemo_recipes_review_release": "BioNeMo Recipes-utgivelse",
         "bionemo_recipes_review_docs": "Offisiell ESM-2-dokumentasjon",
         "bionemo_recipes_review_model_card": "Versjonslåst modellkort",
         "bionemo_recipes_review_download": "Last ned Recipes-gjennomgang som JSON",
+        "bionemo_recipes_code_review_download": "Last ned kodegjennomgang som JSON",
+        "bionemo_recipes_runtime_review_download": "Last ned runtimegjennomgang som JSON",
         "bionemo_recipes_plan_download": "Last ned Recipes ESM-2-plan som JSON",
+        "bionemo_recipes_bundle_download": "Last ned avgrenset Recipes-runtimebundle",
+        "bionemo_recipes_bundle_unavailable": (
+            "Runtimebundlen krever ett eksplisitt sekvensvindu på høyst 64 rester: {error}"
+        ),
+        "bionemo_recipes_bundle_boundary": (
+            "ZIP-filen inneholder bare gjennomgåtte skript, én testsekvens, hasher og låsefiler. Den inneholder ikke vekter, wheels, nøkler eller embeddingverdier, og Streamlit kjører ikke Docker."
+        ),
         "bionemo_gpu_probe_title": "Test av GPU-container (avansert)",
         "bionemo_gpu_probe_help": (
             "Kjør bare nvidia-smi i et gjennomgått image som allerede finnes lokalt. Testen kan ikke laste ned et image, bruke nettverket, lese påloggingsopplysninger eller kjøre BioNeMo."

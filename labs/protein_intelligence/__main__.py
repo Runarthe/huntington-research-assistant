@@ -18,6 +18,16 @@ from labs.protein_intelligence.bionemo_image_review import reviewed_bionemo_cont
 from labs.protein_intelligence.bionemo_recipes_review import (
     reviewed_bionemo_recipes_path,
 )
+from labs.protein_intelligence.bionemo_code_review import (
+    reviewed_bionemo_model_code,
+)
+from labs.protein_intelligence.bionemo_recipes_execution import (
+    BIONEMO_RECIPES_MAX_FIXTURE_RESIDUES,
+    build_bionemo_recipes_execution_bundle,
+    reviewed_bionemo_recipes_runtime,
+    validate_bionemo_recipes_execution_bundle,
+)
+from labs.protein_intelligence.local_esm2 import LocalESM2Config
 from labs.protein_intelligence.manifests import (
     ManifestValidationError,
     manifest_summary,
@@ -26,6 +36,7 @@ from labs.protein_intelligence.sequences import (
     ProteinSequenceRecord,
     SequenceRetrievalError,
     failed_sequence_manifest,
+    fixture_sequence_record,
     retrieve_uniprot_sequence,
     sequence_manifest,
 )
@@ -119,9 +130,7 @@ def build_retrieval_manifest(
 def _sequence_from_args(sequence: str, fasta_file: str | None) -> str:
     if not fasta_file:
         return sequence
-    return parse_fasta_sequence(
-        open(fasta_file, encoding="utf-8").read()
-    )
+    return parse_fasta_sequence(open(fasta_file, encoding="utf-8").read())
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -138,7 +147,32 @@ def main(argv: list[str] | None = None) -> int:
     )
     subparsers.add_parser(
         "bionemo-recipes-review",
-        help="Print the plan-only review of the maintained BioNeMo Recipes path.",
+        help="Print the pinned review of the maintained BioNeMo Recipes path.",
+    )
+    subparsers.add_parser(
+        "bionemo-code-review",
+        help="Print the static security review of the exact Recipes model code.",
+    )
+    subparsers.add_parser(
+        "bionemo-recipes-runtime-review",
+        help="Print the reviewed, not-yet-executed Linux/CUDA runtime record.",
+    )
+    recipes_bundle_parser = subparsers.add_parser(
+        "bionemo-recipes-bundle",
+        help="Build one credential-free, fixture-only Recipes execution bundle.",
+    )
+    recipes_bundle_parser.add_argument(
+        "target",
+        help="Bundled target fixture: HTT, BDNF, or NEFL.",
+    )
+    recipes_bundle_parser.add_argument(
+        "--output",
+        required=True,
+        help="New ZIP path to create. Existing files are not overwritten.",
+    )
+    recipes_bundle_parser.add_argument(
+        "--date",
+        help="ISO date to record for deterministic review output.",
     )
 
     plan_parser = subparsers.add_parser(
@@ -152,7 +186,9 @@ def main(argv: list[str] | None = None) -> int:
         "retrieve",
         help="Print a sequence retrieval manifest. Requires --live for network.",
     )
-    retrieve_parser.add_argument("target", help="Target symbol, entity ID, or UniProt ID.")
+    retrieve_parser.add_argument(
+        "target", help="Target symbol, entity ID, or UniProt ID."
+    )
     retrieve_parser.add_argument("--date", help="ISO date to record in the manifest.")
     retrieve_parser.add_argument(
         "--live",
@@ -229,9 +265,41 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "bionemo-recipes-review":
             _write_json(reviewed_bionemo_recipes_path().model_dump(mode="json"))
             return 0
+        if args.command == "bionemo-code-review":
+            _write_json(reviewed_bionemo_model_code().model_dump(mode="json"))
+            return 0
+        if args.command == "bionemo-recipes-runtime-review":
+            _write_json(reviewed_bionemo_recipes_runtime().model_dump(mode="json"))
+            return 0
+        if args.command == "bionemo-recipes-bundle":
+            target = get_protein_target(args.target)
+            record = fixture_sequence_record(target)
+            archive = build_bionemo_recipes_execution_bundle(
+                record,
+                LocalESM2Config(
+                    max_residues=BIONEMO_RECIPES_MAX_FIXTURE_RESIDUES,
+                ),
+                planned_at=_date_arg(args.date),
+            )
+            validate_bionemo_recipes_execution_bundle(archive)
+            output_path = Path(args.output)
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            with output_path.open("xb") as output:
+                output.write(archive)
+            _write_json(
+                {
+                    "status": "created",
+                    "target": target.symbol,
+                    "output": str(output_path),
+                    "size_bytes": len(archive),
+                }
+            )
+            return 0
         if args.command == "plan":
             target = get_protein_target(args.target)
-            _write_json(planned_sequence_manifest(target, retrieved_at=_date_arg(args.date)))
+            _write_json(
+                planned_sequence_manifest(target, retrieved_at=_date_arg(args.date))
+            )
             return 0
         if args.command == "retrieve":
             _write_json(

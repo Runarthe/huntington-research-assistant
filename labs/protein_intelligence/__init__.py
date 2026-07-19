@@ -114,6 +114,28 @@ from labs.protein_intelligence.bionemo_recipes_review import (
     planned_bionemo_recipes_esm2_manifest,
     reviewed_bionemo_recipes_path,
 )
+from labs.protein_intelligence.bionemo_code_review import (
+    BIONEMO_CODE_REVIEW_VERSION,
+    BIONEMO_MODEL_CODE_GIT_BLOB,
+    BIONEMO_MODEL_CODE_SHA256,
+    BioNeMoCodeFinding,
+    BioNeMoRecipesCodeReview,
+    reviewed_bionemo_model_code,
+    scan_python_source,
+    verify_pinned_bionemo_source,
+)
+from labs.protein_intelligence.bionemo_recipes_execution import (
+    BIONEMO_RECIPES_BASE_AMD64_DIGEST,
+    BIONEMO_RECIPES_BASE_REFERENCE,
+    BIONEMO_RECIPES_BUNDLE_VERSION,
+    BIONEMO_RECIPES_MAX_FIXTURE_RESIDUES,
+    BIONEMO_RECIPES_RUNTIME_REVIEW_VERSION,
+    BioNeMoRecipesExecutionError,
+    BioNeMoRecipesRuntimeReview,
+    build_bionemo_recipes_execution_bundle,
+    reviewed_bionemo_recipes_runtime,
+    validate_bionemo_recipes_execution_bundle,
+)
 
 __all__ = [
     "PROTEIN_TARGETS",
@@ -209,4 +231,22 @@ __all__ = [
     "BioNeMoRecipesReview",
     "planned_bionemo_recipes_esm2_manifest",
     "reviewed_bionemo_recipes_path",
+    "BIONEMO_CODE_REVIEW_VERSION",
+    "BIONEMO_MODEL_CODE_GIT_BLOB",
+    "BIONEMO_MODEL_CODE_SHA256",
+    "BioNeMoCodeFinding",
+    "BioNeMoRecipesCodeReview",
+    "reviewed_bionemo_model_code",
+    "scan_python_source",
+    "verify_pinned_bionemo_source",
+    "BIONEMO_RECIPES_BASE_AMD64_DIGEST",
+    "BIONEMO_RECIPES_BASE_REFERENCE",
+    "BIONEMO_RECIPES_BUNDLE_VERSION",
+    "BIONEMO_RECIPES_MAX_FIXTURE_RESIDUES",
+    "BIONEMO_RECIPES_RUNTIME_REVIEW_VERSION",
+    "BioNeMoRecipesExecutionError",
+    "BioNeMoRecipesRuntimeReview",
+    "build_bionemo_recipes_execution_bundle",
+    "reviewed_bionemo_recipes_runtime",
+    "validate_bionemo_recipes_execution_bundle",
 ]

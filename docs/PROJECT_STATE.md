@@ -47,7 +47,7 @@ This is not a full knowledge graph and is not classic retrieval-augmented genera
 
 - Mock exposes deterministic offline test data.
 - UniProt is an implemented public-data boundary, but the UI remains plan-only.
-- BioNeMo, NVIDIA NIM, AlphaFold, and NVIDIA Blueprint are plan-only placeholders.
+- NVIDIA NIM, AlphaFold, and live NVIDIA Blueprint providers remain plan-only. BioNeMo Recipes has a reviewed fixture runtime bundle, but no model inference has been completed.
 - Non-mock providers no longer display mock artifacts or mock-run commands.
 - The UI exposes only execution modes it can currently perform safely.
 
@@ -91,7 +91,9 @@ The next bounded layer is a separate, advanced GPU-container probe. It requires 
 
 The reviewed reproduction candidate is the archived BioNeMo Framework `2.7.1` Linux/AMD64 image at `sha256:7d15abfbd648915c367ec14a1eef93d4aa40f3e346bacfe63c05f9269dabd678`. Its tag, digest, reported catalogue signature/scan, lifecycle, licence boundary, and anonymous manifest resolution are recorded in a deterministic JSON artifact. HRA did not pull, execute, locally scan, or independently verify the signature, and it directs future development to maintained BioNeMo Recipes.
 
-The maintained path is now separately pinned to BioNeMo Recipes `v3.0.0` at commit `66c150f2920d6155697d4edfc87289f239b65022` and NVIDIA's public 8M ESM-2 model at revision `3674a6acb6c217bbeff709d182a11b196125dfc3`. The review records the model licence, custom-code blob, 30 MB safetensors identity, and exact sequence plan. It does not enable remote code, download model weights, load TransformerEngine, or execute inference.
+The maintained path is pinned to BioNeMo Recipes `v3.0.0` at commit `66c150f2920d6155697d4edfc87289f239b65022` and NVIDIA's public 8M ESM-2 model at revision `3674a6acb6c217bbeff709d182a11b196125dfc3`. The exact model source matches the Recipes repository and has a bounded static review: no network, file, subprocess, dynamic-import, pickle, or model-loading calls were found; one low-severity assert and the unaudited native PyTorch/TransformerEngine dependencies remain explicit. The model card says MIT while the repository LICENSE and source header identify Apache 2.0, so licence review is required.
+
+The fixture runtime pins `nvcr.io/nvidia/pytorch:26.04-py3` to its Linux/AMD64 digest, CUDA 13.2, PyTorch 2.12, TransformerEngine 2.14, every model file, and 28 Python wheels. Its ZIP contains no model weights, wheels, credentials, or embedding values. Fetch, build, and one batch-size-one run are separately gated; inference has no network and a 64-residue ceiling. HRA has not pulled the base image, built the derived image, or executed the fixture.
 
 On the current development machine, the preflight detects an RTX 5070 Ti with 16 GB VRAM, compute capability 12.0, and driver 591.86. Docker Desktop 29.1.3 now exposes a running Linux engine and declares the NVIDIA runtime. The exact GPU model is absent from the reviewed NVIDIA support matrix, so compatibility remains unverified even though the documented compute-capability and driver thresholds are met. The selected image is not currently stored locally, so the GPU-container probe has not run.
 

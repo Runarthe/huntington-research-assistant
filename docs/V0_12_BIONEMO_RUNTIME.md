@@ -71,17 +71,49 @@ The container review showed that the 2.7.1 image is useful only as a frozen repr
 - public model: `nvidia/esm2_t6_8M_UR50D`;
 - model revision: `3674a6acb6c217bbeff709d182a11b196125dfc3`;
 - model parameters: 7,512,353;
-- model licence: MIT;
+- model-card licence metadata: MIT;
+- repository `LICENSE` and source header: Apache 2.0;
+- licence consistency: review required;
 - weights file: 30,058,964-byte safetensors artifact;
 - weights SHA-256: `89dfb9aa2b595936aaccdc50b6b50f3c353c520f0e7bdd54487f5fa00f05a0ed`.
 
 NVIDIA's model card describes this checkpoint as a TransformerEngine-optimized conversion of the original ESM-2 weights. HRA records that as a publisher statement, not as independently reproduced weight or output equivalence.
 
-The model repository includes executable custom code in `esm_nv.py` and requires TransformerEngine. HRA reviewed the repository metadata, configuration, imports, and immutable file identities, but did not conduct a complete security audit, download the weights, enable `trust_remote_code`, import the code, or run inference. The Streamlit panel and CLI export these boundaries alongside a sequence-specific plan:
+The model repository includes executable custom code in `esm_nv.py` and requires TransformerEngine. The file is byte-for-byte identical to `models/esm2/modeling_esm_te.py` in the pinned Recipes commit. HRA parsed it as data and ran a bounded static review without importing it. No network, file-I/O, subprocess, dynamic-import, `eval`, `exec`, pickle, `torch.load`, or `torch.save` calls were found. Bandit 1.8.6 reported one low-severity use of `assert`; the runtime rejects optimized Python and independently verifies the exact configuration before import. PyTorch, TransformerEngine, and their native dependency trees were not source-audited.
+
+The conflicting licence signals are retained rather than silently resolved. HRA does not redistribute the model files, and the runtime requires human licence review before acquisition or execution.
+
+The Streamlit panel and CLI export the review boundaries alongside a sequence-specific plan:
 
 ```powershell
 python -m labs.protein_intelligence bionemo-recipes-review
+python -m labs.protein_intelligence bionemo-code-review
+python -m labs.protein_intelligence bionemo-recipes-runtime-review
 ```
+
+## Reproducible Recipes Fixture Runtime
+
+The maintained-path bundle pins:
+
+- base tag `nvcr.io/nvidia/pytorch:26.04-py3` to Linux/AMD64 digest `sha256:be06a21bd95a46bce1a5cfc0576051a40209f328440edaa2ba5cd35abf85ca1a`;
+- Python 3.12, CUDA 13.2.1, PyTorch `2.12.0a0+0291f96`, TransformerEngine 2.14, and cuDNN 9.21;
+- all eight model-repository files by SHA-256 and size;
+- 28 CPython 3.12 Linux/AMD64 wheels by exact filename, version, and SHA-256;
+- one bundled sequence window of at most 64 residues and batch size one.
+
+Create the credential-free ZIP from the CLI or Protein Lab:
+
+```powershell
+python -m labs.protein_intelligence bionemo-recipes-bundle HTT `
+  --output hra-bionemo-recipes-htt.zip `
+  --date 2026-07-19
+```
+
+The ZIP contains review JSON, lock files, one fixture, a Dockerfile, and explicit fetch/build/run scripts. It contains no model weights, wheels, credentials, embedding vector, or unreviewed sequence input. Artifact acquisition verifies hashes before retaining files. The build uses the already-local exact base with `--pull=false`, disables build networking, and installs only the verified wheelhouse. The run uses `--pull never`, `--network none`, a read-only root filesystem, dropped capabilities, `no-new-privileges`, resource limits, one visible GPU, and an output-only bind mount.
+
+The output contains tensor shapes and SHA-256 checksums, not embedding values. It makes no statement about protein function, similarity, structure, disease causality, treatment relevance, efficacy, safety, or clinical meaning.
+
+The NGC catalogue reports the base as signed and scanned with no malware, but HRA has not locally verified its signature or scanned it. The image is approximately 9.67 GB compressed. HRA has not pulled it, built the derived image, or run the fixture, because acquiring it requires the user to review the applicable NVIDIA terms explicitly.
 
 See the [official ESM-2 model documentation](https://docs.nvidia.com/bionemo-recipes/latest/main/models/ESM-2/) and [Recipes inference example](https://docs.nvidia.com/bionemo-recipes/latest/main/recipes/recipes/esm2_native_te/) for the upstream contract.
 
@@ -147,6 +179,6 @@ The next v0.12 increment should:
 5. Resolve checkpoint access and run the v0.11 execution bundle only after the probe passes and the exact image/runtime contract is approved.
 6. Import the bounded `hra-bionemo-result.json` and review runtime provenance before comparing provider output fields.
 
-For the preferred maintained path, the next increment should complete a security review of the pinned custom model code, define a reproducible Linux/CUDA/TransformerEngine environment, and run only the bundled fixture sequence before considering broader inputs.
+For the preferred maintained path, the static source review and reproducible fixture bundle are complete. The remaining bounded verification is to review the applicable licence terms, pull the exact base digest manually, build the derived image offline, and run one bundled fixture. The result must pass exact-plan import validation before any broader input or provider comparison is considered.
 
 No biological interpretation, model ranking, treatment relevance, efficacy, safety, or clinical claim is part of this experiment.

@@ -19,6 +19,7 @@ from labs.protein_intelligence import (
     fixture_sequence_record,
     load_bionemo_result_manifest,
     planned_bionemo_esm2_manifest,
+    planned_bionemo_recipes_esm2_manifest,
     planned_local_esm2_manifest,
     validate_bionemo_execution_bundle,
 )
@@ -92,9 +93,9 @@ def test_execution_bundle_rejects_changed_container_review(
         contents = {name: source.read(name) for name in source.namelist()}
     execution = json.loads(contents["execution.json"])
     execution["container_review"][field] = value
-    contents["execution.json"] = json.dumps(
-        execution, indent=2, sort_keys=True
-    ).encode("utf-8")
+    contents["execution.json"] = json.dumps(execution, indent=2, sort_keys=True).encode(
+        "utf-8"
+    )
     bundle_manifest = json.loads(contents["bundle-manifest.json"])
     bundle_manifest["files"]["execution.json"] = (
         "sha256:" + hashlib.sha256(contents["execution.json"]).hexdigest()
@@ -184,6 +185,25 @@ def test_generated_result_rejects_incomplete_container_digest() -> None:
     result["runtime"]["interface"] = "bionemo-framework-container"
     result["runtime"]["container"] = "nvcr.io/example@sha256:not-a-digest"
 
+    with pytest.raises(BioNeMoExecutionError, match="immutable container digest"):
+        load_bionemo_result_manifest(json.dumps(result).encode("utf-8"), plan)
+
+
+def test_recipes_result_accepts_only_exact_plan_and_immutable_container() -> None:
+    record, config, _ = _inputs()
+    plan = planned_bionemo_recipes_esm2_manifest(
+        record,
+        config,
+        planned_at=date(2026, 7, 19),
+    )
+    result = fixture_bionemo_result_manifest(plan)
+    result["runtime"]["interface"] = "bionemo-recipes-container"
+    result["runtime"]["container"] = "local/hra-bionemo-recipes@sha256:" + "a" * 64
+
+    loaded = load_bionemo_result_manifest(json.dumps(result).encode("utf-8"), plan)
+    assert loaded["runtime"]["interface"] == "bionemo-recipes-container"
+
+    result["runtime"]["container"] = "hra-bionemo-recipes:latest"
     with pytest.raises(BioNeMoExecutionError, match="immutable container digest"):
         load_bionemo_result_manifest(json.dumps(result).encode("utf-8"), plan)
 
