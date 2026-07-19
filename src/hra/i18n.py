@@ -521,6 +521,45 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "bionemo_recipes_bundle_boundary": (
             "The ZIP contains reviewed scripts, one fixture, hashes, and lock files only. It contains no weights, wheels, credentials, or embedding values and does not run Docker from Streamlit."
         ),
+        "bionemo_recipes_readiness_title": "Recipes build readiness",
+        "bionemo_recipes_readiness_help": (
+            "Check the host, exact bundle, local Docker endpoint, and reviewed base-image presence without network calls, image pulls, containers, credentials, or model imports."
+        ),
+        "bionemo_recipes_terms_declaration": (
+            "I have reviewed the applicable NVIDIA and model terms"
+        ),
+        "bionemo_recipes_terms_declaration_help": (
+            "This records only your declaration. HRA does not accept terms for you and cannot provide legal advice."
+        ),
+        "bionemo_recipes_readiness_run": "Check Recipes build readiness",
+        "bionemo_recipes_readiness_running": "Checking local build inputs...",
+        "bionemo_recipes_readiness_status_ready_to_build": (
+            "All required local inputs are ready for the separately gated offline build. No image was built and no model ran."
+        ),
+        "bionemo_recipes_readiness_status_review_required": (
+            "More review or local preparation is required before the offline build. Nothing was pulled or executed."
+        ),
+        "bionemo_recipes_readiness_status_blocked": (
+            "A required local input is invalid or unsafe. The build must not proceed."
+        ),
+        "bionemo_recipes_readiness_check": "Check",
+        "bionemo_recipes_readiness_result": "Result",
+        "bionemo_recipes_readiness_evidence": "Local evidence",
+        "bionemo_recipes_readiness_check_host_runtime": "Host prerequisites",
+        "bionemo_recipes_readiness_check_fixture_bundle": "Fixture bundle",
+        "bionemo_recipes_readiness_check_terms_review": "Terms review declaration",
+        "bionemo_recipes_readiness_check_local_docker_endpoint": "Local Docker endpoint",
+        "bionemo_recipes_readiness_check_exact_base_image": "Exact base image",
+        "bionemo_recipes_readiness_check_locked_artifacts": "Locked model and wheel files",
+        "bionemo_recipes_readiness_check_status_passed": "Passed",
+        "bionemo_recipes_readiness_check_status_warning": "Review warning",
+        "bionemo_recipes_readiness_check_status_review_required": "Review required",
+        "bionemo_recipes_readiness_check_status_blocked": "Blocked",
+        "bionemo_recipes_readiness_check_status_not_checked": "Not checked",
+        "bionemo_recipes_readiness_boundary": (
+            "The app validates its in-memory fixture bundle and local host only. Use the CLI inside the extracted bundle directory to verify downloaded model files and wheels."
+        ),
+        "bionemo_recipes_readiness_download": "Download readiness report JSON",
         "bionemo_gpu_probe_title": "GPU container probe (advanced)",
         "bionemo_gpu_probe_help": (
             "Run only nvidia-smi inside a reviewed image that already exists locally. The probe cannot pull an image, access the network, inspect credentials, or execute BioNeMo."
@@ -1217,6 +1256,45 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         "bionemo_recipes_bundle_boundary": (
             "ZIP-filen inneholder bare gjennomgåtte skript, én testsekvens, hasher og låsefiler. Den inneholder ikke vekter, wheels, nøkler eller embeddingverdier, og Streamlit kjører ikke Docker."
         ),
+        "bionemo_recipes_readiness_title": "Klargjøring for Recipes-bygg",
+        "bionemo_recipes_readiness_help": (
+            "Kontroller vertsmaskinen, den eksakte bundlen, lokalt Docker-endepunkt og om det gjennomgåtte baseimaget finnes, uten nettverk, imagehenting, containere, nøkler eller modellimport."
+        ),
+        "bionemo_recipes_terms_declaration": (
+            "Jeg har gjennomgått de relevante vilkårene for NVIDIA og modellen"
+        ),
+        "bionemo_recipes_terms_declaration_help": (
+            "Dette registrerer bare erklæringen din. HRA godtar ikke vilkår for deg og kan ikke gi juridiske råd."
+        ),
+        "bionemo_recipes_readiness_run": "Kontroller klargjøring for Recipes-bygg",
+        "bionemo_recipes_readiness_running": "Kontrollerer lokale bygginndata...",
+        "bionemo_recipes_readiness_status_ready_to_build": (
+            "Alle nødvendige lokale inndata er klare for det separat godkjente frakoblede bygget. Ingen image ble bygget, og ingen modell ble kjørt."
+        ),
+        "bionemo_recipes_readiness_status_review_required": (
+            "Mer gjennomgang eller lokal klargjøring kreves før det frakoblede bygget. Ingenting ble hentet eller kjørt."
+        ),
+        "bionemo_recipes_readiness_status_blocked": (
+            "Nødvendige lokale inndata er ugyldige eller usikre. Bygget må ikke fortsette."
+        ),
+        "bionemo_recipes_readiness_check": "Kontroll",
+        "bionemo_recipes_readiness_result": "Resultat",
+        "bionemo_recipes_readiness_evidence": "Lokalt grunnlag",
+        "bionemo_recipes_readiness_check_host_runtime": "Forutsetninger på vertsmaskinen",
+        "bionemo_recipes_readiness_check_fixture_bundle": "Testbundle",
+        "bionemo_recipes_readiness_check_terms_review": "Erklæring om gjennomgåtte vilkår",
+        "bionemo_recipes_readiness_check_local_docker_endpoint": "Lokalt Docker-endepunkt",
+        "bionemo_recipes_readiness_check_exact_base_image": "Eksakt baseimage",
+        "bionemo_recipes_readiness_check_locked_artifacts": "Låste modell- og wheel-filer",
+        "bionemo_recipes_readiness_check_status_passed": "Bestått",
+        "bionemo_recipes_readiness_check_status_warning": "Må vurderes",
+        "bionemo_recipes_readiness_check_status_review_required": "Krever gjennomgang",
+        "bionemo_recipes_readiness_check_status_blocked": "Blokkert",
+        "bionemo_recipes_readiness_check_status_not_checked": "Ikke kontrollert",
+        "bionemo_recipes_readiness_boundary": (
+            "Appen validerer testbundlen i minnet og den lokale vertsmaskinen. Bruk CLI-en i den utpakkede bundle-mappen for å kontrollere nedlastede modellfiler og wheels."
+        ),
+        "bionemo_recipes_readiness_download": "Last ned klargjøringsrapport som JSON",
         "bionemo_gpu_probe_title": "Test av GPU-container (avansert)",
         "bionemo_gpu_probe_help": (
             "Kjør bare nvidia-smi i et gjennomgått image som allerede finnes lokalt. Testen kan ikke laste ned et image, bruke nettverket, lese påloggingsopplysninger eller kjøre BioNeMo."

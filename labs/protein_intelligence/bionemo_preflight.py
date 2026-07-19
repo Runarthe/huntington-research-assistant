@@ -393,11 +393,24 @@ def inspect_bionemo_environment(
     )
 
     if docker_ready:
-        runtime_result = run(("docker", "info", "--format", "{{json .Runtimes}}"))
-        runtime_payload = _json_output(runtime_result)
-        nvidia_runtime = isinstance(runtime_payload, dict) and "nvidia" in {
-            str(name).casefold() for name in runtime_payload
+        runtime_result = run(
+            (
+                "docker",
+                "info",
+                "--format",
+                "{{range $name, $runtime := .Runtimes}}{{$name}}{{println}}{{end}}",
+            )
+        )
+        runtime_names = {
+            line.strip().casefold()
+            for line in runtime_result.stdout.splitlines()
+            if line.strip()
         }
+        nvidia_runtime = (
+            runtime_result.available
+            and runtime_result.returncode == 0
+            and "nvidia" in runtime_names
+        )
         checks.append(
             _check(
                 "container_toolkit",

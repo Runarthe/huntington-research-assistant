@@ -36,6 +36,8 @@ The Streamlit Protein Lab exposes this workflow without making PyTorch or Transf
 
 `bionemo_recipes_review.py` keeps the preferred maintained path separate from the archived container. `bionemo_code_review.py` records a bounded static review of the exact model source. `bionemo_recipes_execution.py` creates and validates a fixture-only runtime handoff pinned to one Linux/AMD64 CUDA/TransformerEngine base and exact artifact hashes. The bundle contains no downloaded artifacts or credentials and Streamlit never launches it.
 
+`bionemo_recipes_readiness.py` checks whether that handoff is locally prepared without contacting a registry, pulling an image, starting a container, inspecting credentials, importing model code, or running inference. An optional extracted artifact directory must contain the exact 8 model files and 28 wheels; linked or mismatched files are rejected.
+
 ## Not Included Yet
 
 - AlphaFold or NIM calls;
@@ -73,6 +75,7 @@ python -m labs.protein_intelligence bionemo-recipes-review
 python -m labs.protein_intelligence bionemo-code-review
 python -m labs.protein_intelligence bionemo-recipes-runtime-review
 python -m labs.protein_intelligence bionemo-recipes-bundle HTT --output hra-recipes-htt.zip --date 2026-07-19
+python -m labs.protein_intelligence bionemo-recipes-readiness --bundle hra-recipes-htt.zip --artifact-root EXTRACTED_RUNTIME_DIRECTORY --strict
 ```
 
 `mock-embed` uses a deterministic fixture vector. It does not call ESM-2, BioNeMo, NIM, AlphaFold, or any external service.

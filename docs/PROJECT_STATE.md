@@ -95,6 +95,8 @@ The maintained path is pinned to BioNeMo Recipes `v3.0.0` at commit `66c150f2920
 
 The fixture runtime pins `nvcr.io/nvidia/pytorch:26.04-py3` to its Linux/AMD64 digest, CUDA 13.2, PyTorch 2.12, TransformerEngine 2.14, every model file, and 28 Python wheels. Its ZIP contains no model weights, wheels, credentials, or embedding values. Fetch, build, and one batch-size-one run are separately gated; inference has no network and a 64-residue ceiling. HRA has not pulled the base image, built the derived image, or executed the fixture.
 
+The next gate is now implemented as a non-networking Recipes readiness report. It validates the deterministic bundle, fixed local Docker endpoint, exact local base-image presence, user-declared terms review, and an optional extracted artifact directory. On 2026-07-20, the public fetch path downloaded and verified all 8 model files (30,114,600 bytes) and 28 wheels (40,936,480 bytes) in a temporary directory, then removed them without importing the model. The exact NVIDIA base remains absent locally.
+
 On the current development machine, the preflight detects an RTX 5070 Ti with 16 GB VRAM, compute capability 12.0, and driver 591.86. Docker Desktop 29.1.3 now exposes a running Linux engine and declares the NVIDIA runtime. The exact GPU model is absent from the reviewed NVIDIA support matrix, so compatibility remains unverified even though the documented compute-capability and driver thresholds are met. The selected image is not currently stored locally, so the GPU-container probe has not run.
 
 See [V0_12_BIONEMO_RUNTIME.md](V0_12_BIONEMO_RUNTIME.md) for the execution boundary and next verification step.

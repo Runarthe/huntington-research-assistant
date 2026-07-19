@@ -27,6 +27,9 @@ from labs.protein_intelligence.bionemo_recipes_execution import (
     reviewed_bionemo_recipes_runtime,
     validate_bionemo_recipes_execution_bundle,
 )
+from labs.protein_intelligence.bionemo_recipes_readiness import (
+    inspect_bionemo_recipes_readiness,
+)
 from labs.protein_intelligence.local_esm2 import LocalESM2Config
 from labs.protein_intelligence.manifests import (
     ManifestValidationError,
@@ -174,6 +177,29 @@ def main(argv: list[str] | None = None) -> int:
         "--date",
         help="ISO date to record for deterministic review output.",
     )
+    recipes_readiness_parser = subparsers.add_parser(
+        "bionemo-recipes-readiness",
+        help="Inspect local Recipes build inputs without pulling or running a container.",
+    )
+    recipes_readiness_parser.add_argument(
+        "--bundle",
+        required=True,
+        help="Path to an HRA Recipes fixture ZIP.",
+    )
+    recipes_readiness_parser.add_argument(
+        "--artifact-root",
+        help="Extracted bundle directory containing model/ and wheelhouse/.",
+    )
+    recipes_readiness_parser.add_argument(
+        "--terms-reviewed",
+        action="store_true",
+        help="Record only that the user reviewed applicable terms; HRA accepts nothing on their behalf.",
+    )
+    recipes_readiness_parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Return exit code 3 unless every required build input is ready.",
+    )
 
     plan_parser = subparsers.add_parser(
         "plan",
@@ -295,6 +321,14 @@ def main(argv: list[str] | None = None) -> int:
                 }
             )
             return 0
+        if args.command == "bionemo-recipes-readiness":
+            report = inspect_bionemo_recipes_readiness(
+                Path(args.bundle).read_bytes(),
+                artifact_root=args.artifact_root,
+                terms_reviewed=args.terms_reviewed,
+            )
+            _write_json(report.model_dump(mode="json"))
+            return 3 if args.strict and report.status != "ready-to-build" else 0
         if args.command == "plan":
             target = get_protein_target(args.target)
             _write_json(

@@ -115,6 +115,32 @@ The output contains tensor shapes and SHA-256 checksums, not embedding values. I
 
 The NGC catalogue reports the base as signed and scanned with no malware, but HRA has not locally verified its signature or scanned it. The image is approximately 9.67 GB compressed. HRA has not pulled it, built the derived image, or run the fixture, because acquiring it requires the user to review the applicable NVIDIA terms explicitly.
 
+## Recipes Build-Readiness Gate
+
+Before any build, the CLI and Protein Lab can create a non-networking readiness report:
+
+```powershell
+python -m labs.protein_intelligence bionemo-recipes-readiness `
+  --bundle hra-bionemo-recipes-htt.zip `
+  --artifact-root EXTRACTED_RUNTIME_DIRECTORY `
+  --terms-reviewed `
+  --strict
+```
+
+The report checks:
+
+- blocking host prerequisites and retained compatibility warnings;
+- exact deterministic bundle identity;
+- a declaration that the user reviewed applicable terms;
+- a local Unix socket or Windows named-pipe Docker endpoint;
+- presence and Linux/AMD64 metadata of the exact reviewed base digest;
+- all 8 model files and 28 wheels by filename, size where recorded, and SHA-256;
+- that artifact paths are regular files rather than symbolic links.
+
+It does not contact a registry, pull an image, inspect a credential, start a container, import model code, or run inference. `ready-to-build` means only that the separately gated offline build has its required local inputs. It is not a successful build or inference claim.
+
+On 2026-07-20, HRA exercised the public artifact-fetch script in a temporary directory. It downloaded and verified 30,114,600 model bytes and 40,936,480 wheel bytes, then removed the directory without importing the model. The current host passed the numeric GPU, driver, architecture, Docker, and NVIDIA-runtime checks; the RTX 5070 Ti compatibility warning remains. The exact 9.67 GB base image is not local.
+
 See the [official ESM-2 model documentation](https://docs.nvidia.com/bionemo-recipes/latest/main/models/ESM-2/) and [Recipes inference example](https://docs.nvidia.com/bionemo-recipes/latest/main/recipes/recipes/esm2_native_te/) for the upstream contract.
 
 ## Second Increment: Explicit GPU-Container Probe
@@ -179,6 +205,6 @@ The next v0.12 increment should:
 5. Resolve checkpoint access and run the v0.11 execution bundle only after the probe passes and the exact image/runtime contract is approved.
 6. Import the bounded `hra-bionemo-result.json` and review runtime provenance before comparing provider output fields.
 
-For the preferred maintained path, the static source review and reproducible fixture bundle are complete. The remaining bounded verification is to review the applicable licence terms, pull the exact base digest manually, build the derived image offline, and run one bundled fixture. The result must pass exact-plan import validation before any broader input or provider comparison is considered.
+For the preferred maintained path, the static source review, reproducible fixture bundle, public artifact-fetch verification, and non-networking build-readiness gate are complete. The remaining bounded verification is to review the applicable licence terms, pull the exact base digest manually, rerun readiness with the extracted artifact directory, build the derived image offline, and run one bundled fixture. The result must pass exact-plan import validation before any broader input or provider comparison is considered.
 
 No biological interpretation, model ranking, treatment relevance, efficacy, safety, or clinical claim is part of this experiment.

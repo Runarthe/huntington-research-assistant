@@ -19,6 +19,12 @@ All notable project changes are documented here. The project follows semantic ve
 - Added a reproducible Linux/AMD64, CUDA 13.2, PyTorch 2.12, and TransformerEngine 2.14 fixture runtime pinned to an immutable NVIDIA base-image digest.
 - Added a deterministic, credential-free Recipes runtime ZIP with exact model and wheel hashes, offline build verification, a 64-residue limit, and hardened one-GPU execution scripts.
 - Added CLI and Protein Lab downloads for the code review, runtime review, exact plan, and fixture bundle, plus import validation for bounded Recipes result metadata.
+- Added a non-networking Recipes build-readiness report for the CLI and Protein Lab. It validates the exact fixture bundle, host blockers, local Docker endpoint, base-image presence, terms-review declaration, and optional artifact directory without pulling or starting a container.
+- Added exact offline verification for an extracted `model/` and `wheelhouse/` directory, including symlink rejection and all pinned hashes.
+
+### Fixed
+
+- Changed Docker runtime discovery to request runtime names only, avoiding false NVIDIA-runtime warnings when Docker 29 returns a runtime-status object larger than the bounded diagnostic output.
 
 ### Safety
 
@@ -31,6 +37,7 @@ All notable project changes are documented here. The project follows semantic ve
 - HRA does not pull the 9.67 GB NVIDIA base, accept its terms, or execute the model automatically. Fetch, build, and run are separate, explicit, fail-closed steps outside Streamlit.
 - The model-card metadata says MIT while the repository LICENSE and source header identify Apache 2.0. HRA records the discrepancy, redistributes no model artifact, and requires human licence review.
 - The maintained runtime accepts one bundled sequence window of at most 64 residues, batch size one, no network, a read-only root filesystem, dropped capabilities, no full embedding export, and no biological or clinical interpretation.
+- A readiness report can say `ready-to-build` only; it never claims that an image was built, a GPU is supported, or a model executed.
 
 ## [0.11.0] - 2026-07-19
 

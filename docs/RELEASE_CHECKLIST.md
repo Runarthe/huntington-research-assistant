@@ -53,6 +53,9 @@ Use this checklist before publishing a tagged release.
 - [ ] Confirm the Recipes runtime requires an explicit window of at most 64 residues and does not start Docker from Streamlit.
 - [ ] Confirm the code review retains the low assert finding, incomplete native-dependency audit, and licence-review requirement.
 - [ ] Confirm the runtime pins the exact Linux/AMD64 base digest and reports the image, derived build, and fixture inference as not executed until manually proven.
+- [ ] Run the Recipes readiness check and confirm it does not call a registry, pull an image, start a container, inspect credentials, or import the model.
+- [ ] Confirm a remote Docker endpoint, tampered bundle, linked artifact, or checksum mismatch is blocked.
+- [ ] Confirm missing terms declaration, exact base image, or artifact directory is reported as review required rather than as a successful build.
 
 ## Safety and Privacy
 

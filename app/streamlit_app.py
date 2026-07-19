@@ -99,6 +99,7 @@ from labs.protein_intelligence import (
     BIONEMO_RECIPES_RELEASE_URL,
     BioNeMoExecutionError,
     BioNeMoRecipesExecutionError,
+    BioNeMoRecipesReadinessReport,
     BioNeMoGPUProbeReport,
     BioNeMoPreflightReport,
     build_bionemo_execution_bundle,
@@ -108,6 +109,7 @@ from labs.protein_intelligence import (
     fixture_sequence_record,
     fixture_bionemo_result_manifest,
     inspect_bionemo_environment,
+    inspect_bionemo_recipes_readiness,
     is_immutable_image_reference,
     local_esm2_manifest,
     local_esm2_status,
@@ -1578,8 +1580,83 @@ def _render_bionemo_recipes_review(
                 mime="application/zip",
                 key=f"bionemo-recipes-bundle-{experiment_id}",
             )
+            _render_bionemo_recipes_readiness(
+                language,
+                execution_bundle,
+                experiment_id,
+            )
         st.caption(translate(language, "bionemo_recipes_bundle_boundary"))
     return plan
+
+
+def _render_bionemo_recipes_readiness(
+    language: str,
+    execution_bundle: bytes,
+    experiment_id: str,
+) -> None:
+    readiness_key = f"bionemo-recipes-readiness-{experiment_id}"
+    st.markdown(f"**{translate(language, 'bionemo_recipes_readiness_title')}**")
+    st.caption(translate(language, "bionemo_recipes_readiness_help"))
+    terms_reviewed = st.checkbox(
+        translate(language, "bionemo_recipes_terms_declaration"),
+        help=translate(language, "bionemo_recipes_terms_declaration_help"),
+        key=f"{readiness_key}-terms",
+    )
+    if st.button(
+        translate(language, "bionemo_recipes_readiness_run"),
+        key=f"{readiness_key}-run",
+    ):
+        with st.spinner(translate(language, "bionemo_recipes_readiness_running")):
+            st.session_state[readiness_key] = inspect_bionemo_recipes_readiness(
+                execution_bundle,
+                terms_reviewed=terms_reviewed,
+            ).model_dump(mode="json")
+
+    payload = st.session_state.get(readiness_key)
+    if not isinstance(payload, dict):
+        return
+    report = BioNeMoRecipesReadinessReport.model_validate(payload)
+    status_key = f"bionemo_recipes_readiness_status_{report.status.replace('-', '_')}"
+    status_text = translate(language, status_key)
+    if report.status == "blocked":
+        st.error(status_text)
+    elif report.status == "review-required":
+        st.warning(status_text)
+    else:
+        st.success(status_text)
+
+    rows = []
+    for check in report.checks:
+        evidence = ", ".join(
+            f"{name.replace('_', ' ')}: {value}"
+            for name, value in check.evidence.items()
+            if value not in (None, "")
+        )
+        rows.append(
+            {
+                translate(language, "bionemo_recipes_readiness_check"): translate(
+                    language,
+                    f"bionemo_recipes_readiness_check_{check.check_id}",
+                ),
+                translate(language, "bionemo_recipes_readiness_result"): translate(
+                    language,
+                    f"bionemo_recipes_readiness_check_status_{check.status.replace('-', '_')}",
+                ),
+                translate(language, "bionemo_recipes_readiness_evidence"): evidence
+                or translate(language, "parity_not_recorded"),
+            }
+        )
+    st.dataframe(rows, hide_index=True, use_container_width=True)
+    st.caption(translate(language, "bionemo_recipes_readiness_boundary"))
+    st.download_button(
+        translate(language, "bionemo_recipes_readiness_download"),
+        data=json.dumps(
+            report.model_dump(mode="json"), indent=2, sort_keys=True
+        ).encode("utf-8"),
+        file_name="hra-bionemo-recipes-readiness.json",
+        mime="application/json",
+        key=f"{readiness_key}-download",
+    )
 
 
 def _render_bionemo_gpu_probe(language: str, experiment_id: str) -> None:
@@ -2267,6 +2344,11 @@ def run_protein_lab(
                     "python -m labs.protein_intelligence bionemo-recipes-bundle "
                     f"{selected_target.symbol} --output hra-recipes-"
                     f"{selected_target.symbol.lower()}.zip"
+                ),
+                (
+                    "python -m labs.protein_intelligence bionemo-recipes-readiness "
+                    f"--bundle hra-recipes-{selected_target.symbol.lower()}.zip "
+                    "--artifact-root EXTRACTED_RUNTIME_DIRECTORY --strict"
                 ),
                 "python -m labs.protein_intelligence bionemo-preflight",
                 (

@@ -30,6 +30,18 @@ python verify_assets.py --root .
 
 The fetched model and wheel files are not part of the HRA repository or ZIP bundle.
 
+From the HRA repository, the extracted directory can be checked without network or container execution:
+
+```bash
+python -m labs.protein_intelligence bionemo-recipes-readiness \
+  --bundle hra-bionemo-recipes-htt.zip \
+  --artifact-root EXTRACTED_RUNTIME_DIRECTORY \
+  --terms-reviewed \
+  --strict
+```
+
+`--terms-reviewed` records only the user's declaration and does not accept any term on the user's behalf. The readiness status means only that required local inputs are present for a build.
+
 ## Prepare the Base Image
 
 After reviewing and accepting the applicable NVIDIA terms yourself, pull the exact digest shown in `runtime-review.json`. Do not replace it with a tag.

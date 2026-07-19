@@ -18,7 +18,12 @@ GPU_COMMAND = (
     "--format=csv,noheader",
 )
 DOCKER_VERSION_COMMAND = ("docker", "version", "--format", "{{json .}}")
-DOCKER_INFO_COMMAND = ("docker", "info", "--format", "{{json .Runtimes}}")
+DOCKER_INFO_COMMAND = (
+    "docker",
+    "info",
+    "--format",
+    "{{range $name, $runtime := .Runtimes}}{{$name}}{{println}}{{end}}",
+)
 CHECKED_AT = datetime(2026, 7, 19, 14, 0, tzinfo=timezone.utc)
 
 
@@ -55,7 +60,7 @@ def _healthy_runner(gpu_name: str = "NVIDIA A100") -> FakeRunner:
             ),
             DOCKER_INFO_COMMAND: CommandResult(
                 returncode=0,
-                stdout=json.dumps({"nvidia": {"path": "nvidia-container-runtime"}}),
+                stdout="io.containerd.runc.v2\nnvidia\nrunc",
             ),
         }
     )
@@ -130,7 +135,7 @@ def test_missing_gpu_and_old_driver_are_blocking() -> None:
                 returncode=0,
                 stdout=_docker_version(),
             ),
-            DOCKER_INFO_COMMAND: CommandResult(returncode=0, stdout='{"nvidia": {}}'),
+            DOCKER_INFO_COMMAND: CommandResult(returncode=0, stdout="nvidia\nrunc"),
         }
     )
     missing_report = inspect_bionemo_environment(

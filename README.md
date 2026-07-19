@@ -46,6 +46,7 @@ This project is not affiliated with any medical association, including the Norwe
 - Optionally run one explicit, network-disabled GPU visibility check in an already-local immutable container image; this does not pull an image or execute BioNeMo.
 - Inspect and export the pinned BioNeMo Framework 2.7.1 container review, including its immutable digest, archived lifecycle, licence boundary, and independent registry-manifest resolution.
 - Review a maintained BioNeMo Recipes `v3.0.0` path with static source findings, immutable model and runtime identities, and a credential-free bundle for one bounded Linux/CUDA fixture inference.
+- Run a non-networking Recipes readiness check that distinguishes missing local preparation from invalid artifacts without pulling an image or executing a model.
 - Offer English and Norwegian UI labels and safety disclaimers.
 - Offer English plain-language and research-detail summary modes.
 - Keep experimental Norwegian generation available to developers, but disabled by default until it passes linguistic and biomedical review.

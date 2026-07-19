@@ -136,6 +136,13 @@ from labs.protein_intelligence.bionemo_recipes_execution import (
     reviewed_bionemo_recipes_runtime,
     validate_bionemo_recipes_execution_bundle,
 )
+from labs.protein_intelligence.bionemo_recipes_readiness import (
+    BIONEMO_RECIPES_READINESS_VERSION,
+    BioNeMoRecipesReadinessCheck,
+    BioNeMoRecipesReadinessReport,
+    inspect_bionemo_recipes_readiness,
+    verify_bionemo_recipes_artifact_directory,
+)
 
 __all__ = [
     "PROTEIN_TARGETS",
@@ -249,4 +256,9 @@ __all__ = [
     "build_bionemo_recipes_execution_bundle",
     "reviewed_bionemo_recipes_runtime",
     "validate_bionemo_recipes_execution_bundle",
+    "BIONEMO_RECIPES_READINESS_VERSION",
+    "BioNeMoRecipesReadinessCheck",
+    "BioNeMoRecipesReadinessReport",
+    "inspect_bionemo_recipes_readiness",
+    "verify_bionemo_recipes_artifact_directory",
 ]
