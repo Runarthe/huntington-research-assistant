@@ -7,8 +7,8 @@ This page is the quickest way to understand what Huntington Research Assistant c
 ## Release Status
 
 - Latest public release: `v0.9.1`
-- Next planned version: `v0.10.0`
-- Next development focus: the first bounded local protein foundation-model experiment
+- Current development version: `v0.10.0`
+- Development focus: the first bounded local protein foundation-model experiment
 - Core application requirement: Python 3.11 or newer
 - Optional local summarization: Ollama with no cloud API key
 
@@ -50,7 +50,7 @@ This is not a full knowledge graph and is not classic retrieval-augmented genera
 - Non-mock providers no longer display mock artifacts or mock-run commands.
 - The UI exposes only execution modes it can currently perform safely.
 
-No live NVIDIA, BioNeMo, NIM, AlphaFold, Blueprint, or GPU inference runs in the application today.
+No live NVIDIA, BioNeMo, NIM, AlphaFold, or Blueprint provider runs in the application today. The v0.10 development branch adds one optional local ESM-2 run with no biological interpretation.
 
 ## Using the Newest Addition
 
@@ -79,9 +79,9 @@ The project has already exercised:
 
 It has not yet exercised real protein-model tensors, GPU inference, NIM deployment, BioNeMo runtime execution, model-output evaluation, or structure-prediction interpretation.
 
-## Recommended Next Milestone
+## Current v0.10 Milestone
 
-The proposed `v0.10.0` milestone is one bounded, optional foundation-model workflow:
+The `v0.10.0` development milestone implements one bounded, optional foundation-model workflow:
 
 ```text
 authoritative sequence record
@@ -92,7 +92,7 @@ authoritative sequence record
   -> provenance-linked lab view
 ```
 
-The first implementation should use a small local ESM-2 checkpoint and record sequence checksum, model version, input handling, tensor shape, pooling method, runtime, and hardware. It should not infer treatment relevance, protein function, clinical meaning, or biological causality.
+The first implementation uses a pinned 8M-parameter ESM-2 checkpoint and records sequence checksum, model revision, input handling, tensor shape, pooling method, runtime, hardware, embedding checksum, and repeat-run comparison. Long sequences require an explicit input window. It does not infer treatment relevance, protein function, clinical meaning, or biological causality.
 
 After that contract is evaluated locally, the same provider boundary can be used to study BioNeMo Framework execution and NIM deployment without changing the public research-navigation application.
 

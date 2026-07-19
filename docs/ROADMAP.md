@@ -147,7 +147,7 @@ See [V0_9_PROVIDER_ADAPTERS.md](V0_9_PROVIDER_ADAPTERS.md) for the adapter bound
 - Keep mock artifacts and mock commands exclusive to the mock provider.
 - Keep the change limited to explanatory UI, artifact controls, documentation, and tests; no live providers or model execution are added.
 
-## v0.10: First Foundation-Model Experiment (Planned)
+## v0.10: First Foundation-Model Experiment (In Progress)
 
 - Complete an explicit, cached authoritative-sequence retrieval path with checksums.
 - Add an optional small local ESM-2 adapter without making model dependencies part of the core application install.

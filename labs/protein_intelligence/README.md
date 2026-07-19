@@ -1,6 +1,6 @@
 # Protein Intelligence Lab
 
-This lab area contains the v0.6 foundation for bounded protein-sequence and model-output experiments. It is optional and is not imported by the core Streamlit application.
+This lab area contains the foundation for bounded protein-sequence and model-output experiments. Heavy model dependencies remain optional and are loaded only during an explicit run.
 
 ## v0.6 Starting Scope
 
@@ -20,13 +20,17 @@ The initial targets are:
 - BDNF, UniProt `P23560`;
 - NEFL / neurofilament light polypeptide, UniProt `P07196`.
 
+## v0.10 Local ESM-2 Slice
+
+The first real model adapter uses the pinned `facebook/esm2_t6_8M_UR50D` checkpoint. It supports explicit sequence windows, local CPU or CUDA execution, strict no-truncation handling, provenance-rich embedding manifests, and repeat-run checksum comparison.
+
+The Streamlit Protein Lab exposes this workflow without making PyTorch or Transformers core dependencies. See [`docs/LOCAL_ESM2_EXPERIMENT.md`](../../docs/LOCAL_ESM2_EXPERIMENT.md).
+
 ## Not Included Yet
 
-- real embedding models;
 - AlphaFold or NIM calls;
 - BioNeMo integration;
 - generated biological hypotheses;
-- UI integration with the public app.
 
 Those belong behind explicit adapters, fixtures, and provenance checks.
 
@@ -37,7 +41,7 @@ ProteinTarget
   -> UniProt FASTA retrieval
   -> ProteinSequenceRecord with checksum
   -> sequence retrieval manifest
-  -> mock embedding provider
+  -> mock or optional local ESM-2 provider
   -> embedding manifest with input provenance
 ```
 

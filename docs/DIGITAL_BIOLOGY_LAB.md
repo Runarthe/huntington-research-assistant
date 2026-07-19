@@ -10,6 +10,8 @@ The Digital Biology Lab is the project's optional learning track for scientific 
 
 BioNeMo Framework provides models and tools for developing and adapting biological foundation-model workflows. Candidate learning areas include protein representation models such as ESM-2, genomic models such as Evo 2, and single-cell representation models such as Geneformer.
 
+The v0.10 development milestone implements the first local ESM-2 representation workflow with pinned model provenance, explicit sequence windows, tensor metadata, and repeat-run checks. It is a local Transformers/PyTorch reference implementation, not yet a BioNeMo or NIM integration. See [LOCAL_ESM2_EXPERIMENT.md](LOCAL_ESM2_EXPERIMENT.md).
+
 Official documentation: <https://docs.nvidia.com/bionemo-framework/latest/>
 
 ### NVIDIA NIM

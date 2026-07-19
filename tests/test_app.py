@@ -63,7 +63,7 @@ def test_protein_lab_tab_renders_without_live_calls() -> None:
     assert not app.exception
     assert "Protein Lab (experimental)" in {subheader.value for subheader in app.subheader}
     assert "Blueprint Lab preview" in {subheader.value for subheader in app.subheader}
-    assert any("No live model calls" in info.value for info in app.caption)
+    assert any("No model runs automatically" in info.value for info in app.caption)
     assert any(
         "deterministic local fixture data" in info.value
         for info in app.info
@@ -79,6 +79,11 @@ def test_protein_lab_tab_renders_without_live_calls() -> None:
     }
     assert "Report source" in {radio.label for radio in app.radio}
     assert "Explanations" in {radio.label for radio in app.radio}
+    assert "Local ESM-2 experiment" in {subheader.value for subheader in app.subheader}
+    assert "Download ESM-2 plan JSON" in {
+        button.label for button in app.get("download_button")
+    }
+    assert "Run local ESM-2" in {button.label for button in app.button}
 
 
 def test_blueprint_provider_status_keys_distinguish_provider_boundaries() -> None:

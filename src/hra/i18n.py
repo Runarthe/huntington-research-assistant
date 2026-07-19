@@ -312,7 +312,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "It uses curated identifiers and local provenance reports only."
         ),
         "protein_lab_scope": (
-            "No live model calls are made here. Reports are navigation/provenance artifacts, "
+            "No model runs automatically. Reports and embeddings are provenance artifacts, "
             "not biological hypotheses, treatment rankings, or medical advice."
         ),
         "protein_lab_symbol": "Symbol",
@@ -354,6 +354,76 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "protein_lab_cli_title": "CLI checks",
         "protein_lab_cli_help": "Equivalent offline commands for reviewing this target outside the app.",
+        "esm2_lab_title": "Local ESM-2 experiment",
+        "esm2_lab_intro": (
+            "Generate a numerical protein-sequence representation with a small, local ESM-2 checkpoint. "
+            "The model runs only after you explicitly start it."
+        ),
+        "esm2_lab_scope": (
+            "This experiment records model and sequence provenance. It does not predict protein function, "
+            "disease relevance, treatment value, or clinical meaning."
+        ),
+        "esm2_input_source": "Sequence input",
+        "esm2_input_source_help": (
+            "Use the bundled short fragment for an offline interface check, or explicitly retrieve and cache "
+            "the current authoritative UniProt sequence."
+        ),
+        "esm2_input_source_help_simple": "Choose a test fragment or a cached UniProt sequence.",
+        "esm2_input_fixture": "Bundled fixture fragment",
+        "esm2_input_uniprot_cache": "Cached UniProt sequence",
+        "esm2_retrieve_uniprot": "Retrieve or refresh from UniProt",
+        "esm2_retrieving": "Retrieving and validating the UniProt sequence...",
+        "esm2_retrieved": "The UniProt sequence was validated and saved in the local user cache.",
+        "esm2_retrieval_failed": "UniProt retrieval failed: {error}",
+        "esm2_no_cached_sequence": "No cached UniProt sequence is available for this target yet.",
+        "esm2_sequence_length": "Sequence residues",
+        "esm2_sequence_checksum": "Sequence checksum",
+        "esm2_sequence_source": "Input source",
+        "esm2_sequence_details": "Accession: {accession} | Retrieved/recorded: {date}",
+        "esm2_window_required": (
+            "This sequence has {length} residues and exceeds the {limit}-residue experiment limit. "
+            "Choose an explicit window; the app will never truncate silently."
+        ),
+        "esm2_window_start": "Window start (one-based)",
+        "esm2_window_start_help": "First residue included in the model input, using one-based sequence coordinates.",
+        "esm2_window_start_help_simple": "Choose the first residue to include.",
+        "esm2_window_length": "Window length",
+        "esm2_window_length_help": "Number of residues included. v0.10 allows at most 1,022 residues.",
+        "esm2_window_length_help_simple": "Choose how many residues to include.",
+        "esm2_device": "Compute device",
+        "esm2_device_help": "Auto uses CUDA when PyTorch can access it; CPU is the portable fallback.",
+        "esm2_device_help_simple": "Choose automatic, CPU, or NVIDIA CUDA execution.",
+        "esm2_device_auto": "Auto",
+        "esm2_device_cpu": "CPU",
+        "esm2_device_cuda": "NVIDIA CUDA",
+        "esm2_cached_model_only": "Use already-downloaded model files only",
+        "esm2_cached_model_only_help": (
+            "Prevent network access during model loading. This run fails if the pinned checkpoint is not already cached."
+        ),
+        "esm2_cached_model_only_help_simple": "Do not download model files during this run.",
+        "esm2_plan_title": "Planned ESM-2 manifest",
+        "esm2_download_plan": "Download ESM-2 plan JSON",
+        "esm2_runtime_ready": "Local ESM-2 dependencies are available.",
+        "esm2_runtime_missing": "Local ESM-2 is optional. Missing packages: {packages}",
+        "esm2_run_confirmation": (
+            "I understand that the first run may download model files and that the output has no clinical meaning."
+        ),
+        "esm2_run": "Run local ESM-2",
+        "esm2_running": "Loading the pinned checkpoint and generating the embedding...",
+        "esm2_run_complete": "Embedding artifact generated. Run the same input again to compare checksums.",
+        "esm2_run_failed": "Local ESM-2 run failed: {error}",
+        "esm2_dimensions": "Embedding dimensions",
+        "esm2_tensor_shape": "Token tensor shape",
+        "esm2_repeat_status": "Repeat check",
+        "esm2_repeat_baseline_recorded": "Baseline recorded",
+        "esm2_repeat_matched": "Checksum matched",
+        "esm2_repeat_different": "Checksum differed",
+        "esm2_repeat_not_comparable": "Not comparable",
+        "esm2_artifact_warning": (
+            "Experimental computational artifact only. The vector has not been evaluated for a scientific downstream task."
+        ),
+        "esm2_artifact_title": "Embedding artifact and provenance",
+        "esm2_download_artifact": "Download embedding artifact JSON",
         "blueprint_lab_title": "Blueprint Lab preview",
         "blueprint_lab_intro": (
             "This preview shows how a curated target, provider boundary, experiment manifest, "
@@ -750,7 +820,7 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
             "Den bruker kuraterte identifikatorer og lokale proveniensrapporter."
         ),
         "protein_lab_scope": (
-            "Ingen levende modellkall kjores her. Rapportene er navigasjon og proveniens, "
+            "Ingen modell kjores automatisk. Rapporter og embeddings er proveniensartefakter, "
             "ikke biologiske hypoteser, behandlingsrangeringer eller medisinske rad."
         ),
         "protein_lab_symbol": "Symbol",
@@ -792,6 +862,76 @@ TRANSLATIONS: dict[str, dict[str, str]] = {
         ),
         "protein_lab_cli_title": "CLI-sjekker",
         "protein_lab_cli_help": "Tilsvarende offline-kommandoer for gjennomgang utenfor appen.",
+        "esm2_lab_title": "Lokalt ESM-2-eksperiment",
+        "esm2_lab_intro": (
+            "Lag en numerisk representasjon av en proteinsekvens med et lite, lokalt ESM-2-kontrollpunkt. "
+            "Modellen kjores bare nar du starter den uttrykkelig."
+        ),
+        "esm2_lab_scope": (
+            "Eksperimentet registrerer proveniens for modell og sekvens. Det predikerer ikke proteinfunksjon, "
+            "sykdomsrelevans, behandlingsverdi eller klinisk betydning."
+        ),
+        "esm2_input_source": "Sekvensgrunnlag",
+        "esm2_input_source_help": (
+            "Bruk det korte medfolgende fragmentet for en offline grensesnittsjekk, eller hent og mellomlagre "
+            "den gjeldende autoritative UniProt-sekvensen uttrykkelig."
+        ),
+        "esm2_input_source_help_simple": "Velg et testfragment eller en mellomlagret UniProt-sekvens.",
+        "esm2_input_fixture": "Medfolgende testfragment",
+        "esm2_input_uniprot_cache": "Mellomlagret UniProt-sekvens",
+        "esm2_retrieve_uniprot": "Hent eller oppdater fra UniProt",
+        "esm2_retrieving": "Henter og validerer UniProt-sekvensen...",
+        "esm2_retrieved": "UniProt-sekvensen ble validert og lagret i den lokale brukerbufferen.",
+        "esm2_retrieval_failed": "Henting fra UniProt mislyktes: {error}",
+        "esm2_no_cached_sequence": "Ingen mellomlagret UniProt-sekvens er tilgjengelig for dette malet enna.",
+        "esm2_sequence_length": "Sekvensrester",
+        "esm2_sequence_checksum": "Sekvenssjekksum",
+        "esm2_sequence_source": "Datakilde",
+        "esm2_sequence_details": "Aksessjonsnummer: {accession} | Hentet/registrert: {date}",
+        "esm2_window_required": (
+            "Sekvensen har {length} rester og overstiger eksperimentgrensen pa {limit}. "
+            "Velg et eksplisitt vindu; appen trunkerer aldri i det skjulte."
+        ),
+        "esm2_window_start": "Start pa vindu (en-basert)",
+        "esm2_window_start_help": "Forste rest som tas med i modellgrunnlaget, med en-baserte sekvenskoordinater.",
+        "esm2_window_start_help_simple": "Velg den forste resten som skal tas med.",
+        "esm2_window_length": "Vinduslengde",
+        "esm2_window_length_help": "Antall rester som tas med. v0.10 tillater maksimalt 1 022 rester.",
+        "esm2_window_length_help_simple": "Velg hvor mange rester som skal tas med.",
+        "esm2_device": "Beregningsenhet",
+        "esm2_device_help": "Auto bruker CUDA nar PyTorch har tilgang; CPU er den portable reservelosningen.",
+        "esm2_device_help_simple": "Velg automatisk, CPU eller NVIDIA CUDA.",
+        "esm2_device_auto": "Auto",
+        "esm2_device_cpu": "CPU",
+        "esm2_device_cuda": "NVIDIA CUDA",
+        "esm2_cached_model_only": "Bruk bare allerede nedlastede modellfiler",
+        "esm2_cached_model_only_help": (
+            "Hindre nettverkstilgang ved modellasting. Kjoringen mislykkes hvis det pinnede kontrollpunktet ikke er mellomlagret."
+        ),
+        "esm2_cached_model_only_help_simple": "Ikke last ned modellfiler under denne kjoringen.",
+        "esm2_plan_title": "Planlagt ESM-2-manifest",
+        "esm2_download_plan": "Last ned ESM-2-plan som JSON",
+        "esm2_runtime_ready": "Lokale ESM-2-avhengigheter er tilgjengelige.",
+        "esm2_runtime_missing": "Lokal ESM-2 er valgfritt. Manglende pakker: {packages}",
+        "esm2_run_confirmation": (
+            "Jeg forstar at forste kjoring kan laste ned modellfiler, og at resultatet ikke har klinisk betydning."
+        ),
+        "esm2_run": "Kjor lokal ESM-2",
+        "esm2_running": "Laster det pinnede kontrollpunktet og lager embedding...",
+        "esm2_run_complete": "Embedding-artefakten er laget. Kjor samme grunnlag igjen for a sammenligne sjekksummer.",
+        "esm2_run_failed": "Lokal ESM-2-kjoring mislyktes: {error}",
+        "esm2_dimensions": "Embedding-dimensjoner",
+        "esm2_tensor_shape": "Form pa token-tensor",
+        "esm2_repeat_status": "Gjentakelsessjekk",
+        "esm2_repeat_baseline_recorded": "Referanse registrert",
+        "esm2_repeat_matched": "Sjekksum samsvarte",
+        "esm2_repeat_different": "Sjekksum var ulik",
+        "esm2_repeat_not_comparable": "Kan ikke sammenlignes",
+        "esm2_artifact_warning": (
+            "Kun en eksperimentell beregningsartefakt. Vektoren er ikke evaluert for en vitenskapelig nedstromsoppgave."
+        ),
+        "esm2_artifact_title": "Embedding-artefakt og proveniens",
+        "esm2_download_artifact": "Last ned embedding-artefakt som JSON",
         "blueprint_lab_title": "Blueprint-labforhåndsvisning",
         "blueprint_lab_intro": (
             "Denne visningen viser hvordan et kuratert mål, en leverandørgrense, et eksperimentmanifest "
